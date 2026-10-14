@@ -1576,7 +1576,317 @@ async function boot(){
   if(error) throw error;
   if(session) await start();
 }
+/* ===== 月曆及收入升級補丁 v2：只加入一次 ===== */
 
+// 1. 新增工具列控制
+const viewSelect=document.createElement("select");
+viewSelect.id="calendarView";
+viewSelect.setAttribute("aria-label","月曆顯示範圍");
+viewSelect.style.cssText="width:auto;margin-top:0";
+viewSelect.innerHTML=`
+  <option value="week">顯示全周</option>
+  <option value="weekdays">只顯示星期一至五</option>
+`;
+$("generate").before(viewSelect);
+
+const confirmMonthButton=document.createElement("button");
+confirmMonthButton.id="confirmMonth";
+confirmMonthButton.type="button";
+confirmMonthButton.textContent="✓ 確認本月全部暫定班";
+$("generate").before(confirmMonthButton);
+
+const calendarHint=document.createElement("p");
+calendarHint.id="calendarHint";
+calendarHint.className="muted";
+$("calendar").after(calendarHint);
+
+// 畫面版本標記，方便檢查有冇載入新版
+const versionLabel=document.createElement("small");
+versionLabel.className="muted";
+versionLabel.textContent="介面版本：月曆及收入 v2";
+$("calendarHint").after(versionLabel);
+
+// 2. 新增樣式
+const upgradeStyle=document.createElement("style");
+upgradeStyle.textContent=`
+.calendar.weekdays{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+}
+.day{
+  display:grid;
+  grid-template-rows:44px minmax(76px,1fr) minmax(76px,1fr);
+  min-height:205px;
+  min-width:0;
+}
+.day-header{overflow:auto}
+.day-slot{min-width:0;padding:4px 0}
+.day-slot.pm{border-top:1px dashed var(--line)}
+.slot-label{
+  display:block;color:var(--muted);
+  font-size:10px;margin-bottom:3px;
+}
+.event{
+  margin-top:4px;padding:5px;border-radius:6px;
+  overflow-wrap:anywhere;
+}
+.event.alan.planned{background:#f0edff;border-color:#7164e8}
+.event.amc.planned{background:#e6f7f3;border-color:#009688}
+.event.stubbs.planned{background:#fff3dc;border-color:#e29820}
+.event.alan.confirmed{background:#ded7ff;border-color:#6352d8}
+.event.amc.confirmed{background:#bcebdd;border-color:#008577}
+.event.stubbs.confirmed{background:#ffe0a6;border-color:#c78316}
+.event.alan.completed{background:#c9bef8;border-color:#5141b8}
+.event.amc.completed{background:#99dcc9;border-color:#006d61}
+.event.stubbs.completed{background:#f6cd80;border-color:#a96a08}
+.event-main{
+  display:block;width:100%;margin:0;padding:0;
+  border:0;border-radius:0;background:transparent;
+  color:var(--text);font-size:inherit;
+  line-height:1.5;text-align:left;
+}
+.quick-confirm{
+  margin-top:5px;padding:3px 6px;
+  background:#ffffffb8;color:#244779;
+  font-size:11px;font-weight:650;
+}
+.total-row{background:#eef3ff;font-weight:700}
+@media(max-width:650px){
+  .day{
+    grid-template-rows:42px minmax(72px,1fr) minmax(72px,1fr);
+    min-height:190px;
+  }
+  .event{padding:4px;font-size:10px}
+  .quick-confirm{padding:3px;font-size:10px}
+}
+`;
+document.head.appendChild(upgradeStyle);
+
+// 3. 覆蓋舊月曆顯示
+renderCalendar=function(shifts){
+  const [y,m]=$("month").value.split("-").map(Number);
+  const weekdaysOnly=$("calendarView").value==="weekdays";
+  const count=new Date(Date.UTC(y,m,0)).getUTCDate();
+  const firstDay=new Date(Date.UTC(y,m-1,1)).getUTCDay();
+  const mondayOffset=(firstDay+6)%7;
+  const offset=weekdaysOnly && mondayOffset>=5 ? 0 : mondayOffset;
+  const labels=weekdaysOnly
+    ? ["一","二","三","四","五"]
+    : ["一","二","三","四","五","六","日"];
+
+  $("calendar").classList.toggle("weekdays",weekdaysOnly);
+
+  let html=labels.map(x=>
+    `<div class="weekday">星期${x}</div>`
+  ).join("");
+  html+="<div></div>".repeat(offset);
+
+  function eventHTML(s){
+    return `
+      <div class="event ${esc(org(s.location))} ${esc(s.status)}">
+        <button type="button" class="event-main"
+          data-edit="${esc(s.id)}">
+          ${esc(names[s.location])}<br>
+          ${esc(s.start)}–${esc(s.end)}<br>
+          ${esc(statuses[s.status])}
+        </button>
+        ${s.status==="planned" ? `
+          <button type="button" class="quick-confirm"
+            data-confirm="${esc(s.id)}">✓ 確認</button>
+        ` : ""}
+      </div>`;
+  }
+
+  for(let d=1;d<=count;d++){
+    const date=dateString(y,m,d);
+    const weekday=new Date(Date.UTC(y,m-1,d)).getUTCDay();
+    const weekend=weekday===0 || weekday===6;
+    if(weekdaysOnly && weekend) continue;
+
+    const holiday=state.holidays[date];
+    const list=shifts.filter(s=>s.date===date);
+    const am=list.filter(s=>minutes(s.start)<780);
+    const pm=list.filter(s=>minutes(s.start)>=780);
+
+    html+=`
+      <div class="day ${weekend || holiday ? "off" : ""}">
+        <div class="day-header">
+          <div class="date">
+            <strong>${d}</strong>
+            <button type="button" data-date="${date}"
+              style="padding:2px 6px">＋</button>
+          </div>
+          ${holiday ? `<div class="holiday">${esc(holiday)}</div>` : ""}
+        </div>
+        <div class="day-slot am">
+          <span class="slot-label">上午</span>
+          ${am.map(eventHTML).join("")}
+        </div>
+        <div class="day-slot pm">
+          <span class="slot-label">下午</span>
+          ${pm.map(eventHTML).join("")}
+        </div>
+      </div>`;
+  }
+
+  $("calendar").innerHTML=html;
+
+  const hiddenCount=weekdaysOnly ? shifts.filter(s=>{
+    const day=new Date(s.date+"T00:00:00Z").getUTCDay();
+    return day===0 || day===6;
+  }).length : 0;
+
+  $("calendarHint").textContent=weekdaysOnly
+    ? `目前只顯示星期一至五；${hiddenCount} 節週末班未顯示。明細及收入仍包含週末班。`
+    : "13:00 前開始放上午；13:00 或之後開始放下午。";
+};
+
+// 4. 確認班次：沿用原有 commit()
+async function confirmShift(id){
+  const shift=state.shifts.find(s=>s.id===id);
+  if(!shift || shift.status!=="planned") return;
+
+  const next=copy(state);
+  next.shifts.find(s=>s.id===id).status="confirmed";
+  await commit(next);
+  message(`已確認 ${shift.date} ${names[shift.location]} ${shift.start}。`);
+}
+
+async function confirmMonthShifts(){
+  const month=$("month").value;
+  const planned=monthShifts().filter(s=>s.status==="planned");
+
+  if(!planned.length){
+    message(`${month} 沒有暫定班需要確認。`);
+    return;
+  }
+
+  if(!confirm(
+    `確認 ${month} 全部 ${planned.length} 節暫定班？\n`+
+    "包括所有地點及週末班；已完成、已取消班次不會改動。"
+  )) return;
+
+  const next=copy(state);
+  for(const s of next.shifts){
+    if(s.date.startsWith(month+"-") && s.status==="planned"){
+      s.status="confirmed";
+    }
+  }
+  await commit(next);
+  message(`已確認 ${month} 共 ${planned.length} 節班次。`);
+}
+
+// 5. 四間診所收入及總額
+function renderIncomeV2(live){
+  const scopes=["alan","cwb","tqb","stubbs"];
+
+  function row(label,all,isTotal=false){
+    const forecast=calculate(all);
+    const earned=calculate(all.filter(s=>s.status==="completed"));
+    const flags=[...new Set([...forecast.flags,...earned.flags])];
+    const notes=flags.length
+      ? flags.map(esc).join("<br>")
+      : all.length
+        ? "資料齊全，按已保存規則試算"
+        : "本月沒有有效班次";
+
+    return `
+      <tr class="${isTotal ? "total-row" : ""}">
+        <td>${esc(label)}</td>
+        <td class="money">${amount(forecast)}</td>
+        <td class="money">${amount(earned)}</td>
+        <td>${notes}</td>
+      </tr>`;
+  }
+
+  $("incomeRows").innerHTML=scopes.map(scope=>
+    row(names[scope],scopeFilter(live,scope))
+  ).join("")+row("所有診所合計",live,true);
+
+  $("amcBreakdown").textContent=
+    "合計包含雅蘭、AMC 銅鑼灣、AMC 太古坊及司徒拔。" +
+    "全月排班包含已完成班次，兩欄不可相加；" +
+    "資料或條款未確認時，金額仍屬暫估／已知部分。";
+}
+
+// 保留原本 render，然後更新明細操作及收入顯示
+const renderBeforeV2=render;
+render=function(){
+  renderBeforeV2();
+
+  $("shiftRows").innerHTML=monthShifts().map(s=>`
+    <tr>
+      <td>${esc(s.date)}</td>
+      <td>${esc(names[s.location])}<br>${esc(s.start)}–${esc(s.end)}</td>
+      <td>${esc(statuses[s.status])}</td>
+      <td>${duration(s)/60}</td>
+      <td>${s.consultation==null ? "待填" : money(s.consultation)}</td>
+      <td>${s.procedure==null ? "待填" : money(s.procedure)}</td>
+      <td>
+        <div class="row">
+          <button type="button" data-edit="${esc(s.id)}">修改</button>
+          ${s.status==="planned" ? `
+            <button type="button" data-confirm="${esc(s.id)}">
+              ✓ 確認
+            </button>` : ""}
+        </div>
+      </td>
+    </tr>`).join("") ||
+    `<tr><td colspan="7">本月未有班次。</td></tr>`;
+
+  renderIncomeV2(active(monthShifts()));
+};
+
+// 6. 覆蓋收入 CSV，避免合併 AMC 與分店重複列入
+exportSummary=function(){
+  const rows=[
+    ["月份","機構","範圍","試算下限HKD","試算上限HKD","提示"]
+  ];
+  const live=active(monthShifts());
+
+  for(const scope of ["alan","cwb","tqb","stubbs","total"]){
+    const all=scope==="total" ? live : scopeFilter(live,scope);
+    const label=scope==="total" ? "所有診所合計" : names[scope];
+
+    for(const [range,list] of [
+      ["全月排班（含已完成）",all],
+      ["已完成",all.filter(s=>s.status==="completed")]
+    ]){
+      const result=calculate(list);
+      rows.push([
+        $("month").value,label,range,
+        result.low/100,result.high/100,result.flags.join("；")
+      ]);
+    }
+  }
+  csv(`ray-income-${$("month").value}.csv`,rows);
+};
+
+// 7. 更新事件；唔使用巢狀按鈕或雙擊操作
+function handleShiftClickV2(e){
+  if(busy) return;
+
+  const confirmButton=e.target.closest("[data-confirm]");
+  const editButton=e.target.closest("[data-edit]");
+  const dateButton=e.target.closest("[data-date]");
+
+  if(confirmButton){
+    run(()=>confirmShift(confirmButton.dataset.confirm));
+  }else if(editButton){
+    openShift(editButton.dataset.edit);
+  }else if(dateButton){
+    openShift(null,dateButton.dataset.date);
+  }
+}
+
+$("calendar").onclick=handleShiftClickV2;
+$("shiftRows").onclick=handleShiftClickV2;
+$("confirmMonth").onclick=()=>run(confirmMonthShifts);
+$("calendarView").onchange=()=>{
+  if(state) renderCalendar(monthShifts());
+};
+$("exportSummary").onclick=exportSummary;
+
+/* ===== 升級補丁結束 ===== */
 run(boot);
 </script>
 </body>
