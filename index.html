@@ -1,832 +1,1419 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="referrer" content="no-referrer">
-<title>Dr. Ray｜駐診排班與收入</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Dr. Ray｜駐診排班與收入</title>
 
-<style>
-:root{
-  --bg:#f3f6fb;--card:#fff;--text:#172337;--muted:#637087;
-  --line:#dce3ed;--blue:#2463eb;--amber:#8a5700;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif}
-main{max-width:1180px;margin:auto;padding:20px}
-h1{font-size:25px;margin:0 0 5px}
-h2{font-size:19px;margin:0 0 16px}
-h3{font-size:16px}
-p,small{line-height:1.6}
-small,.muted{color:var(--muted)}
-.card{background:var(--card);padding:20px;border-radius:15px;
-  border:1px solid var(--line);margin:16px 0}
-.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.between{justify-content:space-between}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-label{display:block;font-size:14px}
-input,select,textarea,button{font:inherit}
-input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);
-  border-radius:8px;margin-top:5px;background:#fff;color:var(--text)}
-textarea{min-height:100px}
-button,.linkbutton{border:0;border-radius:8px;padding:10px 14px;
-  background:#eaf0fb;color:#244779;cursor:pointer;text-decoration:none}
-button.primary{background:var(--blue);color:white}
-button.danger{background:#ffeded;color:#b42318}
-button:disabled{opacity:.5;cursor:wait}
-[hidden]{display:none!important}
-.notice{padding:12px;background:#fff5de;border-radius:9px;color:var(--amber)}
-#message{white-space:pre-wrap}
-.toolbar input{width:auto}
-.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
-.weekday{text-align:center;padding:8px;color:var(--muted);font-size:13px}
-.day{min-height:125px;border:1px solid var(--line);border-radius:8px;
-  padding:7px;background:#fff}
-.day.off{background:#f7f8fb}
-.day .date{display:flex;justify-content:space-between;align-items:center}
-.holiday{font-size:11px;color:#b42318;line-height:1.4}
-.event{display:block;width:100%;text-align:left;margin-top:6px;
-  padding:6px;font-size:12px;border-left:4px solid}
-.event.alan{border-color:#7164e8;background:#f0edff}
-.event.amc{border-color:#009688;background:#e6f7f3}
-.event.stubbs{border-color:#e29820;background:#fff3dc}
-.event.cancelled{opacity:.45;text-decoration:line-through}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:11px;text-align:left;border-bottom:1px solid var(--line);
-  vertical-align:top}
-th{white-space:nowrap;color:var(--muted)}
-.money{font-variant-numeric:tabular-nums;white-space:nowrap}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.stat{padding:14px;background:#f6f8fc;border-radius:10px}
-.stat strong{display:block;font-size:23px;margin-top:6px}
-dialog{border:0;border-radius:14px;max-width:650px;width:94vw;
-  padding:24px;box-shadow:0 20px 70px #0004}
-dialog::backdrop{background:#10203980}
-details summary{cursor:pointer;font-weight:650}
-details .body{margin-top:18px}
-#user{word-break:break-all}
-@media(max-width:650px){
- main{padding:12px}
- .card{padding:14px}
- .grid,.stats{grid-template-columns:1fr}
- .day{min-height:110px;padding:4px}
- .event{font-size:10px;padding:4px;word-break:break-word}
- .weekday{font-size:11px}
- .holiday{font-size:9px}
-}
-  /* 月曆：全周或只顯示工作日 */
-.calendar.weekdays{
-  grid-template-columns:repeat(5,minmax(0,1fr));
-}
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #fff;
+      --text: #172337;
+      --muted: #637087;
+      --line: #dce3ed;
+      --blue: #2463eb;
+      --amber: #8a5700;
+    }
 
-/* 每日固定分成日期列、上午、下午 */
-.day{
-  display:grid;
-  grid-template-rows:44px minmax(76px,1fr) minmax(76px,1fr);
-  min-height:205px;
-}
+    * { box-sizing: border-box; }
 
-.day-header{
-  overflow:auto;
-}
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+    }
 
-.day-slot{
-  min-width:0;
-  padding:4px 0;
-}
+    main { max-width: 1180px; margin: auto; padding: 20px; }
 
-.day-slot.pm{
-  border-top:1px dashed var(--line);
-}
+    h1 { font-size: 25px; margin: 0 0 5px; }
+    h2 { font-size: 19px; margin: 0 0 16px; }
+    h3 { font-size: 16px; }
 
-.slot-label{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-bottom:3px;
-}
+    p, small { line-height: 1.6; }
+    small, .muted { color: var(--muted); }
 
-/* 保留原本診所色系 */
-.event{
-  margin-top:4px;
-  padding:5px;
-  border-left:4px solid;
-  border-radius:6px;
-}
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      margin: 16px 0;
+    }
 
-/* 暫定：淺色 */
-.event.alan.planned{
-  background:#f0edff;
-  border-color:#7164e8;
-}
-.event.amc.planned{
-  background:#e6f7f3;
-  border-color:#009688;
-}
-.event.stubbs.planned{
-  background:#fff3dc;
-  border-color:#e29820;
-}
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-/* 已確認：同色系、較深 */
-.event.alan.confirmed{
-  background:#ded7ff;
-  border-color:#6352d8;
-}
-.event.amc.confirmed{
-  background:#bcebdd;
-  border-color:#008577;
-}
-.event.stubbs.confirmed{
-  background:#ffe0a6;
-  border-color:#c78316;
-}
+    .between { justify-content: space-between; }
 
-/* 已完成：同色系、再深少少 */
-.event.alan.completed{
-  background:#c9bef8;
-  border-color:#5141b8;
-}
-.event.amc.completed{
-  background:#99dcc9;
-  border-color:#006d61;
-}
-.event.stubbs.completed{
-  background:#f6cd80;
-  border-color:#a96a08;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
 
-/* 取消：保留原本淡化效果 */
-.event.cancelled{
-  opacity:.45;
-  text-decoration:line-through;
-}
+    label { display: block; font-size: 14px; }
+    input, select, textarea, button { font: inherit; }
 
-/* 班次本身仍然可以按入去修改 */
-.event-main{
-  display:block;
-  width:100%;
-  margin:0;
-  padding:0;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  color:var(--text);
-  font-size:inherit;
-  line-height:1.5;
-  text-align:left;
-}
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-top: 5px;
+      background: #fff;
+      color: var(--text);
+    }
 
-/* 一鍵確認 */
-.quick-confirm{
-  margin-top:5px;
-  padding:3px 6px;
-  background:#ffffffb8;
-  color:#244779;
-  font-size:11px;
-  font-weight:650;
-}
+    textarea { min-height: 100px; resize: vertical; }
 
-.total-row{
-  background:#eef3ff;
-  font-weight:700;
-}
+    button, .linkbutton {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #eaf0fb;
+      color: #244779;
+      cursor: pointer;
+      text-decoration: none;
+    }
 
-@media(max-width:650px){
-  .day{
-    grid-template-rows:42px minmax(72px,1fr) minmax(72px,1fr);
-    min-height:190px;
-  }
+    button.primary { background: var(--blue); color: white; }
+    button.danger { background: #ffeded; color: #b42318; }
+    button:disabled { opacity: .5; cursor: wait; }
 
-  .event{
-    padding:4px;
-    font-size:10px;
-  }
+    input:disabled, select:disabled, textarea:disabled {
+      opacity: .7;
+      cursor: wait;
+    }
 
-  .quick-confirm{
-    padding:3px;
-    font-size:10px;
-  }
-}
-</style>
+    button:focus-visible, a:focus-visible,
+    input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid #2463eb66;
+      outline-offset: 2px;
+    }
+
+    [hidden] { display: none !important; }
+
+    .notice {
+      padding: 12px;
+      background: #fff5de;
+      border-radius: 9px;
+      color: var(--amber);
+    }
+
+    #message { white-space: pre-wrap; }
+    #user { word-break: break-all; }
+
+    .toolbar { align-items: flex-start; }
+    .toolbar input, .toolbar select { width: auto; margin-top: 0; }
+    .toolbar-actions { flex: 1; justify-content: flex-end; }
+    .checkbox { width: auto; margin-top: 0; }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .calendar.weekdays {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .weekday {
+      text-align: center;
+      padding: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .day {
+      display: grid;
+      grid-template-rows: 44px minmax(76px, 1fr) minmax(76px, 1fr);
+      min-height: 205px;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px;
+      background: #fff;
+    }
+
+    .day.off { background: #f7f8fb; }
+    .day.today { outline: 2px solid var(--blue); outline-offset: -2px; }
+    .day-header { overflow: auto; }
+
+    .date {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .date-add { padding: 2px 6px; }
+
+    .holiday {
+      font-size: 11px;
+      color: #b42318;
+      line-height: 1.4;
+    }
+
+    .day-slot { min-width: 0; padding: 4px 0; }
+    .day-slot.pm { border-top: 1px dashed var(--line); }
+
+    .slot-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-bottom: 3px;
+    }
+
+    .event {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin-top: 4px;
+      padding: 5px;
+      font-size: 12px;
+      border-left: 4px solid;
+      border-radius: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .event.alan { background: #f0edff; border-color: #7164e8; }
+    .event.amc { background: #e6f7f3; border-color: #009688; }
+    .event.stubbs { background: #fff3dc; border-color: #e29820; }
+
+    .event.alan.confirmed { background: #ded7ff; border-color: #6352d8; }
+    .event.amc.confirmed { background: #bcebdd; border-color: #008577; }
+    .event.stubbs.confirmed { background: #ffe0a6; border-color: #c78316; }
+
+    .event.alan.completed { background: #c9bef8; border-color: #5141b8; }
+    .event.amc.completed { background: #99dcc9; border-color: #006d61; }
+    .event.stubbs.completed { background: #f6cd80; border-color: #a96a08; }
+
+    .event.cancelled { opacity: .45; text-decoration: line-through; }
+
+    .event-main {
+      display: block;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: inherit;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .quick-confirm {
+      margin-top: 5px;
+      padding: 3px 6px;
+      background: #ffffffb8;
+      color: #244779;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th { white-space: nowrap; color: var(--muted); }
+
+    .money {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .total-row { background: #eef3ff; font-weight: 700; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat { padding: 14px; background: #f6f8fc; border-radius: 10px; }
+    .stat strong { display: block; font-size: 23px; margin-top: 6px; }
+
+    dialog {
+      border: 0;
+      border-radius: 14px;
+      max-width: 650px;
+      width: 94vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 70px #0004;
+    }
+
+    dialog::backdrop { background: #10203980; }
+    details summary { cursor: pointer; font-weight: 650; }
+    details .body { margin-top: 18px; }
+    footer { margin: 18px 0; }
+
+    @media (max-width: 650px) {
+      main { padding: 12px; }
+      .card { padding: 14px; }
+      .grid, .stats { grid-template-columns: 1fr; }
+      .toolbar-actions { justify-content: flex-start; flex-basis: 100%; }
+
+      .day {
+        grid-template-rows: 42px minmax(72px, 1fr) minmax(72px, 1fr);
+        min-height: 190px;
+        padding: 4px;
+      }
+
+      .event { padding: 4px; font-size: 10px; }
+      .weekday { font-size: 11px; }
+      .holiday { font-size: 9px; }
+      .quick-confirm { padding: 3px; font-size: 10px; }
+      dialog { padding: 18px; }
+    }
+  </style>
 </head>
 
 <body>
 <main>
-<header class="row between">
-  <div>
-    <h1>Dr. Ray｜駐診管理</h1>
-    <small>香港日期及本地駐診時間 · 排班／收入試算／月結</small>
-  </div>
-  <div class="row">
-    <small id="user"></small>
-    <button id="logout" hidden>登出</button>
-  </div>
-</header>
-
-<p id="message" role="status"></p>
-
-<section id="loginCard" class="card">
-  <h2>登入</h2>
-  <form id="loginForm" class="grid">
-    <label>Email
-      <input id="email" type="email" autocomplete="username" required>
-    </label>
-    <label>密碼
-      <input id="password" type="password"
-        autocomplete="current-password" required>
-    </label>
-    <div><button class="primary">登入</button></div>
-  </form>
-  <p class="muted">請先在 Supabase Authentication 建立你的使用者。</p>
-</section>
-
-<div id="app" hidden>
-<section class="card">
-  <div class="row between toolbar">
-    <div class="row">
-      <button id="previous">←</button>
-      <input id="month" type="month" required>
-      <button id="next">→</button>
+  <header class="row between">
+    <div>
+      <h1>Dr. Ray｜駐診管理</h1>
+      <small>香港日期及本地駐診時間 · 排班／收入試算／月結</small>
     </div>
     <div class="row">
-      <select id="calendarView" aria-label="月曆顯示範圍"
-  style="width:auto;margin-top:0">
-  <option value="week">顯示全周</option>
-  <option value="weekdays">只顯示星期一至五</option>
-</select>
-
-<button id="confirmMonth" type="button">
-  ✓ 確認本月全部暫定班
-</button>
-    <button id="generate" class="primary">產生本月固定排班</button>
-    <button id="add">新增班次</button>
-    <button id="deleteMonthShifts" type="button" class="danger">
-      刪除所選月份全部班次
-    </button>
-    <button id="reload">重新載入</button>
+      <small id="user"></small>
+      <button id="logout" type="button" hidden>登出</button>
     </div>
-  </div>
-  <p class="muted">
-    模板：一／三雅蘭、二AMC太古坊、四司徒拔、五AMC銅鑼灣。
-    再次產生不會覆蓋已有班次；取消的班次亦保留。
-  </p>
-  <div id="stats" class="stats"></div>
-</section>
+  </header>
 
-<section class="card">
-  <h2>月曆</h2>
-  <div id="calendar" class="calendar"></div>
-</section>
+  <p id="message" role="status" aria-live="polite"></p>
 
-<section class="card">
-  <div class="row between">
-    <h2>班次明細</h2>
-    <button id="exportShifts">匯出班次 CSV</button>
-  </div>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>日期</th><th>地點／時間</th><th>狀態</th>
-      <th>工時</th><th>診金</th><th>小手術費</th><th>操作</th>
-    </tr></thead>
-    <tbody id="shiftRows"></tbody>
-  </table></div>
-</section>
-
-<section class="card">
-  <div class="row between">
-    <h2>收入試算</h2>
-    <button id="exportSummary">匯出試算 CSV</button>
-  </div>
-  <p class="notice">
-    全月排班試算包含已完成班次，兩欄不可相加。
-    未填費用不是零；「已知部分」可能未包括額外分成。
-    未確認行政費時，顯示未扣行政費的暫估金額。
-  </p>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>機構</th><th>全月排班試算</th>
-      <th>已完成班次試算</th><th>提示</th>
-    </tr></thead>
-    <tbody id="incomeRows"></tbody>
-  </table></div>
-  <p id="amcBreakdown" class="muted"></p>
-</section>
-
-<section class="card">
-  <h2>月結及收款</h2>
-  <p class="muted">
-    結算月份跟上方所選月份。
-    AMC 同一月份只能採用合併或分店結算，避免重複計算。
-    第一版「已收款」填累計金額，並非逐筆付款紀錄。
-  </p>
-  <form id="settlementForm" class="grid">
-    <label>結算對象
-      <select id="settleScope">
-        <option value="alan">雅蘭專科</option>
-        <option value="amc">AMC 合併</option>
-        <option value="cwb">AMC 銅鑼灣</option>
-        <option value="tqb">AMC 太古坊</option>
-        <option value="stubbs">司徒拔醫院</option>
-      </select>
-    </label>
-    <label>診所結算金額 HK$（未知可留空）
-      <input id="statement" type="number" min="0" step=".01">
-    </label>
-    <label>累計已收 HK$
-      <input id="received" type="number" min="0" step=".01" value="0">
-    </label>
-    <label>備註／付款日期
-      <input id="settleNote" maxlength="500">
-    </label>
-    <div class="row">
-      <button class="primary">儲存月結</button>
-      <button id="deleteSettlement" type="button" class="danger">
-        刪除此月結記錄
-      </button>
-    </div>
-  </form>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>對象</th><th>診所結算</th><th>已收</th>
-      <th>結算減已收</th><th>結算減完成班次試算</th><th>備註</th>
-    </tr></thead>
-    <tbody id="settlementRows"></tbody>
-  </table></div>
-</section>
-
-<details class="card">
-  <summary>報酬規則與未確認條款</summary>
-  <div class="body">
-    <p class="notice">
-      新設定只用於之後新增／產生的班次。
-      已有班次保留當時規則；要重算本月，請使用下方明確更新按鈕。
-    </p>
-    <form id="rulesForm">
-      <div id="rulesFields"></div>
-      <div class="row">
-        <button class="primary">儲存新班次規則</button>
-        <button id="applyRules" type="button">
-          將已儲存規則套用本月班次
-        </button>
+  <section id="loginCard" class="card">
+    <h2>登入</h2>
+    <form id="loginForm" class="grid">
+      <label>Email
+        <input id="email" type="email" autocomplete="username" required>
+      </label>
+      <label>密碼
+        <input id="password" type="password"
+          autocomplete="current-password" required>
+      </label>
+      <div>
+        <button id="loginButton" type="submit" class="primary">登入</button>
       </div>
     </form>
-  </div>
-</details>
+    <p class="muted">請先在 Supabase Authentication 建立你的使用者。</p>
+  </section>
 
-<details class="card">
-  <summary>香港公眾假期：匯入及核對</summary>
-  <div class="body">
-    <p>
-      先嘗試載入 1823 日曆；若瀏覽器阻擋跨域讀取，
-      下載官方 ICS 後使用檔案匯入。
+  <div id="app" hidden>
+    <p id="reloadWarning" class="notice" role="alert" hidden>
+      上次儲存未能確認成功，或資料版本已改變。
+      請先備下未儲存輸入，再按「重新載入」。
+      重新載入成功前，暫停寫入資料。
     </p>
-    <div class="row">
-      <button id="fetchHolidays">嘗試載入官方假期</button>
-      <a class="linkbutton"
-        href="https://www.1823.gov.hk/common/ical/tc.ics"
-        target="_blank" rel="noopener">下載官方 ICS</a>
-    </div>
-    <label>匯入 ICS 檔案
-      <input id="holidayFile" type="file" accept=".ics,text/calendar">
-    </label>
-    <p id="holidayStatus"></p>
-    <label>所選月份之年份的假期日期（每行一項）
-      <textarea id="holidayText"
-        placeholder="YYYY-MM-DD 假期名稱"></textarea>
-    </label>
-    <label class="row">
-      <input id="holidayVerified" type="checkbox"
-        style="width:auto">
-      我已核對這一年的公眾假期清單完整
-    </label>
-    <p><button id="saveHolidays" class="primary">儲存全年假期清單</button></p>
-    <small>
-      沒有確認全年資料時，不會產生模板排班。
-      匯入／修改假期不會自動刪除已有班次。
-    </small>
-  </div>
-</details>
 
-<section class="card">
-  <div class="row between">
-    <div>
-      <h2>資料備份</h2>
-      <small>只記錄總金額；請勿輸入病人姓名、身份證或病歷。</small>
-    </div>
-    <button id="backup">下載完整 JSON 備份</button>
+    <section class="card">
+      <div class="row between toolbar">
+        <div class="row">
+          <button id="previous" type="button" aria-label="上一個月">←</button>
+          <input id="month" type="month" aria-label="所選月份" required>
+          <button id="next" type="button" aria-label="下一個月">→</button>
+        </div>
+
+        <div class="row toolbar-actions">
+          <select id="calendarView" aria-label="月曆顯示範圍">
+            <option value="week">顯示全周</option>
+            <option value="weekdays">只顯示星期一至五</option>
+          </select>
+
+          <button id="confirmMonth" type="button">
+            ✓ 確認本月全部暫定班
+          </button>
+
+          <button id="generate" type="button" class="primary">
+            產生本月固定排班
+          </button>
+
+          <button id="add" type="button">新增班次</button>
+
+          <button id="deleteMonthShifts" type="button" class="danger">
+            刪除所選月份全部班次
+          </button>
+
+          <button id="reload" type="button">重新載入</button>
+        </div>
+      </div>
+
+      <p class="muted">
+        模板：一／三雅蘭、二 AMC 太古坊、四司徒拔、五 AMC 銅鑼灣。
+        同日已有任何班次便整日跳過；不覆蓋手動改班，取消的班次亦保留。
+      </p>
+
+      <div id="stats" class="stats"></div>
+    </section>
+
+    <section class="card">
+      <h2>月曆</h2>
+      <div id="calendar" class="calendar"></div>
+      <p id="calendarHint" class="muted"></p>
+      <small>暫定：淺色 · 已確認：較深色 · 已完成：深色 · 已取消：淡化及刪線</small>
+    </section>
+
+    <section class="card">
+      <div class="row between">
+        <h2>班次明細</h2>
+        <button id="exportShifts" type="button">匯出班次 CSV</button>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>地點／時間</th>
+              <th>狀態</th>
+              <th>工時</th>
+              <th>診金</th>
+              <th>小手術費</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="shiftRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row between">
+        <h2>收入試算</h2>
+        <button id="exportSummary" type="button">匯出試算 CSV</button>
+      </div>
+
+      <p class="notice">
+        全月排班試算包含已完成班次，兩欄不可相加。
+        未填費用不是零；「已知部分」可能未包括額外分成。
+        行政費計法選「待確認」時不扣除；如自行選擇扣法但未確認，
+        會按所選扣法顯示暫估。
+        試算範圍只反映已知費用及保底比較週期，不是最終收入上下限。
+      </p>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>機構</th>
+              <th>全月排班試算</th>
+              <th>已完成班次試算</th>
+              <th>提示</th>
+            </tr>
+          </thead>
+          <tbody id="incomeRows"></tbody>
+        </table>
+      </div>
+
+      <p id="amcBreakdown" class="muted"></p>
+    </section>
+
+    <section class="card">
+      <h2>月結及收款</h2>
+
+      <p class="muted">
+        結算月份跟上方所選月份。
+        AMC 同一月份只能採用合併或分店結算，避免重複計算。
+        「已收款」填累計金額，並非逐筆付款紀錄。
+      </p>
+
+      <form id="settlementForm" class="grid">
+        <label>結算對象
+          <select id="settleScope">
+            <option value="alan">雅蘭專科</option>
+            <option value="amc">AMC 合併</option>
+            <option value="cwb">AMC 銅鑼灣</option>
+            <option value="tqb">AMC 太古坊</option>
+            <option value="stubbs">司徒拔醫院</option>
+          </select>
+        </label>
+
+        <label>診所結算金額 HK$（未知可留空）
+          <input id="statement" type="number" min="0" step=".01">
+        </label>
+
+        <label>累計已收 HK$
+          <input id="received" type="number" min="0" step=".01" value="0">
+        </label>
+
+        <label>備註／付款日期
+          <input id="settleNote" maxlength="500">
+        </label>
+
+        <div class="row">
+          <button type="submit" class="primary">儲存月結</button>
+          <button id="deleteSettlement" type="button" class="danger">
+            刪除此月結記錄
+          </button>
+        </div>
+      </form>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>對象</th>
+              <th>診所結算</th>
+              <th>已收</th>
+              <th>結算減已收</th>
+              <th>結算減完成班次試算</th>
+              <th>備註</th>
+            </tr>
+          </thead>
+          <tbody id="settlementRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <details class="card">
+      <summary>報酬規則與未確認條款</summary>
+      <div class="body">
+        <p class="notice">
+          新設定只用於之後新增／產生的班次。
+          已有班次保留當時規則；要重算本月，請使用下方明確更新按鈕。
+          套用本月時只使用已儲存規則，請先儲存修改。
+        </p>
+
+        <form id="rulesForm">
+          <div id="rulesFields"></div>
+          <div class="row">
+            <button type="submit" class="primary">儲存新班次規則</button>
+            <button id="applyRules" type="button">
+              將已儲存規則套用本月班次
+            </button>
+          </div>
+        </form>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary>香港公眾假期：匯入及核對</summary>
+      <div class="body">
+        <p>
+          先嘗試載入 1823 日曆；若瀏覽器阻擋跨域讀取，
+          下載官方 ICS 後使用檔案匯入。
+        </p>
+
+        <div class="row">
+          <button id="fetchHolidays" type="button">嘗試載入官方假期</button>
+          <a class="linkbutton"
+            href="https://www.1823.gov.hk/common/ical/tc.ics"
+            target="_blank" rel="noopener noreferrer">下載官方 ICS</a>
+        </div>
+
+        <label>匯入 ICS 檔案
+          <input id="holidayFile" type="file" accept=".ics,text/calendar">
+        </label>
+
+        <p id="holidayStatus"></p>
+
+        <label>所選月份之年份的假期日期（每行一項）
+          <textarea id="holidayText"
+            placeholder="YYYY-MM-DD 假期名稱"></textarea>
+        </label>
+
+        <label class="row">
+          <input id="holidayVerified" type="checkbox" class="checkbox">
+          我已核對這一年的公眾假期清單完整
+        </label>
+
+        <p>
+          <button id="saveHolidays" type="button" class="primary">
+            儲存全年假期清單
+          </button>
+        </p>
+
+        <small>
+          沒有確認全年資料時，不會產生模板排班。
+          匯入會替換檔案所含年份的假期，並取消該年份的核對標記。
+          匯入／修改假期不會自動刪除已有班次。
+        </small>
+      </div>
+    </details>
+
+    <section class="card">
+      <div class="row between">
+        <div>
+          <h2>資料備份</h2>
+          <small>
+            只記錄總金額；請勿輸入病人姓名、身份證或病歷。
+            JSON 備份包含已載入／已儲存資料，不包含表單未儲存輸入。
+          </small>
+        </div>
+
+        <button id="backup" type="button">下載完整 JSON 備份</button>
+      </div>
+    </section>
   </div>
-</section>
-</div>
+
+  <footer>
+    <small>介面版本：整合版 v3 · 不需要另外加入升級補丁</small>
+  </footer>
 </main>
 
-<dialog id="shiftDialog">
-<form id="shiftForm">
-  <h2 id="shiftTitle">班次</h2>
-  <input id="shiftId" type="hidden">
-  <div class="grid">
-    <label>日期
-      <input id="shiftDate" type="date" required>
+<dialog id="shiftDialog" aria-labelledby="shiftTitle">
+  <form id="shiftForm">
+    <h2 id="shiftTitle">班次</h2>
+    <input id="shiftId" type="hidden">
+
+    <div class="grid">
+      <label>日期
+        <input id="shiftDate" type="date" required>
+      </label>
+
+      <label>地點
+        <select id="location">
+          <option value="alan">雅蘭專科</option>
+          <option value="tqb">AMC－太古坊</option>
+          <option value="cwb">AMC－銅鑼灣</option>
+          <option value="stubbs">司徒拔醫院</option>
+        </select>
+      </label>
+
+      <label>開始
+        <input id="start" type="time" required>
+      </label>
+
+      <label>結束
+        <input id="end" type="time" required>
+      </label>
+
+      <label>狀態
+        <select id="status">
+          <option value="planned">暫定</option>
+          <option value="confirmed">已確認</option>
+          <option value="completed">已完成</option>
+          <option value="cancelled">已取消</option>
+        </select>
+      </label>
+
+      <div></div>
+
+      <label>診金／身體檢查醫生費 HK$
+        <input id="consultation" type="number" min="0" step=".01">
+      </label>
+
+      <label>小手術／門診程序醫生費 HK$
+        <input id="procedure" type="number" min="0" step=".01">
+      </label>
+    </div>
+
+    <p class="muted">
+      暫定／已確認：填預測費用；已完成：填實際費用。
+      留空代表未知；確定沒有收入請填 0。
+      AMC 替更不計診金分成。
+    </p>
+
+    <label>備註
+      <textarea id="shiftNote" maxlength="1000"></textarea>
     </label>
-    <label>地點
-      <select id="location">
-        <option value="alan">雅蘭專科</option>
-        <option value="tqb">AMC－太古坊</option>
-        <option value="cwb">AMC－銅鑼灣</option>
-        <option value="stubbs">司徒拔醫院</option>
-      </select>
-    </label>
-    <label>開始
-      <input id="start" type="time" required>
-    </label>
-    <label>結束
-      <input id="end" type="time" required>
-    </label>
-    <label>狀態
-      <select id="status">
-        <option value="planned">暫定</option>
-        <option value="confirmed">已確認</option>
-        <option value="completed">已完成</option>
-        <option value="cancelled">已取消</option>
-      </select>
-    </label>
-    <div></div>
-    <label>診金／身體檢查醫生費 HK$
-      <input id="consultation" type="number" min="0" step=".01">
-    </label>
-    <label>小手術／門診程序醫生費 HK$
-      <input id="procedure" type="number" min="0" step=".01">
-    </label>
-  </div>
-  <p class="muted">
-    暫定／已確認：填預測費用；已完成：填實際費用。
-    留空代表未知；確定沒有收入請填 0。
-    AMC 替更不計診金分成。
-  </p>
-  <label>備註
-    <textarea id="shiftNote" maxlength="1000"></textarea>
-  </label>
-  <p id="snapshotInfo" class="muted"></p>
-  <div class="row">
-    <button class="primary">儲存</button>
-    <button id="closeDialog" type="button">關閉</button>
-    <button id="deleteShift" type="button" class="danger">永久刪除</button>
-  </div>
-</form>
+
+    <p id="snapshotInfo" class="muted"></p>
+
+    <div class="row">
+      <button type="submit" class="primary">儲存</button>
+      <button id="closeDialog" type="button">關閉</button>
+      <button id="deleteShift" type="button" class="danger">永久刪除</button>
+    </div>
+  </form>
 </dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 "use strict";
 
-/* ===== 唯一必須修改的設定 ===== */
+/* =========================================================
+   設定：沿用原本 Supabase 項目
+   資料表：ray_workspace
+   儲存 RPC：ray_save(p_expected, p_data)
+   資料 schema：1
+   ========================================================= */
+
 const SUPABASE_URL = "https://vuzzgyzyucyuedxabjss.supabase.co";
 const SUPABASE_KEY = "sb_publishable_meYS5Q2OrY2T0pwrUE8lbQ__jjeEkTt";
-/* ============================ */
+const HOLIDAY_URL = "https://www.1823.gov.hk/common/ical/tc.ics";
 
 const $ = id => document.getElementById(id);
 const copy = value => structuredClone(value);
+
 const names = {
-  alan:"雅蘭專科", amc:"AMC 中心", stubbs:"司徒拔醫院",
-  cwb:"AMC－銅鑼灣", tqb:"AMC－太古坊"
+  alan: "雅蘭專科",
+  amc: "AMC 中心",
+  stubbs: "司徒拔醫院",
+  cwb: "AMC－銅鑼灣",
+  tqb: "AMC－太古坊"
 };
+
 const statuses = {
-  planned:"暫定",confirmed:"已確認",completed:"已完成",cancelled:"已取消"
+  planned: "暫定",
+  confirmed: "已確認",
+  completed: "已完成",
+  cancelled: "已取消"
 };
-const org = location => ["cwb","tqb"].includes(location) ? "amc" : location;
-const esc = value => String(value ?? "").replace(/[&<>"']/g,
-  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money = cents => new Intl.NumberFormat("zh-HK",{
-  style:"currency",currency:"HKD",minimumFractionDigits:2
-}).format(cents/100);
-const pad = n => String(n).padStart(2,"0");
-const dateString = (y,m,d) => `${y}-${pad(m)}-${pad(d)}`;
-const todayHK = () => {
-  const parts = new Intl.DateTimeFormat("en-GB",{
-    timeZone:"Asia/Hong_Kong",year:"numeric",month:"2-digit",day:"2-digit"
+
+const locations = ["alan", "tqb", "cwb", "stubbs"];
+const scopes = ["alan", "cwb", "tqb", "stubbs"];
+const ruleOrgs = ["alan", "amc", "stubbs"];
+const adminModes = ["pending", "none", "share", "gross", "all"];
+const bases = ["unknown", "session", "daily", "monthly"];
+
+const templates = {
+  1: ["alan", [["09:00", "13:00"], ["14:00", "18:00"]]],
+  2: ["tqb", [["09:00", "12:00"], ["13:00", "18:00"]]],
+  3: ["alan", [["09:00", "13:00"], ["14:00", "18:00"]]],
+  4: ["stubbs", [["09:00", "13:00"], ["14:00", "18:00"]]],
+  5: ["cwb", [["09:00", "12:00"], ["13:00", "17:30"]]]
+};
+
+const org = location =>
+  ["cwb", "tqb"].includes(location) ? "amc" : location;
+
+const esc = value => String(value ?? "").replace(
+  /[&<>"']/g,
+  c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[c]
+);
+
+const moneyFormatter = new Intl.NumberFormat("zh-HK", {
+  style: "currency",
+  currency: "HKD",
+  minimumFractionDigits: 2
+});
+
+const hourFormatter = new Intl.NumberFormat("zh-HK", {
+  maximumFractionDigits: 2
+});
+
+const money = cents => moneyFormatter.format(cents / 100);
+const hours = value => hourFormatter.format(value);
+const pad = n => String(n).padStart(2, "0");
+const dateString = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+
+function todayHK() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Hong_Kong",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
   }).formatToParts(new Date());
-  const p = Object.fromEntries(parts.map(x => [x.type,x.value]));
+
+  const p = Object.fromEntries(parts.map(x => [x.type, x.value]));
   return `${p.year}-${p.month}-${p.day}`;
-};
-const minutes = t => {
-  const [h,m] = t.split(":").map(Number);
-  return h*60+m;
-};
-const duration = s => minutes(s.end)-minutes(s.start);
-const percent = (cents,bps) => Math.round(cents*bps/10000);
-const numeric = id => {
+}
+
+function validMonth(value) {
+  return /^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(value);
+}
+
+function validDate(value) {
+  if (typeof value !== "string" ||
+      !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const date = new Date(value + "T00:00:00Z");
+  return Number.isFinite(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value;
+}
+
+function validTime(value) {
+  return typeof value === "string" &&
+    /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+}
+
+function minutes(time) {
+  const [h, m] = time.split(":").map(Number);
+  return h * 60 + m;
+}
+
+const duration = shift => minutes(shift.end) - minutes(shift.start);
+const percent = (cents, bps) => Math.round(cents * bps / 10000);
+const displayInput = cents =>
+  cents == null ? "" : (cents / 100).toFixed(2);
+
+function numeric(id) {
   const raw = $(id).value.trim();
-  if(raw === "") return null;
+  if (raw === "") return null;
+
   const n = Number(raw);
-  if(!Number.isFinite(n) || n < 0) throw Error("金額必須是非負數");
-  return Math.round(n*100);
-};
-const displayInput = cents => cents == null ? "" : (cents/100).toFixed(2);
+  const cents = Math.round(n * 100);
 
-let db, uid, state, revision;
+  if (!Number.isFinite(n) || n < 0 || !Number.isSafeInteger(cents)) {
+    throw Error("金額必須是有效的非負數，且不可超出安全計算範圍。");
+  }
+
+  return cents;
+}
+
+function percentageInput(id) {
+  const raw = $(id).value.trim();
+  const value = Number(raw);
+
+  if (raw === "" || !Number.isFinite(value) ||
+      value < 0 || value > 100) {
+    throw Error("請填寫 0–100% 的有效比例。");
+  }
+
+  return Math.round(value * 100);
+}
+
+let db = null;
+let uid = null;
+let state = null;
+let revision = null;
 let busy = false;
+let needsReload = false;
+let sessionEpoch = 0;
+let shownMonth = todayHK().slice(0, 7);
+let shownSettlementScope = "alan";
 
-function initialState(){
+const dirty = {
+  rules: false,
+  holidays: false,
+  settlement: false,
+  shift: false
+};
+
+/* ===================== 初始資料 ===================== */
+
+function initialState() {
   return {
-    schema:1,
-    rules:{
-      alan:{hourly:80000,share:7000,basis:"unknown",
-        admin:0,adminMode:"none",adminConfirmed:true},
-      amc:{hourly:85000,share:3000,basis:"session",
-        admin:100,adminMode:"pending",adminConfirmed:false},
-      stubbs:{hourly:90000,share:2000,basis:"session",
-        admin:100,adminMode:"pending",adminConfirmed:false}
+    schema: 1,
+    rules: {
+      alan: {
+        hourly: 80000,
+        share: 7000,
+        basis: "unknown",
+        admin: 0,
+        adminMode: "none",
+        adminConfirmed: true
+      },
+      amc: {
+        hourly: 85000,
+        share: 3000,
+        basis: "session",
+        admin: 100,
+        adminMode: "pending",
+        adminConfirmed: false
+      },
+      stubbs: {
+        hourly: 90000,
+        share: 2000,
+        basis: "session",
+        admin: 100,
+        adminMode: "pending",
+        adminConfirmed: false
+      }
     },
-    shifts:[],
-    settlements:[],
-    holidays:{},
-    verifiedYears:[]
+    shifts: [],
+    settlements: [],
+    holidays: {},
+    verifiedYears: []
   };
 }
 
-function message(text,error=false){
-  $("message").textContent=text;
-  $("message").style.color=error ? "#b42318" : "#2463eb";
+/* ===================== 資料檢查 ===================== */
+
+function isObject(value) {
+  return value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value);
 }
 
-async function run(action){
-  if(busy) return;
-  busy=true;
-  document.querySelectorAll("button").forEach(b=>b.disabled=true);
-  try{ await action(); }
-  catch(e){ console.error(e); message(e.message || String(e),true); }
-  finally{
-    busy=false;
-    document.querySelectorAll("button").forEach(b=>b.disabled=false);
+function validCents(value) {
+  return Number.isSafeInteger(value) && value >= 0;
+}
+
+function validateRule(rule) {
+  if (!isObject(rule) ||
+      !validCents(rule.hourly) ||
+      !Number.isInteger(rule.share) ||
+      rule.share < 0 || rule.share > 10000 ||
+      !Number.isInteger(rule.admin) ||
+      rule.admin < 0 || rule.admin > 10000 ||
+      !bases.includes(rule.basis) ||
+      !adminModes.includes(rule.adminMode) ||
+      typeof rule.adminConfirmed !== "boolean") {
+    throw Error("報酬規則資料不完整或無效；未覆蓋資料，請檢查原有記錄。");
   }
 }
 
-async function load(){
-  const {data,error}=await db.from("ray_workspace")
-    .select("data,revision").eq("owner_id",uid).single();
-  if(error) throw error;
-  state=data.data;
-  revision=data.revision;
-  if(state.schema!==1) throw Error("資料版本不支援，請勿覆蓋");
-  render();
+function validateState(value) {
+  if (!isObject(value) || value.schema !== 1) {
+    throw Error("資料版本不支援，請勿覆蓋。");
+  }
+
+  if (!isObject(value.rules) ||
+      !Array.isArray(value.shifts) ||
+      !Array.isArray(value.settlements) ||
+      !isObject(value.holidays) ||
+      !Array.isArray(value.verifiedYears)) {
+    throw Error("工作區資料結構不完整；未覆蓋資料。");
+  }
+
+  for (const o of ruleOrgs) validateRule(value.rules[o]);
+
+  const ids = new Set();
+
+  for (const s of value.shifts) {
+    if (!isObject(s) ||
+        typeof s.id !== "string" || !s.id ||
+        ids.has(s.id) ||
+        !validDate(s.date) ||
+        !locations.includes(s.location) ||
+        !validTime(s.start) || !validTime(s.end) ||
+        duration(s) <= 0 ||
+        !Object.hasOwn(statuses, s.status) ||
+        !(s.consultation == null || validCents(s.consultation)) ||
+        !(s.procedure == null || validCents(s.procedure)) ||
+        !(s.note == null || typeof s.note === "string")) {
+      throw Error("有班次資料無效或 ID 重複；未覆蓋資料，請檢查備份。");
+    }
+
+    validateRule(s.rule);
+    ids.add(s.id);
+  }
+
+  const settlementKeys = new Set();
+
+  for (const item of value.settlements) {
+    if (!isObject(item) ||
+        !validMonth(item.month) ||
+        ![...scopes, "amc"].includes(item.scope) ||
+        !(item.statement == null || validCents(item.statement)) ||
+        !validCents(item.received) ||
+        !(item.note == null || typeof item.note === "string")) {
+      throw Error("有月結資料無效；未覆蓋資料。");
+    }
+
+    const key = item.month + "|" + item.scope;
+
+    if (settlementKeys.has(key)) {
+      throw Error("有重複月結資料；未覆蓋資料。");
+    }
+
+    settlementKeys.add(key);
+  }
+
+  for (const [date, label] of Object.entries(value.holidays)) {
+    if (!validDate(date) || typeof label !== "string") {
+      throw Error("有假期資料無效；未覆蓋資料。");
+    }
+  }
+
+  if (value.verifiedYears.some(y =>
+    !Number.isInteger(y) || y < 1000 || y > 9999
+  )) {
+    throw Error("假期核對年份資料無效；未覆蓋資料。");
+  }
 }
 
-async function commit(next){
-  const {data,error}=await db.rpc("ray_save",{
-    p_expected:revision,p_data:next
-  });
-  if(error){
-    if(error.message.includes("VERSION_CONFLICT"))
-      throw Error("其他裝置已修改資料。本次未儲存；請先備下輸入，再按重新載入。");
-    throw error;
+function validRevision(value) {
+  if (typeof value === "number") {
+    return Number.isSafeInteger(value) && value >= 0;
   }
-  revision=Number(data);
-  state=next;
+
+  return typeof value === "string" && /^\d+$/.test(value);
+}
+
+/* ===================== 操作及未儲存保護 ===================== */
+
+function message(text, error = false) {
+  $("message").textContent = text;
+  $("message").style.color = error ? "#b42318" : "#2463eb";
+}
+
+function resetDirty() {
+  for (const key of Object.keys(dirty)) dirty[key] = false;
+}
+
+function hasUnsaved() {
+  return Object.values(dirty).some(Boolean);
+}
+
+function confirmDiscard(text = "有未儲存輸入，繼續會放棄這些修改。確定？") {
+  return !hasUnsaved() || confirm(text);
+}
+
+function requireWorkspace() {
+  if (!db || !uid || !state) {
+    throw Error("請先登入並成功載入資料。");
+  }
+}
+
+function requireWritable() {
+  requireWorkspace();
+
+  if (needsReload) {
+    throw Error("請先備下未儲存輸入，再重新載入資料，之後才可儲存。");
+  }
+}
+
+function updateControls() {
+  document.querySelectorAll("button, input, select, textarea")
+    .forEach(element => {
+      element.disabled = busy;
+    });
+
+  if (!busy && !db) $("loginButton").disabled = true;
+
+  $("reloadWarning").hidden = !needsReload;
+  document.body.setAttribute("aria-busy", String(busy));
+}
+
+async function run(action) {
+  if (busy) return;
+
+  busy = true;
+  updateControls();
+
+  try {
+    await action();
+  } catch (error) {
+    console.error(error);
+    message(error.message || String(error), true);
+  } finally {
+    busy = false;
+    updateControls();
+  }
+}
+
+function markReloadRequired() {
+  needsReload = true;
+  $("reloadWarning").hidden = false;
+}
+
+function clearSession() {
+  sessionEpoch++;
+  uid = null;
+  state = null;
+  revision = null;
+  needsReload = false;
+  resetDirty();
+
+  $("app").hidden = true;
+  $("loginCard").hidden = false;
+  $("logout").hidden = true;
+  $("reloadWarning").hidden = true;
+  $("user").textContent = "";
+  $("password").value = "";
+
+  if ($("shiftDialog").open) $("shiftDialog").close();
+
+  $("stats").innerHTML = "";
+  $("calendar").innerHTML = "";
+  $("shiftRows").innerHTML = "";
+  $("incomeRows").innerHTML = "";
+  $("settlementRows").innerHTML = "";
+  $("rulesFields").innerHTML = "";
+  $("holidayText").value = "";
+  $("holidayVerified").checked = false;
+  $("statement").value = "";
+  $("received").value = "0.00";
+  $("settleNote").value = "";
+  $("shiftForm").reset();
+
+  message("已登出，請重新登入。");
+}
+
+/* ===================== Supabase 讀取／儲存 ===================== */
+
+async function load() {
+  if (!db || !uid) throw Error("請先登入。");
+
+  const owner = uid;
+  const epoch = sessionEpoch;
+
+  const { data, error } = await db
+    .from("ray_workspace")
+    .select("data,revision")
+    .eq("owner_id", owner)
+    .single();
+
+  if (epoch !== sessionEpoch || uid !== owner) {
+    throw Error("登入狀態已改變，未載入資料。");
+  }
+
+  if (error) throw error;
+  if (!data) throw Error("找不到工作區資料。");
+
+  validateState(data.data);
+
+  if (!validRevision(data.revision)) {
+    throw Error("資料版本號無效，請勿覆蓋。");
+  }
+
+  state = data.data;
+  revision = data.revision;
+  needsReload = false;
+  resetDirty();
+
+  render(true);
+}
+
+async function commit(next) {
+  requireWritable();
+  validateState(next);
+
+  const owner = uid;
+  const epoch = sessionEpoch;
+
+  let response;
+
+  try {
+    response = await db.rpc("ray_save", {
+      p_expected: revision,
+      p_data: next
+    });
+  } catch (error) {
+    if (epoch === sessionEpoch && uid === owner) {
+      markReloadRequired();
+    }
+
+    throw Error(
+      "未能確認儲存結果。請先備下輸入，再重新載入；不要直接重複儲存。"
+    );
+  }
+
+  if (epoch !== sessionEpoch || uid !== owner) {
+    throw Error("登入狀態已改變，請重新登入後核對儲存結果。");
+  }
+
+  const { data, error } = response;
+
+  if (error) {
+    markReloadRequired();
+
+    if (String(error.message).includes("VERSION_CONFLICT")) {
+      throw Error(
+        "其他裝置已修改資料。本次未儲存；請先備下输入，再按重新載入。"
+      );
+    }
+
+    throw Error(
+      `${error.message || "儲存失敗"}\n` +
+      "請先備下輸入，再重新載入資料，核對後才重試。"
+    );
+  }
+
+  if (!validRevision(data)) {
+    markReloadRequired();
+    throw Error("伺服器未回傳有效版本號；請重新載入核對儲存結果。");
+  }
+
+  revision = data;
+  state = next;
+
   render();
   message("已儲存至 Supabase。");
 }
 
-function monthShifts(){
-  return state.shifts.filter(s=>s.date.startsWith($("month").value))
-    .sort((a,b)=>`${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`));
-}
-function active(shifts){return shifts.filter(s=>s.status!=="cancelled");}
-function scopeFilter(shifts,scope){
-  return shifts.filter(s=>scope==="amc" ? org(s.location)==="amc" :
-    s.location===scope);
+async function reloadWorkspace() {
+  requireWorkspace();
+
+  if (!confirmDiscard(
+    "重新載入會放棄未儲存的規則、假期或月結輸入。請先備下內容。確定？"
+  )) return;
+
+  await load();
+  message("已重新載入最新資料。");
 }
 
-/*
-  收入引擎：
-  - 金額以 cents 儲存，比例以 basis points 儲存。
-  - 每節計算組件後四捨五入到分。
-  - 空白費用表示資料未齊。
-  - 未確認行政費不自動扣款。
-*/
-function components(s){
-  const r=s.rule;
-  const o=org(s.location);
-  const hourly=Math.round(duration(s)*r.hourly/60);
-  let gross=0, missing=false;
+/* ===================== 班次篩選 ===================== */
 
-  if(o==="amc"){
-    if(s.procedure==null) missing=true;
-    gross=s.procedure ?? 0;
-  }else{
-    if(s.consultation==null || s.procedure==null) missing=true;
-    gross=(s.consultation ?? 0)+(s.procedure ?? 0);
+function selectedMonth() {
+  const month = $("month").value;
+  if (!validMonth(month)) throw Error("請先選擇有效月份。");
+  return month;
+}
+
+function monthShifts(month = selectedMonth()) {
+  if (!state) return [];
+
+  return state.shifts
+    .filter(s => s.date.startsWith(month + "-"))
+    .sort((a, b) =>
+      `${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`)
+    );
+}
+
+function active(shifts) {
+  return shifts.filter(s => s.status !== "cancelled");
+}
+
+function scopeFilter(shifts, scope) {
+  return shifts.filter(s =>
+    scope === "amc" ? org(s.location) === "amc" : s.location === scope
+  );
+}
+
+/* ===================== 收入引擎 =====================
+   沿用原有業務計法：
+   - 金額：cents；比例：basis points。
+   - 雅蘭：保底與分成取較高者。
+   - AMC：時薪加小手術分成；診金不分成。
+   - 司徒拔：時薪加診金／程序費分成。
+   - pending：不扣行政費。
+   - 選定扣法但未確認：仍按選定扣法暫估，附提示。
+   ================================================== */
+
+function components(s) {
+  const r = s.rule;
+  const o = org(s.location);
+  const hourly = Math.round(duration(s) * r.hourly / 60);
+
+  let gross = 0;
+  let missing = false;
+
+  if (o === "amc") {
+    missing = s.procedure == null;
+    gross = s.procedure ?? 0;
+  } else {
+    missing = s.consultation == null || s.procedure == null;
+    gross = (s.consultation ?? 0) + (s.procedure ?? 0);
   }
 
-  if(r.adminMode==="gross") gross=percent(gross,10000-r.admin);
-  let share=percent(gross,r.share);
-  if(r.adminMode==="share") share=percent(share,10000-r.admin);
+  if (r.adminMode === "gross") {
+    gross = percent(gross, 10000 - r.admin);
+  }
 
-  return {hourly,share,missing};
+  let share = percent(gross, r.share);
+
+  if (r.adminMode === "share") {
+    share = percent(share, 10000 - r.admin);
+  }
+
+  return { hourly, share, missing };
 }
 
-function calculate(shifts){
-  const flags=new Set();
-  const groups=new Map();
-  let low=0,high=0;
+function ruleKey(rule) {
+  return JSON.stringify([
+    rule.hourly,
+    rule.share,
+    rule.basis,
+    rule.admin,
+    rule.adminMode,
+    rule.adminConfirmed
+  ]);
+}
 
-  for(const s of active(shifts)){
-    const o=org(s.location);
-    const key=o+"|"+JSON.stringify(s.rule);
-    if(!groups.has(key)) groups.set(key,[]);
+function calculate(shifts) {
+  const flags = new Set();
+  const groups = new Map();
+
+  let low = 0;
+  let high = 0;
+
+  for (const s of active(shifts)) {
+    const key = org(s.location) + "|" + ruleKey(s.rule);
+
+    if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(s);
   }
 
-  for(const group of groups.values()){
-    const r=group[0].rule;
-    const o=org(group[0].location);
-    const items=group.map(s=>({s,...components(s)}));
+  for (const group of groups.values()) {
+    const r = group[0].rule;
+    const o = org(group[0].location);
+    const items = group.map(s => ({ s, ...components(s) }));
 
-    if(items.some(x=>x.missing))
+    if (items.some(x => x.missing)) {
       flags.add("費用未齊：顯示已知部分");
+    }
 
-    if(r.adminMode==="pending")
+    if (r.adminMode === "pending") {
       flags.add("行政費扣法待確認，尚未扣除");
-    else if(!r.adminConfirmed)
-      flags.add("行政費設定為暫估");
+    } else if (!r.adminConfirmed) {
+      flags.add("行政費設定未確認，按所選扣法暫估");
+    }
 
-    let a,b;
+    let a;
+    let b;
 
-    if(o==="alan"){
-      const total=(bucket)=>Math.max(
-        bucket.reduce((n,x)=>n+x.hourly,0),
-        bucket.reduce((n,x)=>n+x.share,0)
+    if (o === "alan") {
+      const total = bucket => Math.max(
+        bucket.reduce((n, x) => n + x.hourly, 0),
+        bucket.reduce((n, x) => n + x.share, 0)
       );
-      const session=items.reduce((n,x)=>n+total([x]),0);
-      const monthly=total(items);
-      const days=new Map();
-      for(const x of items){
-        if(!days.has(x.s.date)) days.set(x.s.date,[]);
+
+      const session = items.reduce((n, x) => n + total([x]), 0);
+      const monthly = total(items);
+      const days = new Map();
+
+      for (const x of items) {
+        if (!days.has(x.s.date)) days.set(x.s.date, []);
         days.get(x.s.date).push(x);
       }
-      const daily=[...days.values()].reduce((n,g)=>n+total(g),0);
 
-      if(r.basis==="unknown"){
-        a=monthly;b=session;
+      const daily = [...days.values()]
+        .reduce((n, bucket) => n + total(bucket), 0);
+
+      if (r.basis === "unknown") {
+        a = monthly;
+        b = session;
         flags.add("雅蘭比較週期待確認：範圍為整月至逐節");
-      }else{
-        a=b=({session,daily,monthly})[r.basis];
+      } else {
+        a = b = { session, daily, monthly }[r.basis];
       }
-    }else{
-      a=b=items.reduce((n,x)=>n+x.hourly+x.share,0);
+    } else {
+      a = b = items.reduce((n, x) => n + x.hourly + x.share, 0);
     }
 
-    if(r.adminMode==="all"){
-      a=percent(a,10000-r.admin);
-      b=percent(b,10000-r.admin);
+    if (r.adminMode === "all") {
+      a = percent(a, 10000 - r.admin);
+      b = percent(b, 10000 - r.admin);
     }
 
-    low+=a;high+=b;
+    low += a;
+    high += b;
   }
 
-  // 同一機構出現不同規則版本時分組計算，不偷偷覆蓋歷史規則。
-  for(const o of ["alan","amc","stubbs"]){
-    const keys=[...groups.keys()].filter(k=>k.startsWith(o+"|"));
-    if(keys.length>1)
-      flags.add(names[o]+"有多個規則版本，按版本分組；請核對分段結算");
+  for (const o of ruleOrgs) {
+    const keys = [...groups.keys()].filter(k => k.startsWith(o + "|"));
+
+    if (keys.length > 1) {
+      flags.add(
+        names[o] + "有多個規則版本，按版本分組；請核對分段結算"
+      );
+    }
   }
 
-  return {low,high,flags:[...flags]};
-}
-
-function amount(result){
-  return result.low===result.high ? money(result.low) :
-    `${money(result.low)} ～ ${money(result.high)}`;
-}
-function renderIncome(live){
-  const scopes=["alan","cwb","tqb","stubbs"];
-
-  function incomeRow(label,all,done,isTotal=false){
-    const forecast=calculate(all);
-    const earned=calculate(done);
-
-    const flags=[...new Set([
-      ...forecast.flags,
-      ...earned.flags
-    ])];
-
-    const notes=flags.length
-      ? flags.map(esc).join("<br>")
-      : all.length
-        ? "資料齊全，按已保存規則試算"
-        : "本月沒有有效班次";
-
-    return `
-      <tr class="${isTotal ? "total-row" : ""}">
-        <td>${esc(label)}</td>
-        <td class="money">${amount(forecast)}</td>
-        <td class="money">${amount(earned)}</td>
-        <td>${notes}</td>
-      </tr>
-    `;
+  if (!Number.isSafeInteger(low) || !Number.isSafeInteger(high)) {
+    throw Error("試算總額超出安全計算範圍，請檢查金額。");
   }
 
-  let html=scopes.map(scope=>{
-    const all=scopeFilter(live,scope);
-    const done=all.filter(s=>s.status==="completed");
-
-    return incomeRow(names[scope],all,done);
-  }).join("");
-
-  const completed=live.filter(s=>s.status==="completed");
-
-  html+=incomeRow(
-    "所有診所合計",
-    live,
-    completed,
-    true
-  );
-
-  $("incomeRows").innerHTML=html;
-
-  $("amcBreakdown").textContent=
-    "合計已包含雅蘭專科、AMC－銅鑼灣、AMC－太古坊及司徒拔醫院。" +
-    "全月排班已包含已完成班次，兩欄不可相加；" +
-    "如資料或條款未確認，合計亦只屬暫估／已知部分。";
+  return { low, high, flags: [...flags] };
 }
-function render(){
-  const shifts=monthShifts();
-  const live=active(shifts);
-  const completed=live.filter(s=>s.status==="completed");
-  $("stats").innerHTML=`
-    <div class="stat">本月有效班次<strong>${live.length} 節</strong></div>
-    <div class="stat">排班工時<strong>${
-      live.reduce((n,s)=>n+duration(s),0)/60} 小時</strong></div>
-    <div class="stat">已完成<strong>${completed.length} 節</strong></div>`;
+
+function amount(result) {
+  return result.low === result.high
+    ? money(result.low)
+    : `${money(result.low)} ～ ${money(result.high)}`;
+}
+
+/* ===================== 畫面繪製 ===================== */
+
+function render(forceForms = false) {
+  if (!state) return;
+
+  const shifts = monthShifts();
+  const live = active(shifts);
+  const completed = live.filter(s => s.status === "completed");
+
+  $("stats").innerHTML = `
+    <div class="stat">
+      本月有效班次<strong>${live.length} 節</strong>
+    </div>
+    <div class="stat">
+      排班工時<strong>${
+        hours(live.reduce((n, s) => n + duration(s), 0) / 60)
+      } 小時</strong>
+    </div>
+    <div class="stat">
+      已完成<strong>${completed.length} 節</strong>
+    </div>
+  `;
 
   renderCalendar(shifts);
-  $("shiftRows").innerHTML=shifts.map(s=>`
-    <tr>
-      <td>${esc(s.date)}</td>
-      <td>${esc(names[s.location])}<br>${esc(s.start)}–${esc(s.end)}</td>
-      <td>${statuses[s.status]}</td>
-      <td>${duration(s)/60}</td>
-      <td>${s.consultation==null?"待填":money(s.consultation)}</td>
-      <td>${s.procedure==null?"待填":money(s.procedure)}</td>
-<td>
-  <div class="row">
-    <button data-edit="${esc(s.id)}">修改</button>
-
-    ${s.status==="planned" ? `
-      <button data-confirm="${esc(s.id)}">
-        ✓ 確認
-      </button>
-    ` : ""}
-  </div>
-</td>
-    </tr>`).join("") || `<tr><td colspan="7">本月未有班次。</td></tr>`;
-
+  renderShiftRows(shifts);
   renderIncome(live);
-  renderSettlements();
-  renderRules();
-  renderHolidays();
+  renderSettlements(forceForms);
+  renderRules(forceForms);
+  renderHolidays(forceForms);
+
+  updateControls();
 }
 
-function renderCalendar(shifts){
-  const [y,m]=$("month").value.split("-").map(Number);
-  const weekdaysOnly=$("calendarView").value==="weekdays";
+function renderShiftRows(shifts) {
+  $("shiftRows").innerHTML = shifts.map(s => `
+    <tr>
+      <td>${esc(s.date)}</td>
+      <td>
+        ${esc(names[s.location])}<br>
+        ${esc(s.start)}–${esc(s.end)}
+      </td>
+      <td>${esc(statuses[s.status])}</td>
+      <td>${hours(duration(s) / 60)}</td>
+      <td>${s.consultation == null ? "待填" : money(s.consultation)}</td>
+      <td>${s.procedure == null ? "待填" : money(s.procedure)}</td>
+      <td>
+        <div class="row">
+          <button type="button" data-edit="${esc(s.id)}">修改</button>
+          ${s.status === "planned" ? `
+            <button type="button" data-confirm="${esc(s.id)}">
+              ✓ 確認
+            </button>
+          ` : ""}
+        </div>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="7">本月未有班次。</td></tr>`;
+}
 
-  const count=new Date(Date.UTC(y,m,0)).getUTCDate();
-  const firstDay=new Date(Date.UTC(y,m-1,1)).getUTCDay();
+function renderCalendar(shifts) {
+  const [y, m] = selectedMonth().split("-").map(Number);
+  const weekdaysOnly = $("calendarView").value === "weekdays";
+  const count = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const firstDay = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  const mondayOffset = (firstDay + 6) % 7;
+  const offset = weekdaysOnly && mondayOffset >= 5 ? 0 : mondayOffset;
 
-  // 星期一=0，星期日=6
-  const mondayOffset=(firstDay+6)%7;
+  const labels = weekdaysOnly
+    ? ["一", "二", "三", "四", "五"]
+    : ["一", "二", "三", "四", "五", "六", "日"];
 
-  // 月初是星期六／日，而又只顯示工作日：
-  // 第一個顯示日期會是星期一，所以不用前置空格。
-  const offset=weekdaysOnly && mondayOffset>=5
-    ? 0
-    : mondayOffset;
+  const today = todayHK();
+  const byDate = new Map();
 
-  const labels=weekdaysOnly
-    ? ["一","二","三","四","五"]
-    : ["一","二","三","四","五","六","日"];
+  for (const s of shifts) {
+    if (!byDate.has(s.date)) byDate.set(s.date, []);
+    byDate.get(s.date).push(s);
+  }
 
-  $("calendar").classList.toggle("weekdays",weekdaysOnly);
+  $("calendar").classList.toggle("weekdays", weekdaysOnly);
 
-  let html=labels.map(x=>
-    `<div class="weekday">星期${x}</div>`
+  let html = labels.map(label =>
+    `<div class="weekday">星期${label}</div>`
   ).join("");
 
-  html+="<div></div>".repeat(offset);
+  html += '<div aria-hidden="true"></div>'.repeat(offset);
 
-  function eventHTML(s){
+  function eventHTML(s) {
     return `
-      <div class="event ${org(s.location)} ${s.status}">
+      <div class="event ${esc(org(s.location))} ${esc(s.status)}">
         <button type="button" class="event-main"
           data-edit="${esc(s.id)}">
           ${esc(names[s.location])}<br>
           ${esc(s.start)}–${esc(s.end)}<br>
           ${esc(statuses[s.status])}
         </button>
-
-        ${s.status==="planned" ? `
+        ${s.status === "planned" ? `
           <button type="button" class="quick-confirm"
             data-confirm="${esc(s.id)}">
             ✓ 確認
@@ -836,31 +1423,29 @@ function renderCalendar(shifts){
     `;
   }
 
-  for(let d=1;d<=count;d++){
-    const date=dateString(y,m,d);
-    const weekday=new Date(Date.UTC(y,m-1,d)).getUTCDay();
-    const weekend=weekday===0 || weekday===6;
+  for (let d = 1; d <= count; d++) {
+    const date = dateString(y, m, d);
+    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    const weekend = weekday === 0 || weekday === 6;
 
-    if(weekdaysOnly && weekend) continue;
+    if (weekdaysOnly && weekend) continue;
 
-    const holiday=state.holidays[date];
-    const dayShifts=shifts.filter(s=>s.date===date);
+    const holiday = state.holidays[date];
+    const dayShifts = byDate.get(date) || [];
+    const morning = dayShifts.filter(s => minutes(s.start) < 780);
+    const afternoon = dayShifts.filter(s => minutes(s.start) >= 780);
 
-    // 按開始時間分格；13:00 正正屬於下午。
-    const morning=dayShifts.filter(s=>minutes(s.start)<780);
-    const afternoon=dayShifts.filter(s=>minutes(s.start)>=780);
-
-    html+=`
-      <div class="day ${weekend || holiday ? "off" : ""}">
+    html += `
+      <div class="day ${weekend || holiday ? "off" : ""} ${
+        date === today ? "today" : ""
+      }">
         <div class="day-header">
           <div class="date">
             <strong>${d}</strong>
-            <button type="button" data-date="${date}"
-              style="padding:2px 6px">
-              ＋
-            </button>
+            <button type="button" class="date-add"
+              data-date="${date}"
+              aria-label="新增 ${date} 班次">＋</button>
           </div>
-
           ${holiday ? `
             <div class="holiday">${esc(holiday)}</div>
           ` : ""}
@@ -879,146 +1464,334 @@ function renderCalendar(shifts){
     `;
   }
 
-  $("calendar").innerHTML=html;
+  $("calendar").innerHTML = html;
 
-  const hiddenCount=weekdaysOnly
-    ? shifts.filter(s=>{
-        const day=new Date(s.date+"T00:00:00Z").getUTCDay();
-        return day===0 || day===6;
+  const hiddenCount = weekdaysOnly
+    ? shifts.filter(s => {
+        const day = new Date(s.date + "T00:00:00Z").getUTCDay();
+        return day === 0 || day === 6;
       }).length
     : 0;
 
-  $("calendarHint").textContent=weekdaysOnly
-    ? `目前只顯示星期一至五。${
-        hiddenCount ? `另有 ${hiddenCount} 節週末班未顯示。` : ""
-      }所有班次仍會列入明細及收入試算。`
-    : "13:00 前開始的班次顯示於上午；13:00 或之後開始的班次顯示於下午。";
+  $("calendarHint").textContent = weekdaysOnly
+    ? `目前只顯示星期一至五；${hiddenCount} 節週末班未顯示。` +
+      "所有班次仍會列入明細及收入試算。"
+    : "13:00 前開始的班次顯示於上午；" +
+      "13:00 或之後開始的班次顯示於下午。";
 }
 
-function openShift(id,date){
-  const s=id ? state.shifts.find(x=>x.id===id) : null;
-  $("shiftId").value=s?.id || "";
-  $("shiftDate").value=s?.date || date || todayHK();
-  $("location").value=s?.location || "alan";
-  $("start").value=s?.start || "09:00";
-  $("end").value=s?.end || "13:00";
-  $("status").value=s?.status || "planned";
-  $("consultation").value=displayInput(s?.consultation);
-  $("procedure").value=displayInput(s?.procedure);
-  $("shiftNote").value=s?.note || "";
-  $("deleteShift").hidden=!s;
-  $("snapshotInfo").textContent=s ?
-    "此班次保留建立時的報酬規則；更換機構時改用新機構的現行規則。" :
-    "新班次使用目前已儲存的報酬規則。";
+function renderIncome(live) {
+  function incomeRow(label, all, isTotal = false) {
+    const forecast = calculate(all);
+    const earned = calculate(all.filter(s => s.status === "completed"));
+    const flags = [...new Set([...forecast.flags, ...earned.flags])];
+
+    const notes = flags.length
+      ? flags.map(esc).join("<br>")
+      : all.length
+        ? "資料齊全，按已保存規則試算"
+        : "本月沒有有效班次";
+
+    return `
+      <tr class="${isTotal ? "total-row" : ""}">
+        <td>${esc(label)}</td>
+        <td class="money">${amount(forecast)}</td>
+        <td class="money">${amount(earned)}</td>
+        <td>${notes}</td>
+      </tr>
+    `;
+  }
+
+  $("incomeRows").innerHTML = scopes.map(scope =>
+    incomeRow(names[scope], scopeFilter(live, scope))
+  ).join("") + incomeRow("所有診所合計", live, true);
+
+  $("amcBreakdown").textContent =
+    "合計包含雅蘭、AMC 銅鑼灣、AMC 太古坊及司徒拔，沒有另外重複加入 AMC 合併。" +
+    "全月排班包含已完成班次，兩欄不可相加。" +
+    "已完成欄只以已完成班次試算；如雅蘭按每日／整月比較，" +
+    "未完成班次可能影響最終月結。";
+}
+
+/* ===================== 班次新增／修改／刪除 ===================== */
+
+function openShift(id, date) {
+  if (busy) return;
+  requireWorkspace();
+
+  const s = id ? state.shifts.find(x => x.id === id) : null;
+  if (id && !s) throw Error("找不到這節班次，請重新載入。");
+
+  $("shiftForm").reset();
+  $("shiftTitle").textContent = s ? "修改班次" : "新增班次";
+  $("shiftId").value = s?.id || "";
+  $("shiftDate").value = s?.date || date || todayHK();
+  $("location").value = s?.location || "alan";
+  $("start").value = s?.start || "09:00";
+  $("end").value = s?.end || "13:00";
+  $("status").value = s?.status || "planned";
+  $("consultation").value = displayInput(s?.consultation);
+  $("procedure").value = displayInput(s?.procedure);
+  $("shiftNote").value = s?.note || "";
+  $("deleteShift").hidden = !s;
+
+  $("snapshotInfo").textContent = s
+    ? "此班次保留建立時的報酬規則；更換機構時改用新機構的現行規則。"
+    : "新班次使用目前已儲存的報酬規則。";
+
+  dirty.shift = false;
   $("shiftDialog").showModal();
 }
 
-async function saveShift(){
-  const id=$("shiftId").value;
-  const old=state.shifts.find(s=>s.id===id);
-  const location=$("location").value;
-  const s={
-    id:id || crypto.randomUUID(),
-    date:$("shiftDate").value,
-    location,
-    start:$("start").value,
-    end:$("end").value,
-    status:$("status").value,
-    consultation:numeric("consultation"),
-    procedure:numeric("procedure"),
-    note:$("shiftNote").value,
-    rule:copy(old && org(old.location)===org(location) ?
-      old.rule : state.rules[org(location)])
-  };
-  if(duration(s)<=0) throw Error("結束時間必須晚於開始時間；不支援跨日班次");
+function closeShift() {
+  if (busy) return;
 
-  const others=active(state.shifts.filter(x=>x.id!==id && x.date===s.date));
-  if(s.status!=="cancelled"){
-    if(others.some(x=>minutes(s.start)<minutes(x.end) &&
-      minutes(s.end)>minutes(x.start)))
-      throw Error("此班次與同日其他班次時間重疊");
-
-    if(others.length>=2 ||
-       others.reduce((n,x)=>n+duration(x),duration(s))>480){
-      if(!confirm("同日超過兩節或八小時。確定作為特別例外？")) return;
-    }
-    const dow=new Date(s.date+"T00:00:00Z").getUTCDay();
-    if(dow===0 || dow===6 || state.holidays[s.date]){
-      if(!confirm("這是週末或公眾假期。確定安排駐診？")) return;
-    }else if(!state.verifiedYears.includes(Number(s.date.slice(0,4)))){
-      if(!confirm("此年份假期尚未核對，未能可靠排除公眾假期。仍要新增？"))
-        return;
-    }
+  if (dirty.shift && !confirm("班次有未儲存修改，確定放棄並關閉？")) {
+    return;
   }
 
-  const next=copy(state);
-  const index=next.shifts.findIndex(x=>x.id===id);
-  if(index<0) next.shifts.push(s); else next.shifts[index]=s;
-  await commit(next);
+  dirty.shift = false;
   $("shiftDialog").close();
 }
 
-async function generate(){
-  const [y,m]=$("month").value.split("-").map(Number);
-  if(!state.verifiedYears.includes(y))
-    throw Error(`請先在假期設定核對並確認 ${y} 年全年假期。`);
+async function saveShift() {
+  requireWritable();
 
-  const templates={
-    1:["alan",[["09:00","13:00"],["14:00","18:00"]]],
-    2:["tqb",[["09:00","12:00"],["13:00","18:00"]]],
-    3:["alan",[["09:00","13:00"],["14:00","18:00"]]],
-    4:["stubbs",[["09:00","13:00"],["14:00","18:00"]]],
-    5:["cwb",[["09:00","12:00"],["13:00","17:30"]]]
+  const id = $("shiftId").value;
+  const old = id ? state.shifts.find(s => s.id === id) : null;
+
+  if (id && !old) throw Error("找不到原有班次，請重新載入。");
+
+  const location = $("location").value;
+  const date = $("shiftDate").value;
+  const start = $("start").value;
+  const end = $("end").value;
+  const status = $("status").value;
+
+  if (!validDate(date) || !validTime(start) || !validTime(end) ||
+      !locations.includes(location) || !Object.hasOwn(statuses, status)) {
+    throw Error("請填寫有效日期、時間、地點及狀態。");
+  }
+
+  const s = {
+    ...(old || {}),
+    id: id || crypto.randomUUID(),
+    date,
+    location,
+    start,
+    end,
+    status,
+    consultation: numeric("consultation"),
+    procedure: numeric("procedure"),
+    note: $("shiftNote").value,
+    rule: copy(
+      old && org(old.location) === org(location)
+        ? old.rule
+        : state.rules[org(location)]
+    )
   };
-  const next=copy(state);
-  let added=0,skipped=0;
-  const last=new Date(Date.UTC(y,m,0)).getUTCDate();
 
-  for(let d=1;d<=last;d++){
-    const date=dateString(y,m,d);
-    const weekday=new Date(Date.UTC(y,m-1,d)).getUTCDay();
-    if(!templates[weekday] || next.holidays[date]) continue;
+  if (duration(s) <= 0) {
+    throw Error("結束時間必須晚於開始時間；不支援跨日班次。");
+  }
 
-    // 同日已有任何班次便整日跳過，避免覆蓋手動改班／請假。
-    if(next.shifts.some(s=>s.date===date)){skipped++;continue;}
+  const others = active(state.shifts.filter(x =>
+    x.id !== id && x.date === s.date
+  ));
 
-    const [location,slots]=templates[weekday];
-    for(const [start,end] of slots){
-      next.shifts.push({
-        id:crypto.randomUUID(),date,location,start,end,
-        status:"planned",consultation:null,procedure:null,note:"",
-        rule:copy(next.rules[org(location)])
-      });
-      added++;
+  if (s.status !== "cancelled") {
+    if (others.some(x =>
+      minutes(s.start) < minutes(x.end) &&
+      minutes(s.end) > minutes(x.start)
+    )) {
+      throw Error("此班次與同日其他班次時間重疊。");
+    }
+
+    if (others.length >= 2 ||
+        others.reduce((n, x) => n + duration(x), duration(s)) > 480) {
+      if (!confirm("同日超過兩節或八小時。確定作為特別例外？")) return;
+    }
+
+    const dow = new Date(s.date + "T00:00:00Z").getUTCDay();
+
+    if (dow === 0 || dow === 6 || state.holidays[s.date]) {
+      if (!confirm("這是週末或公眾假期。確定安排駐診？")) return;
+    } else if (!state.verifiedYears.includes(Number(s.date.slice(0, 4)))) {
+      if (!confirm(
+        "此年份假期尚未核對，未能可靠排除公眾假期。仍要儲存？"
+      )) return;
     }
   }
-  if(!added){
+
+  const next = copy(state);
+  const index = next.shifts.findIndex(x => x.id === id);
+
+  if (index < 0) next.shifts.push(s);
+  else next.shifts[index] = s;
+
+  await commit(next);
+
+  dirty.shift = false;
+  $("shiftDialog").close();
+}
+
+async function deleteShift() {
+  requireWritable();
+
+  const id = $("shiftId").value;
+  const shift = state.shifts.find(s => s.id === id);
+
+  if (!shift) throw Error("找不到這節班次。");
+
+  if (!confirm(
+    `永久刪除 ${shift.date} ${names[shift.location]} ` +
+    `${shift.start}–${shift.end}？\n` +
+    "一般請假建議改為已取消，以免重新產生。"
+  )) return;
+
+  const next = copy(state);
+  next.shifts = next.shifts.filter(s => s.id !== id);
+
+  await commit(next);
+
+  dirty.shift = false;
+  $("shiftDialog").close();
+}
+
+/* ===================== 固定排班 ===================== */
+
+async function generate() {
+  requireWritable();
+
+  const month = selectedMonth();
+  const [y, m] = month.split("-").map(Number);
+
+  if (!state.verifiedYears.includes(y)) {
+    throw Error(`請先在假期設定核對並確認 ${y} 年全年假期。`);
+  }
+
+  if (dirty.holidays) {
+    throw Error("假期設定有未儲存修改，請先儲存後再產生排班。");
+  }
+
+  if (dirty.rules) {
+    throw Error("報酬規則有未儲存修改，請先儲存後再產生排班。");
+  }
+
+  const next = copy(state);
+  const existingDates = new Set(next.shifts.map(s => s.date));
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+
+  let added = 0;
+  let skipped = 0;
+
+  for (let d = 1; d <= last; d++) {
+    const date = dateString(y, m, d);
+    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+
+    if (!templates[weekday] || next.holidays[date]) continue;
+
+    if (existingDates.has(date)) {
+      skipped++;
+      continue;
+    }
+
+    const [location, slots] = templates[weekday];
+
+    for (const [start, end] of slots) {
+      next.shifts.push({
+        id: crypto.randomUUID(),
+        date,
+        location,
+        start,
+        end,
+        status: "planned",
+        consultation: null,
+        procedure: null,
+        note: "",
+        rule: copy(next.rules[org(location)])
+      });
+
+      added++;
+    }
+
+    existingDates.add(date);
+  }
+
+  if (!added) {
     message(`沒有新增班次；已有記錄的工作日跳過 ${skipped} 日。`);
     return;
   }
+
   await commit(next);
   message(`新增 ${added} 節；跳過已有記錄的工作日 ${skipped} 日。`);
 }
-async function deleteMonthShifts(){
-  // 固定本次操作的月份，避免誤用其他月份。
-  const month=$("month").value;
 
-  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))
-    throw Error("請先選擇有效月份。");
+/* ===================== 一鍵確認 ===================== */
 
-  const prefix=month+"-";
-  const shifts=state.shifts.filter(s=>s.date.startsWith(prefix));
+async function confirmShift(id) {
+  requireWritable();
 
-  if(!shifts.length){
+  const shift = state.shifts.find(s => s.id === id);
+  if (!shift || shift.status !== "planned") return;
+
+  const next = copy(state);
+  next.shifts.find(s => s.id === id).status = "confirmed";
+
+  await commit(next);
+
+  message(
+    `已確認 ${shift.date} ${names[shift.location]} ${shift.start} 的班次。`
+  );
+}
+
+async function confirmMonthShifts() {
+  requireWritable();
+
+  const month = selectedMonth();
+  const planned = monthShifts(month).filter(s => s.status === "planned");
+
+  if (!planned.length) {
+    message(`${month} 沒有暫定班需要確認。`);
+    return;
+  }
+
+  if (!confirm(
+    `將 ${month} 全部 ${planned.length} 節暫定班改為已確認？\n` +
+    "包括所有地點及週末班；已完成、已取消班次不會改動。"
+  )) return;
+
+  const next = copy(state);
+
+  for (const s of next.shifts) {
+    if (s.date.startsWith(month + "-") && s.status === "planned") {
+      s.status = "confirmed";
+    }
+  }
+
+  await commit(next);
+  message(`已確認 ${month} 共 ${planned.length} 節班次。`);
+}
+
+/* ===================== 刪除整月班次 ===================== */
+
+async function deleteMonthShifts() {
+  requireWritable();
+
+  const month = selectedMonth();
+  const prefix = month + "-";
+  const shifts = monthShifts(month);
+
+  if (!shifts.length) {
     message(`${month} 沒有班次需要刪除。`);
     return;
   }
 
-  const completed=shifts.filter(s=>s.status==="completed").length;
-  const cancelled=shifts.filter(s=>s.status==="cancelled").length;
-  const hasSettlement=state.settlements.some(x=>x.month===month);
+  const completed = shifts.filter(s => s.status === "completed").length;
+  const cancelled = shifts.filter(s => s.status === "cancelled").length;
+  const hasSettlement = state.settlements.some(x => x.month === month);
 
-  const warning=[
+  const warning = [
     `即將永久刪除 ${month} 的全部 ${shifts.length} 節班次。`,
     `包括已完成 ${completed} 節、已取消 ${cancelled} 節。`,
     "",
@@ -1034,856 +1807,1004 @@ async function deleteMonthShifts(){
     "確定繼續？"
   ].join("\n");
 
-  if(!confirm(warning)) return;
+  if (!confirm(warning)) return;
 
-  // 再要求輸入月份，減少誤刪。
-  const typed=prompt(
+  const typed = prompt(
     `請輸入 ${month}，確認永久刪除這個月份的全部班次。`
   );
 
-  if(typed===null) return;
+  if (typed === null) return;
 
-  if(typed.trim()!==month){
-    message("輸入月份不符，未刪除任何資料。",true);
+  if (typed.trim() !== month) {
+    message("輸入月份不符，未刪除任何資料。", true);
     return;
   }
 
-  const next=copy(state);
-  next.shifts=next.shifts.filter(s=>!s.date.startsWith(prefix));
+  const next = copy(state);
+  next.shifts = next.shifts.filter(s => !s.date.startsWith(prefix));
 
-  // 沿用現有儲存及版本衝突檢查。
   await commit(next);
 
   message(
-    `已永久刪除 ${month} 共 ${shifts.length} 節班次。`+
+    `已永久刪除 ${month} 共 ${shifts.length} 節班次。` +
     "其他月份及月結／收款記錄已保留。"
   );
 }
-function options(values,current){
-  return Object.entries(values).map(([value,label])=>
-    `<option value="${value}" ${value===current?"selected":""}>${label}</option>`
-  ).join("");
+
+/* ===================== 報酬規則 ===================== */
+
+function options(values, current) {
+  return Object.entries(values).map(([value, label]) => `
+    <option value="${esc(value)}" ${
+      value === current ? "selected" : ""
+    }>${esc(label)}</option>
+  `).join("");
 }
 
-function renderRules(){
-  $("rulesFields").innerHTML=["alan","amc","stubbs"].map(o=>{
-    const r=state.rules[o];
-    return `<h3>${names[o]}</h3><div class="grid">
-      <label>時薪／保底 HK$
-        <input id="${o}_hourly" type="number" min="0" step=".01"
-          value="${r.hourly/100}" required>
-      </label>
-      <label>分成 %
-        <input id="${o}_share" type="number" min="0" max="100"
-          step=".01" value="${r.share/100}" required>
-      </label>
-      ${o==="alan"?`<label>保底與分成比較週期
-        <select id="alan_basis">${options({
-          unknown:"待確認：顯示試算範圍",session:"每節",
-          daily:"每日",monthly:"整月"
-        },r.basis)}</select></label>`:""}
-      <label>行政費 %
-        <input id="${o}_admin" type="number" min="0" max="100"
-          step=".01" value="${r.admin/100}" required>
-      </label>
-      <label>行政費計法
-        <select id="${o}_mode">${options({
-          pending:"待確認：暫不扣除",
-          none:"不扣行政費",
-          share:"只扣分成所得",
-          gross:"醫生費先扣行政費，再計分成",
-          all:"時薪／保底及分成所得一併扣"
-        },r.adminMode)}</select>
-      </label>
-      <label class="row">
-        <input id="${o}_confirmed" type="checkbox" style="width:auto"
-          ${r.adminConfirmed?"checked":""}>行政費設定已獲確認
-      </label>
-    </div>`;
+function renderRules(force = false) {
+  if (dirty.rules && !force) return;
+
+  $("rulesFields").innerHTML = ruleOrgs.map(o => {
+    const r = state.rules[o];
+
+    return `
+      <h3>${esc(names[o])}</h3>
+      <div class="grid">
+        <label>時薪／保底 HK$
+          <input id="${o}_hourly" type="number" min="0" step=".01"
+            value="${r.hourly / 100}" required>
+        </label>
+
+        <label>分成 %
+          <input id="${o}_share" type="number" min="0" max="100"
+            step=".01" value="${r.share / 100}" required>
+        </label>
+
+        ${o === "alan" ? `
+          <label>保底與分成比較週期
+            <select id="alan_basis">
+              ${options({
+                unknown: "待確認：顯示試算範圍",
+                session: "每節",
+                daily: "每日",
+                monthly: "整月"
+              }, r.basis)}
+            </select>
+          </label>
+        ` : ""}
+
+        <label>行政費 %
+          <input id="${o}_admin" type="number" min="0" max="100"
+            step=".01" value="${r.admin / 100}" required>
+        </label>
+
+        <label>行政費計法
+          <select id="${o}_mode">
+            ${options({
+              pending: "待確認：暫不扣除",
+              none: "不扣行政費",
+              share: "只扣分成所得",
+              gross: "醫生費先扣行政費，再計分成",
+              all: "時薪／保底及分成所得一併扣"
+            }, r.adminMode)}
+          </select>
+        </label>
+
+        <label class="row">
+          <input id="${o}_confirmed" type="checkbox" class="checkbox"
+            ${r.adminConfirmed ? "checked" : ""}>
+          行政費設定已獲確認
+        </label>
+      </div>
+    `;
   }).join("");
 }
 
-async function saveRules(){
-  const next=copy(state);
-  for(const o of ["alan","amc","stubbs"]){
-    const hourly=numeric(o+"_hourly");
-    const share=Number($(o+"_share").value);
-    const admin=Number($(o+"_admin").value);
-    if(hourly==null || !Number.isFinite(share) || !Number.isFinite(admin) ||
-       share<0 || share>100 || admin<0 || admin>100)
-      throw Error("請填寫有效時薪及 0–100% 比例");
+async function saveRules() {
+  requireWritable();
 
-    next.rules[o]={
-      hourly,share:Math.round(share*100),admin:Math.round(admin*100),
-      basis:o==="alan" ? $("alan_basis").value : "session",
-      adminMode:$(o+"_mode").value,
-      adminConfirmed:$(o+"_confirmed").checked
+  const next = copy(state);
+
+  for (const o of ruleOrgs) {
+    const hourly = numeric(o + "_hourly");
+    if (hourly == null) throw Error("請填寫有效時薪。");
+
+    next.rules[o] = {
+      ...next.rules[o],
+      hourly,
+      share: percentageInput(o + "_share"),
+      admin: percentageInput(o + "_admin"),
+      basis: o === "alan" ? $("alan_basis").value : "session",
+      adminMode: $(o + "_mode").value,
+      adminConfirmed: $(o + "_confirmed").checked
     };
   }
+
   await commit(next);
+
+  dirty.rules = false;
+  renderRules(true);
+  message("已儲存新班次規則；已有班次仍保留原有規則。");
 }
 
-async function applyRules(){
-  if(!confirm("會更新本月所有班次的報酬規則，包括已完成班次，並改變試算。確定？"))
+async function applyRules() {
+  requireWritable();
+
+  if (dirty.rules) {
+    throw Error("報酬規則有未儲存修改，請先按「儲存新班次規則」。");
+  }
+
+  const month = selectedMonth();
+  const shifts = monthShifts(month);
+
+  if (!shifts.length) {
+    message(`${month} 沒有班次可套用規則。`);
     return;
-  const next=copy(state);
-  for(const s of next.shifts){
-    if(s.date.startsWith($("month").value))
-      s.rule=copy(next.rules[org(s.location)]);
   }
-  await commit(next);
-}
 
-function renderHolidays(){
-  const year=Number($("month").value.slice(0,4));
-  const entries=Object.entries(state.holidays)
-    .filter(([d])=>d.startsWith(String(year))).sort();
-  $("holidayText").value=entries.map(([d,n])=>`${d} ${n}`).join("\n");
-  $("holidayVerified").checked=state.verifiedYears.includes(year);
-  $("holidayStatus").textContent=
-    `${year} 年：${entries.length} 個日期；`+
-    (state.verifiedYears.includes(year)?"已確認全年清單":"尚未確認全年清單");
-}
+  if (!confirm(
+    `將已儲存規則套用 ${month} 全部 ${shifts.length} 節班次？\n` +
+    "包括已完成及已取消班次，收入試算可能改變。"
+  )) return;
 
-async function importICS(text){
-  const unfolded=text.replace(/\r?\n[ \t]/g,"");
-  const blocks=unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || [];
-  const imported={};
-  for(const block of blocks){
-    const match=block.match(/^DTSTART(?:;[^:\r\n]*)?:(\d{4})(\d{2})(\d{2})/m);
-    if(!match) continue;
-    const label=block.match(/^SUMMARY(?:;[^:\r\n]*)?:(.*)$/m);
-    const date=`${match[1]}-${match[2]}-${match[3]}`;
-    imported[date]=(label?.[1] || "公眾假期").trim()
-      .replace(/\\n/gi," ").replace(/\\([,;\\])/g,"$1");
-  }
-  if(!Object.keys(imported).length) throw Error("找不到可讀取的 ICS 假期日期");
+  const next = copy(state);
 
-  const years=[...new Set(Object.keys(imported).map(d=>Number(d.slice(0,4))))];
-  const next=copy(state);
-
-  // 以匯入資料替換所含年份，避免保留舊清單已移除的日期。
-  for(const date of Object.keys(next.holidays)){
-    if(years.includes(Number(date.slice(0,4)))) delete next.holidays[date];
-  }
-  Object.assign(next.holidays,imported);
-  next.verifiedYears=next.verifiedYears.filter(y=>!years.includes(y));
-  await commit(next);
-  message(`已匯入 ${Object.keys(imported).length} 個日期。請逐年核對後確認完整。`);
-}
-
-async function saveHolidays(){
-  const year=Number($("month").value.slice(0,4));
-  const parsed={};
-  for(const line of $("holidayText").value.split(/\r?\n/)){
-    if(!line.trim()) continue;
-    const m=line.trim().match(/^(\d{4}-\d{2}-\d{2})(?:\s+(.+))?$/);
-    if(!m || Number(m[1].slice(0,4))!==year)
-      throw Error("每行必須是所選年份的 YYYY-MM-DD，後面可加假期名稱");
-
-    const d=new Date(m[1]+"T00:00:00Z");
-    if(!Number.isFinite(d.getTime()) || d.toISOString().slice(0,10)!==m[1])
-      throw Error("無效日期："+m[1]);
-    parsed[m[1]]=m[2] || "公眾假期";
-  }
-  const verified=$("holidayVerified").checked;
-  if(verified && !Object.keys(parsed).length)
-    throw Error("不能確認空白假期清單");
-
-  const next=copy(state);
-  for(const d of Object.keys(next.holidays)){
-    if(d.startsWith(String(year))) delete next.holidays[d];
-  }
-  Object.assign(next.holidays,parsed);
-  next.verifiedYears=next.verifiedYears.filter(y=>y!==year);
-  if(verified) next.verifiedYears.push(year);
-  await commit(next);
-}
-
-function fillSettlement(){
-  const item=state.settlements.find(x=>x.month===$("month").value &&
-    x.scope===$("settleScope").value);
-  $("statement").value=displayInput(item?.statement);
-  $("received").value=displayInput(item?.received ?? 0);
-  $("settleNote").value=item?.note || "";
-}
-
-function renderSettlements(){
-  const items=state.settlements.filter(x=>x.month===$("month").value);
-  const done=monthShifts().filter(s=>s.status==="completed");
-  $("settlementRows").innerHTML=items.map(x=>{
-    const result=calculate(scopeFilter(done,x.scope));
-    let difference="待填結算額";
-    if(x.statement!=null){
-      if(result.flags.length || result.low!==result.high){
-        difference="待確認；完成班次試算："+amount(result);
-      }else{
-        difference=money(x.statement-result.low);
-      }
+  for (const s of next.shifts) {
+    if (s.date.startsWith(month + "-")) {
+      s.rule = copy(next.rules[org(s.location)]);
     }
-    return `<tr>
-      <td>${esc(names[x.scope])}</td>
-      <td>${x.statement==null?"待填":money(x.statement)}</td>
-      <td>${money(x.received)}</td>
-      <td>${x.statement==null?"待填":money(x.statement-x.received)}</td>
-      <td>${esc(difference)}</td>
-      <td>${esc(x.note)}</td>
-    </tr>`;
-  }).join("") || `<tr><td colspan="6">本月未有結算記錄。</td></tr>`;
-  fillSettlement();
-}
+  }
 
-async function saveSettlement(){
-  const month=$("month").value,scope=$("settleScope").value;
-  const existing=state.settlements.filter(x=>x.month===month);
-  if(scope==="amc" && existing.some(x=>["cwb","tqb"].includes(x.scope)))
-    throw Error("已有 AMC 分店月結；請先刪除分店記錄，再改為合併結算");
-  if(["cwb","tqb"].includes(scope) && existing.some(x=>x.scope==="amc"))
-    throw Error("已有 AMC 合併月結；請先刪除合併記錄，再改為分店結算");
-
-  const next=copy(state);
-  next.settlements=next.settlements.filter(x=>!(x.month===month && x.scope===scope));
-  next.settlements.push({
-    month,scope,statement:numeric("statement"),
-    received:numeric("received") ?? 0,note:$("settleNote").value
-  });
   await commit(next);
+  message(`已將已儲存規則套用 ${month} 全部班次。`);
 }
 
-function download(name,text,type){
-  const url=URL.createObjectURL(new Blob([text],{type}));
-  const a=document.createElement("a");
-  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+/* ===================== 假期匯入／核對 ===================== */
+
+function renderHolidays(force = false) {
+  if (dirty.holidays && !force) return;
+
+  const year = Number(selectedMonth().slice(0, 4));
+  const entries = Object.entries(state.holidays)
+    .filter(([date]) => date.startsWith(year + "-"))
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  $("holidayText").value =
+    entries.map(([date, name]) => `${date} ${name}`).join("\n");
+
+  $("holidayVerified").checked = state.verifiedYears.includes(year);
+
+  $("holidayStatus").textContent =
+    `${year} 年：${entries.length} 個日期；` +
+    (state.verifiedYears.includes(year)
+      ? "已確認全年清單"
+      : "尚未確認全年清單");
 }
 
-function csvCell(value){
-  let text=String(value ?? "");
-  // 防止文字欄位被 Excel 當作公式執行。
-  if(/^[=+\-@\t\r]/.test(text)) text="'"+text;
-  return '"'+text.replace(/"/g,'""')+'"';
-}
-function csv(name,rows){
-  download(name,"\uFEFF"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n"),
-    "text/csv;charset=utf-8");
+async function importICS(text) {
+  requireWritable();
+
+  if (dirty.holidays && !confirm(
+    "假期設定有未儲存修改。匯入會放棄這些修改，確定繼續？"
+  )) return;
+
+  const unfolded = text.replace(/\r?\n[ \t]/g, "");
+  const blocks = unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || [];
+  const imported = {};
+
+  for (const block of blocks) {
+    const match = block.match(
+      /^DTSTART(?:;[^:\r\n]*)?:(\d{4})(\d{2})(\d{2})/m
+    );
+
+    if (!match) continue;
+
+    const date = `${match[1]}-${match[2]}-${match[3]}`;
+    if (!validDate(date)) throw Error("ICS 包含無效日期：" + date);
+
+    const label = block.match(/^SUMMARY(?:;[^:\r\n]*)?:(.*)$/m);
+
+    imported[date] = (label?.[1] || "公眾假期")
+      .trim()
+      .replace(/\\n/gi, " ")
+      .replace(/\\([,;\\])/g, "$1");
+  }
+
+  const dates = Object.keys(imported);
+
+  if (!dates.length) {
+    throw Error("找不到可讀取的 ICS 假期日期。");
+  }
+
+  const years = [...new Set(dates.map(d => Number(d.slice(0, 4))))];
+
+  if (!confirm(
+    `將匯入 ${dates.length} 個日期，涉及 ${years.join("、")} 年。\n` +
+    "會替換這些年份的假期清單，並取消全年核對標記。\n" +
+    "已有班次不會刪除。確定匯入？"
+  )) return;
+
+  const next = copy(state);
+
+  for (const date of Object.keys(next.holidays)) {
+    if (years.includes(Number(date.slice(0, 4)))) {
+      delete next.holidays[date];
+    }
+  }
+
+  Object.assign(next.holidays, imported);
+  next.verifiedYears = next.verifiedYears.filter(y => !years.includes(y));
+
+  await commit(next);
+
+  dirty.holidays = false;
+  renderHolidays(true);
+
+  message(`已匯入 ${dates.length} 個日期。請逐年核對後確認完整。`);
 }
 
-function exportShifts(){
-  const rows=[[
-    "日期","地點","開始","結束","工時","狀態",
-    "診金HKD","小手術HKD","時薪/保底部分HKD（非最終收入）",
-    "報酬規則JSON","備註"
+async function fetchHolidays() {
+  requireWritable();
+
+  let text;
+
+  try {
+    const response = await fetch(HOLIDAY_URL, {
+      cache: "no-store",
+      credentials: "omit"
+    });
+
+    if (!response.ok) throw Error("HTTP " + response.status);
+    text = await response.text();
+  } catch (error) {
+    throw Error(
+      "未能直接讀取官方資料。請下載官方 ICS，再使用檔案匯入。"
+    );
+  }
+
+  await importICS(text);
+}
+
+async function saveHolidays() {
+  requireWritable();
+
+  const year = Number(selectedMonth().slice(0, 4));
+  const parsed = {};
+
+  for (const line of $("holidayText").value.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+
+    const match = line.trim().match(
+      /^(\d{4}-\d{2}-\d{2})(?:\s+(.+))?$/
+    );
+
+    if (!match || Number(match[1].slice(0, 4)) !== year) {
+      throw Error(
+        "每行必須是所選年份的 YYYY-MM-DD，後面可加假期名稱。"
+      );
+    }
+
+    if (!validDate(match[1])) {
+      throw Error("無效日期：" + match[1]);
+    }
+
+    if (Object.hasOwn(parsed, match[1])) {
+      throw Error("假期日期重複：" + match[1]);
+    }
+
+    parsed[match[1]] = match[2] || "公眾假期";
+  }
+
+  const verified = $("holidayVerified").checked;
+
+  if (verified && !Object.keys(parsed).length) {
+    throw Error("不能確認空白假期清單。");
+  }
+
+  const next = copy(state);
+
+  for (const date of Object.keys(next.holidays)) {
+    if (date.startsWith(year + "-")) delete next.holidays[date];
+  }
+
+  Object.assign(next.holidays, parsed);
+  next.verifiedYears = next.verifiedYears.filter(y => y !== year);
+
+  if (verified) next.verifiedYears.push(year);
+
+  await commit(next);
+
+  dirty.holidays = false;
+  renderHolidays(true);
+
+  message(
+    `已儲存 ${year} 年假期清單；` +
+    (verified ? "已標記全年核對完成。" : "尚未標記全年核對完成。")
+  );
+}
+
+/* ===================== 月結及收款 ===================== */
+
+function fillSettlement(force = false) {
+  if (dirty.settlement && !force) return;
+
+  const month = selectedMonth();
+  const scope = $("settleScope").value;
+
+  const item = state.settlements.find(x =>
+    x.month === month && x.scope === scope
+  );
+
+  $("statement").value = displayInput(item?.statement);
+  $("received").value = displayInput(item?.received ?? 0);
+  $("settleNote").value = item?.note || "";
+
+  shownSettlementScope = scope;
+}
+
+function renderSettlements(force = false) {
+  const month = selectedMonth();
+  const items = state.settlements.filter(x => x.month === month);
+  const done = monthShifts(month).filter(s => s.status === "completed");
+
+  $("settlementRows").innerHTML = items.map(x => {
+    const result = calculate(scopeFilter(done, x.scope));
+    let difference = "待填結算額";
+
+    if (x.statement != null) {
+      difference = result.flags.length || result.low !== result.high
+        ? "待確認；完成班次試算：" + amount(result)
+        : money(x.statement - result.low);
+    }
+
+    return `
+      <tr>
+        <td>${esc(names[x.scope])}</td>
+        <td>${x.statement == null ? "待填" : money(x.statement)}</td>
+        <td>${money(x.received)}</td>
+        <td>${
+          x.statement == null ? "待填" : money(x.statement - x.received)
+        }</td>
+        <td>${esc(difference)}</td>
+        <td>${esc(x.note)}</td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="6">本月未有結算記錄。</td></tr>`;
+
+  fillSettlement(force);
+}
+
+async function saveSettlement() {
+  requireWritable();
+
+  const month = selectedMonth();
+  const scope = $("settleScope").value;
+  const existing = state.settlements.filter(x => x.month === month);
+
+  if (scope === "amc" &&
+      existing.some(x => ["cwb", "tqb"].includes(x.scope))) {
+    throw Error(
+      "已有 AMC 分店月結；請先刪除分店記錄，再改為合併結算。"
+    );
+  }
+
+  if (["cwb", "tqb"].includes(scope) &&
+      existing.some(x => x.scope === "amc")) {
+    throw Error(
+      "已有 AMC 合併月結；請先刪除合併記錄，再改為分店結算。"
+    );
+  }
+
+  const old = existing.find(x => x.scope === scope);
+  const next = copy(state);
+
+  next.settlements = next.settlements.filter(x =>
+    !(x.month === month && x.scope === scope)
+  );
+
+  next.settlements.push({
+    ...(old || {}),
+    month,
+    scope,
+    statement: numeric("statement"),
+    received: numeric("received") ?? 0,
+    note: $("settleNote").value
+  });
+
+  await commit(next);
+
+  dirty.settlement = false;
+  fillSettlement(true);
+  message(`已儲存 ${month} ${names[scope]} 月結。`);
+}
+
+async function deleteSettlement() {
+  requireWritable();
+
+  const month = selectedMonth();
+  const scope = $("settleScope").value;
+
+  const exists = state.settlements.some(x =>
+    x.month === month && x.scope === scope
+  );
+
+  if (!exists) {
+    message("沒有此月份／對象的已儲存月結記錄。");
+    return;
+  }
+
+  if (!confirm(`刪除 ${month} ${names[scope]} 的月結記錄？`)) return;
+
+  const next = copy(state);
+
+  next.settlements = next.settlements.filter(x =>
+    !(x.month === month && x.scope === scope)
+  );
+
+  await commit(next);
+
+  dirty.settlement = false;
+  fillSettlement(true);
+  message("已刪除此月結記錄。");
+}
+
+/* ===================== CSV／JSON 匯出 ===================== */
+
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = name;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function csvCell(value) {
+  let text = String(value ?? "");
+
+  // 文字欄位避免被試算表當作公式。
+  // 真正數值欄位保留數值格式。
+  if (typeof value !== "number" &&
+      /^[\s]*[=+\-@\t\r]/.test(text)) {
+    text = "'" + text;
+  }
+
+  return '"' + text.replace(/"/g, '""') + '"';
+}
+
+function csv(name, rows) {
+  download(
+    name,
+    "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n"),
+    "text/csv;charset=utf-8"
+  );
+}
+
+function exportShifts() {
+  requireWorkspace();
+
+  const rows = [[
+    "日期",
+    "地點",
+    "開始",
+    "結束",
+    "工時",
+    "狀態",
+    "診金HKD",
+    "小手術HKD",
+    "時薪/保底部分HKD（非最終收入）",
+    "報酬規則JSON",
+    "備註"
   ]];
-  for(const s of monthShifts()){
+
+  for (const s of monthShifts()) {
     rows.push([
-      s.date,names[s.location],s.start,s.end,duration(s)/60,statuses[s.status],
-      s.consultation==null?"":s.consultation/100,
-      s.procedure==null?"":s.procedure/100,
-      s.status==="cancelled"?0:components(s).hourly/100,
-      JSON.stringify(s.rule),s.note
+      s.date,
+      names[s.location],
+      s.start,
+      s.end,
+      duration(s) / 60,
+      statuses[s.status],
+      s.consultation == null ? "" : s.consultation / 100,
+      s.procedure == null ? "" : s.procedure / 100,
+      s.status === "cancelled" ? 0 : components(s).hourly / 100,
+      JSON.stringify(s.rule),
+      s.note
     ]);
   }
-  csv(`ray-shifts-${$("month").value}.csv`,rows);
+
+  csv(`ray-shifts-${selectedMonth()}.csv`, rows);
 }
 
-function exportSummary(){
-  const rows=[
-    ["月份","機構","範圍","試算下限HKD","試算上限HKD","提示"]
-  ];
+function exportSummary() {
+  requireWorkspace();
 
-  const live=active(monthShifts());
-  const scopes=["alan","cwb","tqb","stubbs","total"];
+  const rows = [[
+    "月份",
+    "機構",
+    "範圍",
+    "已知部分試算低值HKD",
+    "已知部分試算高值HKD",
+    "提示"
+  ]];
 
-  for(const scope of scopes){
-    const all=scope==="total"
-      ? live
-      : scopeFilter(live,scope);
+  const month = selectedMonth();
+  const live = active(monthShifts(month));
 
-    const label=scope==="total"
-      ? "所有診所合計"
-      : names[scope];
+  for (const scope of [...scopes, "total"]) {
+    const all = scope === "total" ? live : scopeFilter(live, scope);
+    const label = scope === "total" ? "所有診所合計" : names[scope];
 
-    for(const [range,list] of [
-      ["全月排班（含已完成）",all],
-      ["已完成",all.filter(s=>s.status==="completed")]
-    ]){
-      const result=calculate(list);
+    for (const [range, list] of [
+      ["全月排班（含已完成）", all],
+      ["已完成", all.filter(s => s.status === "completed")]
+    ]) {
+      const result = calculate(list);
 
       rows.push([
-        $("month").value,
+        month,
         label,
         range,
-        result.low/100,
-        result.high/100,
+        result.low / 100,
+        result.high / 100,
         result.flags.join("；")
       ]);
     }
   }
 
-  csv(`ray-income-${$("month").value}.csv`,rows);
+  csv(`ray-income-${month}.csv`, rows);
 }
 
-function changeMonth(delta){
-  const [y,m]=$("month").value.split("-").map(Number);
-  const d=new Date(Date.UTC(y,m-1+delta,1));
-  $("month").value=`${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}`;
-  render();
+function backup() {
+  requireWorkspace();
+
+  download(
+    `ray-backup-${todayHK()}.json`,
+    JSON.stringify({
+      exportedAt: new Date().toISOString(),
+      revision,
+      data: state
+    }, null, 2),
+    "application/json"
+  );
 }
 
-/* ===== 基本計算自測 ===== */
-function selfTest(){
-  const defaults=initialState().rules;
-  const make=(location,rule,c,p,date="2026-01-05",start="09:00",end="13:00")=>({
-    location,rule,date,start,end,status:"completed",
-    consultation:c,procedure:p
-  });
-  const assert=(ok,label)=>{if(!ok)throw Error("計算自測失敗："+label);};
+/* ===================== 月份切換 ===================== */
 
-  let r=calculate([
-    make("alan",defaults.alan,0,0),
-    make("alan",defaults.alan,1000000,0,"2026-01-05","14:00","18:00")
-  ]);
-  assert(r.low===700000 && r.high===1020000,"雅蘭未知比較週期");
+function switchMonth(target) {
+  if (busy || !state) return;
 
-  const daily={...defaults.alan,basis:"daily"};
-  r=calculate([
-    make("alan",daily,0,0),
-    make("alan",daily,1000000,0,"2026-01-05","14:00","18:00")
-  ]);
-  assert(r.low===700000,"雅蘭每日比較");
-
-  const amc={...defaults.amc,adminMode:"none",adminConfirmed:true};
-  r=calculate([make("tqb",amc,999999,100000)]);
-  assert(r.low===370000,"AMC診金不分成，小手術30%");
-
-  const st={...defaults.stubbs,adminMode:"none",adminConfirmed:true};
-  r=calculate([make("stubbs",st,1000000,0,
-    "2026-01-08","09:00","17:00")]);
-  assert(r.low===920000,"司徒拔時薪加20%");
-
-  r=calculate([make("stubbs",{...st,adminMode:"gross"},1000000,0,
-    "2026-01-08","09:00","17:00")]);
-  assert(r.low===918000,"醫生費先扣1%");
-
-  r=calculate([make("stubbs",{...st,adminMode:"all"},1000000,0,
-    "2026-01-08","09:00","17:00")]);
-  assert(r.low===910800,"全額扣1%");
-
-  r=calculate([make("tqb",amc,0,null)]);
-  assert(r.flags.some(x=>x.includes("費用未齊")),"空白不是零");
-}
-async function confirmShift(id){
-  const shift=state.shifts.find(s=>s.id===id);
-
-  if(!shift || shift.status!=="planned") return;
-
-  const next=copy(state);
-  const target=next.shifts.find(s=>s.id===id);
-
-  target.status="confirmed";
-
-  await commit(next);
-  message(`已確認 ${shift.date} ${names[shift.location]} ${shift.start} 的班次。`);
-}
-
-async function confirmMonthShifts(){
-  const month=$("month").value;
-
-  const planned=monthShifts().filter(s=>s.status==="planned");
-
-  if(!planned.length){
-    message(`${month} 沒有暫定班需要確認。`);
+  if (!validMonth(target)) {
+    $("month").value = shownMonth;
+    message("請選擇有效月份。", true);
     return;
   }
 
-  if(!confirm(
-    `將 ${month} 全部 ${planned.length} 節暫定班改為已確認？\n`+
-    "包括所有地點及週末班；已完成、已取消的班次不會改動。"
-  )) return;
-
-  const next=copy(state);
-
-  for(const s of next.shifts){
-    if(s.date.startsWith(month+"-") && s.status==="planned"){
-      s.status="confirmed";
-    }
+  if (target === shownMonth) {
+    $("month").value = shownMonth;
+    return;
   }
 
-  await commit(next);
-  message(`已確認 ${month} 共 ${planned.length} 節班次。`);
+  if (!confirmDiscard(
+    "轉月份會放棄未儲存的規則、假期或月結輸入。確定繼續？"
+  )) {
+    $("month").value = shownMonth;
+    return;
+  }
+
+  shownMonth = target;
+  $("month").value = target;
+  resetDirty();
+  render(true);
 }
-/* ===== 事件 ===== */
-$("month").value=todayHK().slice(0,7);
 
-$("loginForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  run(async()=>{
-    const {error}=await db.auth.signInWithPassword({
-      email:$("email").value.trim(),password:$("password").value
-    });
-    if(error) throw error;
-    $("password").value="";
-    await start();
+function changeMonth(delta) {
+  const [y, m] = shownMonth.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1 + delta, 1));
+  const target =
+    `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
+
+  switchMonth(target);
+}
+
+/* ===================== 自測 ===================== */
+
+function selfTest() {
+  const defaults = initialState().rules;
+
+  const make = (
+    location,
+    rule,
+    consultation,
+    procedure,
+    date = "2026-01-05",
+    start = "09:00",
+    end = "13:00"
+  ) => ({
+    location,
+    rule,
+    consultation,
+    procedure,
+    date,
+    start,
+    end,
+    status: "completed"
   });
-});
-$("logout").onclick=()=>run(async()=>{
-  const {error}=await db.auth.signOut();
-  if(error) throw error;
-  location.reload();
-});
-$("previous").onclick=()=>changeMonth(-1);
-$("next").onclick=()=>changeMonth(1);
-$("month").onchange=()=>{
-  if(!/^\d{4}-\d{2}$/.test($("month").value)){
-    $("month").value=todayHK().slice(0,7);
+
+  const assert = (ok, label) => {
+    if (!ok) throw Error("計算自測失敗：" + label);
+  };
+
+  let result = calculate([
+    make("alan", defaults.alan, 0, 0),
+    make("alan", defaults.alan, 1000000, 0,
+      "2026-01-05", "14:00", "18:00")
+  ]);
+
+  assert(
+    result.low === 700000 && result.high === 1020000,
+    "雅蘭未知比較週期"
+  );
+
+  const daily = { ...defaults.alan, basis: "daily" };
+
+  result = calculate([
+    make("alan", daily, 0, 0),
+    make("alan", daily, 1000000, 0,
+      "2026-01-05", "14:00", "18:00")
+  ]);
+
+  assert(result.low === 700000, "雅蘭每日比較");
+
+  const amc = {
+    ...defaults.amc,
+    adminMode: "none",
+    adminConfirmed: true
+  };
+
+  result = calculate([make("tqb", amc, 999999, 100000)]);
+  assert(result.low === 370000, "AMC 診金不分成、小手術 30%");
+
+  const stubbs = {
+    ...defaults.stubbs,
+    adminMode: "none",
+    adminConfirmed: true
+  };
+
+  result = calculate([
+    make("stubbs", stubbs, 1000000, 0,
+      "2026-01-08", "09:00", "17:00")
+  ]);
+
+  assert(result.low === 920000, "司徒拔時薪加 20%");
+
+  result = calculate([
+    make("stubbs", { ...stubbs, adminMode: "gross" }, 1000000, 0,
+      "2026-01-08", "09:00", "17:00")
+  ]);
+
+  assert(result.low === 918000, "醫生費先扣 1%");
+
+  result = calculate([
+    make("stubbs", { ...stubbs, adminMode: "all" }, 1000000, 0,
+      "2026-01-08", "09:00", "17:00")
+  ]);
+
+  assert(result.low === 910800, "全額扣 1%");
+
+  result = calculate([make("tqb", amc, 0, null)]);
+  assert(
+    result.flags.some(flag => flag.includes("費用未齊")),
+    "空白不是零"
+  );
+
+  const cancelled = {
+    ...make("tqb", amc, 0, 100000),
+    status: "cancelled"
+  };
+
+  assert(calculate([cancelled]).low === 0, "取消班不計收入");
+
+  const all = [
+    make("tqb", amc, 0, 100000),
+    make("cwb", amc, 0, 100000)
+  ];
+
+  assert(
+    calculate(all).low ===
+      calculate(scopeFilter(all, "tqb")).low +
+      calculate(scopeFilter(all, "cwb")).low,
+    "AMC 分店合計不重複"
+  );
+
+  assert(validDate("2028-02-29"), "有效閏日");
+  assert(!validDate("2026-02-29"), "拒絕無效閏日");
+
+  const staticIds = [...document.querySelectorAll("[id]")]
+    .map(element => element.id);
+
+  assert(
+    new Set(staticIds).size === staticIds.length,
+    "HTML 不可有重複 ID"
+  );
+}
+
+/* ===================== 登入／啟動 ===================== */
+
+async function start() {
+  if (!db) throw Error("Supabase 尚未初始化。");
+
+  const epoch = sessionEpoch;
+  const { data, error } = await db.auth.getUser();
+
+  if (error) throw error;
+  if (epoch !== sessionEpoch) throw Error("登入狀態已改變。");
+
+  const user = data?.user;
+  if (!user) return;
+
+  uid = user.id;
+  const owner = uid;
+
+  const { data: existing, error: readError } = await db
+    .from("ray_workspace")
+    .select("owner_id")
+    .eq("owner_id", owner)
+    .maybeSingle();
+
+  if (epoch !== sessionEpoch || uid !== owner) {
+    throw Error("登入狀態已改變。");
   }
-  render();
-};
-  $("confirmMonth").onclick=()=>run(confirmMonthShifts);
 
-$("calendarView").onchange=()=>{
-  renderCalendar(monthShifts());
-};
-$("reload").onclick=()=>run(load);
-$("generate").onclick=()=>run(generate);
-$("deleteMonthShifts").onclick=()=>run(deleteMonthShifts);
-$("add").onclick=()=>openShift(null,$("month").value+"-01");
+  if (readError) throw readError;
 
-$("calendar").onclick=e=>{
-  if(busy) return;
+  if (!existing) {
+    const { error: insertError } = await db
+      .from("ray_workspace")
+      .insert({
+        owner_id: owner,
+        data: initialState()
+      });
 
-  const confirmButton=e.target.closest("[data-confirm]");
-  const edit=e.target.closest("[data-edit]");
-  const date=e.target.closest("[data-date]");
+    if (epoch !== sessionEpoch || uid !== owner) {
+      throw Error("登入狀態已改變。");
+    }
 
-  if(confirmButton){
-    run(()=>confirmShift(confirmButton.dataset.confirm));
-  }else if(edit){
-    openShift(edit.dataset.edit);
-  }else if(date){
-    openShift(null,date.dataset.date);
-  }
-};
-
-  $("shiftRows").onclick=e=>{
-  if(busy) return;
-
-  const confirmButton=e.target.closest("[data-confirm]");
-  const editButton=e.target.closest("[data-edit]");
-
-  if(confirmButton){
-    run(()=>confirmShift(confirmButton.dataset.confirm));
-  }else if(editButton){
-    openShift(editButton.dataset.edit);
-  }
-};
-$("shiftForm").onsubmit=e=>{e.preventDefault();run(saveShift);};
-$("closeDialog").onclick=()=>$("shiftDialog").close();
-$("deleteShift").onclick=()=>run(async()=>{
-  if(!confirm("永久刪除這節班次？一般請假建議改為已取消，以免重新產生。")) return;
-  const next=copy(state);
-  next.shifts=next.shifts.filter(s=>s.id!==$("shiftId").value);
-  await commit(next);
-  $("shiftDialog").close();
-});
-$("rulesForm").onsubmit=e=>{e.preventDefault();run(saveRules);};
-$("applyRules").onclick=()=>run(applyRules);
-$("saveHolidays").onclick=()=>run(saveHolidays);
-$("fetchHolidays").onclick=()=>run(async()=>{
-  let text;
-  try{
-    const response=await fetch("https://www.1823.gov.hk/common/ical/tc.ics",{
-      cache:"no-store",credentials:"omit"
-    });
-    if(!response.ok) throw Error("HTTP "+response.status);
-    text=await response.text();
-  }catch(e){
-    throw Error("未能直接讀取官方資料。請下載官方 ICS，再用檔案匯入。");
-  }
-  await importICS(text);
-});
-$("holidayFile").onchange=e=>{
-  const file=e.target.files[0];
-  if(file) run(async()=>{await importICS(await file.text());e.target.value="";});
-};
-$("settleScope").onchange=fillSettlement;
-$("settlementForm").onsubmit=e=>{e.preventDefault();run(saveSettlement);};
-$("deleteSettlement").onclick=()=>run(async()=>{
-  if(!confirm("刪除這個月份／對象的月結記錄？")) return;
-  const next=copy(state);
-  next.settlements=next.settlements.filter(x=>!(
-    x.month===$("month").value && x.scope===$("settleScope").value
-  ));
-  await commit(next);
-});
-$("exportShifts").onclick=exportShifts;
-$("exportSummary").onclick=exportSummary;
-$("backup").onclick=()=>download(
-  `ray-backup-${todayHK()}.json`,
-  JSON.stringify({exportedAt:new Date().toISOString(),revision,data:state},null,2),
-  "application/json"
-);
-
-async function start(){
-  const {data:{user},error}=await db.auth.getUser();
-  if(error) throw error;
-  if(!user) return;
-  uid=user.id;
-
-  const {data:existing,error:readError}=await db.from("ray_workspace")
-    .select("owner_id").eq("owner_id",uid).maybeSingle();
-  if(readError) throw readError;
-
-  if(!existing){
-    const {error:insertError}=await db.from("ray_workspace").insert({
-      owner_id:uid,data:initialState()
-    });
-    if(insertError && insertError.code!=="23505") throw insertError;
+    if (insertError && insertError.code !== "23505") {
+      throw insertError;
+    }
   }
 
   await load();
-  $("loginCard").hidden=true;
-  $("app").hidden=false;
-  $("logout").hidden=false;
-  $("user").textContent=user.email;
-  message("已登入。首次使用請先匯入並核對假期，再產生排班。");
+
+  if (epoch !== sessionEpoch || uid !== owner) {
+    throw Error("登入狀態已改變。");
+  }
+
+  $("loginCard").hidden = true;
+  $("app").hidden = false;
+  $("logout").hidden = false;
+  $("user").textContent = user.email || "";
+
+  message(
+    "已登入並載入資料。首次使用請先匯入及核對假期，再產生排班。"
+  );
 }
 
-async function boot(){
-  selfTest();
-  if(SUPABASE_URL.includes("YOUR_PROJECT") ||
-     SUPABASE_KEY.includes("YOUR_PUBLISHABLE"))
-    throw Error("請先在 index.html 填入 Supabase URL 及 publishable key。");
-  if(!window.supabase) throw Error("Supabase SDK 未載入，請檢查網絡。");
+async function login() {
+  if (!db) throw Error("Supabase SDK 尚未載入，請重新整理。");
 
-  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-  // 其他分頁登出／session失效時，清除畫面。
-  db.auth.onAuthStateChange(event=>{
-    if(event==="SIGNED_OUT"){
-      uid=null;state=null;revision=null;
-      $("app").hidden=true;
-      $("loginCard").hidden=false;
-      $("logout").hidden=true;
-      $("user").textContent="";
-      $("shiftDialog").close();
-      message("已登出，請重新登入。");
-    }
+  const { error } = await db.auth.signInWithPassword({
+    email: $("email").value.trim(),
+    password: $("password").value
   });
 
-  const {data:{session},error}=await db.auth.getSession();
-  if(error) throw error;
-  if(session) await start();
-}
-/* ===== 月曆及收入升級補丁 v2：只加入一次 ===== */
+  if (error) throw error;
 
-// 1. 新增工具列控制
-viewSelect.id="calendarView";
-viewSelect.setAttribute("aria-label","月曆顯示範圍");
-viewSelect.style.cssText="width:auto;margin-top:0";
-viewSelect.innerHTML=`
-  <option value="week">顯示全周</option>
-  <option value="weekdays">只顯示星期一至五</option>
-`;
-$("generate").before(viewSelect);
-
-confirmMonthButton.id="confirmMonth";
-confirmMonthButton.type="button";
-confirmMonthButton.textContent="✓ 確認本月全部暫定班";
-$("generate").before(confirmMonthButton);
-
-const calendarHint=document.createElement("p");
-calendarHint.id="calendarHint";
-calendarHint.className="muted";
-$("calendar").after(calendarHint);
-
-// 畫面版本標記，方便檢查有冇載入新版
-const versionLabel=document.createElement("small");
-versionLabel.className="muted";
-versionLabel.textContent="介面版本：月曆及收入 v2";
-$("calendarHint").after(versionLabel);
-
-// 2. 新增樣式
-const upgradeStyle=document.createElement("style");
-upgradeStyle.textContent=`
-.calendar.weekdays{
-  grid-template-columns:repeat(5,minmax(0,1fr));
-}
-.day{
-  display:grid;
-  grid-template-rows:44px minmax(76px,1fr) minmax(76px,1fr);
-  min-height:205px;
-  min-width:0;
-}
-.day-header{overflow:auto}
-.day-slot{min-width:0;padding:4px 0}
-.day-slot.pm{border-top:1px dashed var(--line)}
-.slot-label{
-  display:block;color:var(--muted);
-  font-size:10px;margin-bottom:3px;
-}
-.event{
-  margin-top:4px;padding:5px;border-radius:6px;
-  overflow-wrap:anywhere;
-}
-.event.alan.planned{background:#f0edff;border-color:#7164e8}
-.event.amc.planned{background:#e6f7f3;border-color:#009688}
-.event.stubbs.planned{background:#fff3dc;border-color:#e29820}
-.event.alan.confirmed{background:#ded7ff;border-color:#6352d8}
-.event.amc.confirmed{background:#bcebdd;border-color:#008577}
-.event.stubbs.confirmed{background:#ffe0a6;border-color:#c78316}
-.event.alan.completed{background:#c9bef8;border-color:#5141b8}
-.event.amc.completed{background:#99dcc9;border-color:#006d61}
-.event.stubbs.completed{background:#f6cd80;border-color:#a96a08}
-.event-main{
-  display:block;width:100%;margin:0;padding:0;
-  border:0;border-radius:0;background:transparent;
-  color:var(--text);font-size:inherit;
-  line-height:1.5;text-align:left;
-}
-.quick-confirm{
-  margin-top:5px;padding:3px 6px;
-  background:#ffffffb8;color:#244779;
-  font-size:11px;font-weight:650;
-}
-.total-row{background:#eef3ff;font-weight:700}
-@media(max-width:650px){
-  .day{
-    grid-template-rows:42px minmax(72px,1fr) minmax(72px,1fr);
-    min-height:190px;
-  }
-  .event{padding:4px;font-size:10px}
-  .quick-confirm{padding:3px;font-size:10px}
-}
-`;
-document.head.appendChild(upgradeStyle);
-
-// 3. 覆蓋舊月曆顯示
-renderCalendar=function(shifts){
-  const [y,m]=$("month").value.split("-").map(Number);
-  const weekdaysOnly=$("calendarView").value==="weekdays";
-  const count=new Date(Date.UTC(y,m,0)).getUTCDate();
-  const firstDay=new Date(Date.UTC(y,m-1,1)).getUTCDay();
-  const mondayOffset=(firstDay+6)%7;
-  const offset=weekdaysOnly && mondayOffset>=5 ? 0 : mondayOffset;
-  const labels=weekdaysOnly
-    ? ["一","二","三","四","五"]
-    : ["一","二","三","四","五","六","日"];
-
-  $("calendar").classList.toggle("weekdays",weekdaysOnly);
-
-  let html=labels.map(x=>
-    `<div class="weekday">星期${x}</div>`
-  ).join("");
-  html+="<div></div>".repeat(offset);
-
-  function eventHTML(s){
-    return `
-      <div class="event ${esc(org(s.location))} ${esc(s.status)}">
-        <button type="button" class="event-main"
-          data-edit="${esc(s.id)}">
-          ${esc(names[s.location])}<br>
-          ${esc(s.start)}–${esc(s.end)}<br>
-          ${esc(statuses[s.status])}
-        </button>
-        ${s.status==="planned" ? `
-          <button type="button" class="quick-confirm"
-            data-confirm="${esc(s.id)}">✓ 確認</button>
-        ` : ""}
-      </div>`;
-  }
-
-  for(let d=1;d<=count;d++){
-    const date=dateString(y,m,d);
-    const weekday=new Date(Date.UTC(y,m-1,d)).getUTCDay();
-    const weekend=weekday===0 || weekday===6;
-    if(weekdaysOnly && weekend) continue;
-
-    const holiday=state.holidays[date];
-    const list=shifts.filter(s=>s.date===date);
-    const am=list.filter(s=>minutes(s.start)<780);
-    const pm=list.filter(s=>minutes(s.start)>=780);
-
-    html+=`
-      <div class="day ${weekend || holiday ? "off" : ""}">
-        <div class="day-header">
-          <div class="date">
-            <strong>${d}</strong>
-            <button type="button" data-date="${date}"
-              style="padding:2px 6px">＋</button>
-          </div>
-          ${holiday ? `<div class="holiday">${esc(holiday)}</div>` : ""}
-        </div>
-        <div class="day-slot am">
-          <span class="slot-label">上午</span>
-          ${am.map(eventHTML).join("")}
-        </div>
-        <div class="day-slot pm">
-          <span class="slot-label">下午</span>
-          ${pm.map(eventHTML).join("")}
-        </div>
-      </div>`;
-  }
-
-  $("calendar").innerHTML=html;
-
-  const hiddenCount=weekdaysOnly ? shifts.filter(s=>{
-    const day=new Date(s.date+"T00:00:00Z").getUTCDay();
-    return day===0 || day===6;
-  }).length : 0;
-
-  $("calendarHint").textContent=weekdaysOnly
-    ? `目前只顯示星期一至五；${hiddenCount} 節週末班未顯示。明細及收入仍包含週末班。`
-    : "13:00 前開始放上午；13:00 或之後開始放下午。";
-};
-
-// 4. 確認班次：沿用原有 commit()
-async function confirmShift(id){
-  const shift=state.shifts.find(s=>s.id===id);
-  if(!shift || shift.status!=="planned") return;
-
-  const next=copy(state);
-  next.shifts.find(s=>s.id===id).status="confirmed";
-  await commit(next);
-  message(`已確認 ${shift.date} ${names[shift.location]} ${shift.start}。`);
+  $("password").value = "";
+  await start();
 }
 
-async function confirmMonthShifts(){
-  const month=$("month").value;
-  const planned=monthShifts().filter(s=>s.status==="planned");
-
-  if(!planned.length){
-    message(`${month} 沒有暫定班需要確認。`);
+async function logout() {
+  if (!confirmDiscard("有未儲存输入，登出會放棄修改。確定登出？")) {
     return;
   }
 
-  if(!confirm(
-    `確認 ${month} 全部 ${planned.length} 節暫定班？\n`+
-    "包括所有地點及週末班；已完成、已取消班次不會改動。"
-  )) return;
+  const { error } = await db.auth.signOut();
+  if (error) throw error;
 
-  const next=copy(state);
-  for(const s of next.shifts){
-    if(s.date.startsWith(month+"-") && s.status==="planned"){
-      s.status="confirmed";
-    }
-  }
-  await commit(next);
-  message(`已確認 ${month} 共 ${planned.length} 節班次。`);
+  // 若事件尚未清除畫面，在此補做；避免重複清除。
+  if (uid || state) clearSession();
 }
 
-// 5. 四間診所收入及總額
-function renderIncomeV2(live){
-  const scopes=["alan","cwb","tqb","stubbs"];
+async function boot() {
+  selfTest();
 
-  function row(label,all,isTotal=false){
-    const forecast=calculate(all);
-    const earned=calculate(all.filter(s=>s.status==="completed"));
-    const flags=[...new Set([...forecast.flags,...earned.flags])];
-    const notes=flags.length
-      ? flags.map(esc).join("<br>")
-      : all.length
-        ? "資料齊全，按已保存規則試算"
-        : "本月沒有有效班次";
-
-    return `
-      <tr class="${isTotal ? "total-row" : ""}">
-        <td>${esc(label)}</td>
-        <td class="money">${amount(forecast)}</td>
-        <td class="money">${amount(earned)}</td>
-        <td>${notes}</td>
-      </tr>`;
+  if (!window.supabase) {
+    throw Error("Supabase SDK 未載入，請檢查網絡後重新整理。");
   }
 
-  $("incomeRows").innerHTML=scopes.map(scope=>
-    row(names[scope],scopeFilter(live,scope))
-  ).join("")+row("所有診所合計",live,true);
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  $("amcBreakdown").textContent=
-    "合計包含雅蘭、AMC 銅鑼灣、AMC 太古坊及司徒拔。" +
-    "全月排班包含已完成班次，兩欄不可相加；" +
-    "資料或條款未確認時，金額仍屬暫估／已知部分。";
+  // 此回呼只同步清除畫面，不在回呼中發起 Supabase 請求。
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+      clearSession();
+    } else if (uid && session?.user?.id &&
+               session.user.id !== uid) {
+      clearSession();
+      message("其他分頁已切換帳戶，請重新登入。", true);
+    }
+  });
+
+  const { data, error } = await db.auth.getSession();
+  if (error) throw error;
+
+  if (data?.session) {
+    await start();
+  } else {
+    message("請登入。");
+  }
 }
 
-// 保留原本 render，然後更新明細操作及收入顯示
-const renderBeforeV2=render;
-render=function(){
-  renderBeforeV2();
+/* ===================== 事件：每個控制項只綁定一次 ===================== */
 
-  $("shiftRows").innerHTML=monthShifts().map(s=>`
-    <tr>
-      <td>${esc(s.date)}</td>
-      <td>${esc(names[s.location])}<br>${esc(s.start)}–${esc(s.end)}</td>
-      <td>${esc(statuses[s.status])}</td>
-      <td>${duration(s)/60}</td>
-      <td>${s.consultation==null ? "待填" : money(s.consultation)}</td>
-      <td>${s.procedure==null ? "待填" : money(s.procedure)}</td>
-      <td>
-        <div class="row">
-          <button type="button" data-edit="${esc(s.id)}">修改</button>
-          ${s.status==="planned" ? `
-            <button type="button" data-confirm="${esc(s.id)}">
-              ✓ 確認
-            </button>` : ""}
-        </div>
-      </td>
-    </tr>`).join("") ||
-    `<tr><td colspan="7">本月未有班次。</td></tr>`;
+$("month").value = shownMonth;
 
-  renderIncomeV2(active(monthShifts()));
-};
+$("loginForm").addEventListener("submit", event => {
+  event.preventDefault();
+  run(login);
+});
 
-// 6. 覆蓋收入 CSV，避免合併 AMC 與分店重複列入
-exportSummary=function(){
-  const rows=[
-    ["月份","機構","範圍","試算下限HKD","試算上限HKD","提示"]
-  ];
-  const live=active(monthShifts());
+$("logout").addEventListener("click", () => run(logout));
+$("previous").addEventListener("click", () => changeMonth(-1));
+$("next").addEventListener("click", () => changeMonth(1));
 
-  for(const scope of ["alan","cwb","tqb","stubbs","total"]){
-    const all=scope==="total" ? live : scopeFilter(live,scope);
-    const label=scope==="total" ? "所有診所合計" : names[scope];
+$("month").addEventListener("change", () => {
+  switchMonth($("month").value);
+});
 
-    for(const [range,list] of [
-      ["全月排班（含已完成）",all],
-      ["已完成",all.filter(s=>s.status==="completed")]
-    ]){
-      const result=calculate(list);
-      rows.push([
-        $("month").value,label,range,
-        result.low/100,result.high/100,result.flags.join("；")
-      ]);
-    }
-  }
-  csv(`ray-income-${$("month").value}.csv`,rows);
-};
+$("calendarView").addEventListener("change", () => {
+  if (!busy && state) renderCalendar(monthShifts());
+});
 
-// 7. 更新事件；唔使用巢狀按鈕或雙擊操作
-function handleShiftClickV2(e){
-  if(busy) return;
+$("reload").addEventListener("click", () => run(reloadWorkspace));
+$("generate").addEventListener("click", () => run(generate));
+$("confirmMonth").addEventListener("click", () => run(confirmMonthShifts));
 
-  const confirmButton=e.target.closest("[data-confirm]");
-  const editButton=e.target.closest("[data-edit]");
-  const dateButton=e.target.closest("[data-date]");
+$("deleteMonthShifts").addEventListener(
+  "click", () => run(deleteMonthShifts)
+);
 
-  if(confirmButton){
-    run(()=>confirmShift(confirmButton.dataset.confirm));
-  }else if(editButton){
+$("add").addEventListener("click", () => {
+  if (busy || !state) return;
+
+  const month = selectedMonth();
+  const today = todayHK();
+
+  openShift(null, today.startsWith(month + "-") ? today : month + "-01");
+});
+
+function handleShiftClick(event) {
+  if (busy || !state || !(event.target instanceof Element)) return;
+
+  const confirmButton = event.target.closest("[data-confirm]");
+  const editButton = event.target.closest("[data-edit]");
+  const dateButton = event.target.closest("[data-date]");
+
+  if (confirmButton) {
+    run(() => confirmShift(confirmButton.dataset.confirm));
+  } else if (editButton) {
     openShift(editButton.dataset.edit);
-  }else if(dateButton){
-    openShift(null,dateButton.dataset.date);
+  } else if (dateButton) {
+    openShift(null, dateButton.dataset.date);
   }
 }
 
-$("calendar").onclick=handleShiftClickV2;
-$("shiftRows").onclick=handleShiftClickV2;
-$("confirmMonth").onclick=()=>run(confirmMonthShifts);
-$("calendarView").onchange=()=>{
-  if(state) renderCalendar(monthShifts());
-};
-$("exportSummary").onclick=exportSummary;
+$("calendar").addEventListener("click", handleShiftClick);
+$("shiftRows").addEventListener("click", handleShiftClick);
 
-/* ===== 升級補丁結束 ===== */
+$("shiftForm").addEventListener("submit", event => {
+  event.preventDefault();
+  run(saveShift);
+});
+
+$("closeDialog").addEventListener("click", closeShift);
+$("deleteShift").addEventListener("click", () => run(deleteShift));
+
+$("shiftDialog").addEventListener("cancel", event => {
+  event.preventDefault();
+  closeShift();
+});
+
+$("shiftDialog").addEventListener("close", () => {
+  dirty.shift = false;
+});
+
+$("rulesForm").addEventListener("submit", event => {
+  event.preventDefault();
+  run(saveRules);
+});
+
+$("applyRules").addEventListener("click", () => run(applyRules));
+
+$("saveHolidays").addEventListener("click", () => run(saveHolidays));
+$("fetchHolidays").addEventListener("click", () => run(fetchHolidays));
+
+$("holidayFile").addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (!file || busy) return;
+
+  run(async () => {
+    try {
+      await importICS(await file.text());
+    } finally {
+      $("holidayFile").value = "";
+    }
+  });
+});
+
+$("settleScope").addEventListener("change", () => {
+  if (!state || busy) return;
+
+  if (dirty.settlement &&
+      !confirm("此月結有未儲存修改，切換對象會放棄修改。確定？")) {
+    $("settleScope").value = shownSettlementScope;
+    return;
+  }
+
+  dirty.settlement = false;
+  fillSettlement(true);
+});
+
+$("settlementForm").addEventListener("submit", event => {
+  event.preventDefault();
+  run(saveSettlement);
+});
+
+$("deleteSettlement").addEventListener(
+  "click", () => run(deleteSettlement)
+);
+
+$("exportShifts").addEventListener("click", () => run(exportShifts));
+$("exportSummary").addEventListener("click", () => run(exportSummary));
+$("backup").addEventListener("click", () => run(backup));
+
+// 用事件委派追蹤表單修改，動態建立的規則欄位亦適用。
+function trackUnsaved(event) {
+  if (!state || busy || !(event.target instanceof Element)) return;
+
+  const target = event.target;
+
+  if (target.closest("#rulesForm")) {
+    dirty.rules = true;
+  } else if (target.id === "holidayText" ||
+             target.id === "holidayVerified") {
+    dirty.holidays = true;
+  } else if (target.closest("#settlementForm") &&
+             target.id !== "settleScope") {
+    dirty.settlement = true;
+  } else if (target.closest("#shiftForm")) {
+    dirty.shift = true;
+  }
+}
+
+document.addEventListener("input", trackUnsaved);
+document.addEventListener("change", trackUnsaved);
+
+window.addEventListener("beforeunload", event => {
+  if (hasUnsaved() || busy) {
+    event.preventDefault();
+    event.returnValue = "";
+  }
+});
+
+// 全份檔案只有一次啟動。
 run(boot);
 </script>
 </body>
