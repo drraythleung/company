@@ -1138,8 +1138,8 @@ async function start(){
 
 async function boot(){
   selfTest();
-  if(SUPABASE_URL.includes("https://vuzzgyzyucyuedxabjss.supabase.co") ||
-     SUPABASE_KEY.includes("sb_publishable_meYS5Q2OrY2T0pwrUE8lbQ__jjeEkTt"))
+  if(SUPABASE_URL.includes("YOUR_PROJECT") ||
+     SUPABASE_KEY.includes("YOUR_PUBLISHABLE"))
     throw Error("請先在 index.html 填入 Supabase URL 及 publishable key。");
   if(!window.supabase) throw Error("Supabase SDK 未載入，請檢查網絡。");
 
