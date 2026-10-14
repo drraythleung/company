@@ -279,7 +279,6 @@ details .body{margin-top:18px}
 <section class="card">
   <h2>月曆</h2>
   <div id="calendar" class="calendar"></div>
-  <p id="calendarHint" class="muted"></p>
 </section>
 
 <section class="card">
@@ -1579,7 +1578,6 @@ async function boot(){
 /* ===== 月曆及收入升級補丁 v2：只加入一次 ===== */
 
 // 1. 新增工具列控制
-const viewSelect=document.createElement("select");
 viewSelect.id="calendarView";
 viewSelect.setAttribute("aria-label","月曆顯示範圍");
 viewSelect.style.cssText="width:auto;margin-top:0";
@@ -1589,7 +1587,6 @@ viewSelect.innerHTML=`
 `;
 $("generate").before(viewSelect);
 
-const confirmMonthButton=document.createElement("button");
 confirmMonthButton.id="confirmMonth";
 confirmMonthButton.type="button";
 confirmMonthButton.textContent="✓ 確認本月全部暫定班";
