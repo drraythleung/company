@@ -118,9 +118,12 @@ details .body{margin-top:18px}
       <button id="next">→</button>
     </div>
     <div class="row">
-      <button id="generate" class="primary">產生本月固定排班</button>
-      <button id="add">新增班次</button>
-      <button id="reload">重新載入</button>
+    <button id="generate" class="primary">產生本月固定排班</button>
+    <button id="add">新增班次</button>
+    <button id="deleteMonthShifts" type="button" class="danger">
+      刪除所選月份全部班次
+    </button>
+    <button id="reload">重新載入</button>
     </div>
   </div>
   <p class="muted">
@@ -730,7 +733,66 @@ async function generate(){
   await commit(next);
   message(`新增 ${added} 節；跳過已有記錄的工作日 ${skipped} 日。`);
 }
+async function deleteMonthShifts(){
+  // 固定本次操作的月份，避免誤用其他月份。
+  const month=$("month").value;
 
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))
+    throw Error("請先選擇有效月份。");
+
+  const prefix=month+"-";
+  const shifts=state.shifts.filter(s=>s.date.startsWith(prefix));
+
+  if(!shifts.length){
+    message(`${month} 沒有班次需要刪除。`);
+    return;
+  }
+
+  const completed=shifts.filter(s=>s.status==="completed").length;
+  const cancelled=shifts.filter(s=>s.status==="cancelled").length;
+  const hasSettlement=state.settlements.some(x=>x.month===month);
+
+  const warning=[
+    `即將永久刪除 ${month} 的全部 ${shifts.length} 節班次。`,
+    `包括已完成 ${completed} 節、已取消 ${cancelled} 節。`,
+    "",
+    "所有地點的班次都會刪除，其他月份不受影響。",
+    "月結／收款記錄、報酬規則及假期設定會保留。",
+    ...(hasSettlement ? [
+      "",
+      "注意：此月份已有月結記錄。",
+      "刪除後收入試算會更新，月結差額亦可能改變。"
+    ] : []),
+    "",
+    "此操作沒有一鍵復原功能，建議先下載 JSON 備份。",
+    "確定繼續？"
+  ].join("\n");
+
+  if(!confirm(warning)) return;
+
+  // 再要求輸入月份，減少誤刪。
+  const typed=prompt(
+    `請輸入 ${month}，確認永久刪除這個月份的全部班次。`
+  );
+
+  if(typed===null) return;
+
+  if(typed.trim()!==month){
+    message("輸入月份不符，未刪除任何資料。",true);
+    return;
+  }
+
+  const next=copy(state);
+  next.shifts=next.shifts.filter(s=>!s.date.startsWith(prefix));
+
+  // 沿用現有儲存及版本衝突檢查。
+  await commit(next);
+
+  message(
+    `已永久刪除 ${month} 共 ${shifts.length} 節班次。`+
+    "其他月份及月結／收款記錄已保留。"
+  );
+}
 function options(values,current){
   return Object.entries(values).map(([value,label])=>
     `<option value="${value}" ${value===current?"selected":""}>${label}</option>`
@@ -1053,6 +1115,7 @@ $("month").onchange=()=>{
 };
 $("reload").onclick=()=>run(load);
 $("generate").onclick=()=>run(generate);
+$("deleteMonthShifts").onclick=()=>run(deleteMonthShifts);
 $("add").onclick=()=>openShift(null,$("month").value+"-01");
 $("calendar").onclick=e=>{
   const edit=e.target.closest("[data-edit]");
