@@ -3396,5 +3396,1519 @@ window.addEventListener("beforeunload", event => {
 /* 全份檔案只有一次啟動。 */
 run(boot);
 </script>
+  <!-- ===== Dr. Ray v5：總覽及設定排版升級，貼在 </body> 前 ===== -->
+<style id="rayV5Style">
+  .v5-overview-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .v5-overview-head h2 { margin: 0; }
+
+  .v5-year-control {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .v5-year-control select {
+    width: auto;
+    min-width: 110px;
+    margin: 0;
+  }
+
+  .v5-year-control button {
+    min-width: 44px;
+    padding: 8px 12px;
+  }
+
+  .v5-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .v5-kpi {
+    min-width: 0;
+    padding: 15px;
+    border-radius: 11px;
+    background: #f5f8fe;
+    border: 1px solid #e4eaf5;
+  }
+
+  .v5-kpi-label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .v5-kpi strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 22px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .v5-kpi small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+  }
+
+  .v5-summary-lines {
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 4px 14px;
+  }
+
+  .v5-summary-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf0f5;
+  }
+
+  .v5-summary-line:last-child { border-bottom: 0; }
+
+  .v5-summary-line span {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .v5-summary-line strong {
+    text-align: right;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .v5-subsection {
+    margin-top: 22px;
+  }
+
+  .v5-subsection > summary {
+    font-size: 16px;
+  }
+
+  .v5-chart {
+    margin-top: 14px;
+    display: grid;
+    gap: 13px;
+  }
+
+  .v5-chart-month {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+  }
+
+  .v5-chart-month-label {
+    color: var(--muted);
+    font-size: 13px;
+    padding-top: 4px;
+  }
+
+  .v5-chart-bars {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .v5-chart-series {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 7px;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .v5-series-name {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .v5-track {
+    height: 9px;
+    background: #edf1f7;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .v5-bar {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  .v5-blue { background: #5b83f1; }
+  .v5-green { background: #199f86; }
+  .v5-amber { background: #df9b27; }
+
+  .v5-chart-value {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .v5-month-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .v5-month-card {
+    min-width: 0;
+    align-self: start;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .v5-month-card.v5-selected {
+    border-color: #9db9fa;
+    background: #fbfcff;
+  }
+
+  .v5-month-card > summary {
+    padding: 14px;
+    min-height: 70px;
+  }
+
+  .v5-month-title {
+    display: inline;
+    font-size: 16px;
+  }
+
+  .v5-month-subtitle {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 5px;
+  }
+
+  .v5-month-body {
+    padding: 0 14px 14px;
+  }
+
+  .v5-metric {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #edf0f5;
+    padding: 9px 0;
+  }
+
+  .v5-metric > span {
+    color: var(--muted);
+    font-size: 12px;
+    flex: 0 1 48%;
+  }
+
+  .v5-metric > strong {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .v5-month-note {
+    margin: 9px 0;
+    padding: 9px;
+    background: #fff7e8;
+    border-radius: 7px;
+    color: #805400;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .v5-month-body > button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .v5-rule-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin: 12px 0;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .v5-rule-card > summary {
+    padding: 15px;
+  }
+
+  .v5-rule-name {
+    font-size: 16px;
+  }
+
+  .v5-rule-summary {
+    display: block;
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .v5-rule-summary > span { display: block; }
+
+  .v5-rule-edit {
+    padding: 0 15px 15px;
+    border-top: 1px solid var(--line);
+  }
+
+  .v5-rule-edit > p {
+    font-size: 13px;
+  }
+
+  .v5-badge {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 2px 7px;
+    background: #fff1d6;
+    color: #805400;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .v5-badge.v5-ok {
+    background: #e5f5ee;
+    color: #166b4c;
+  }
+
+  .v5-settings-block {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .v5-settings-block > summary {
+    font-size: 15px;
+  }
+
+  .v5-advanced {
+    background: #fffaf4;
+    border: 1px solid #eedbc6;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 20px;
+  }
+
+  .v5-advanced p {
+    font-size: 13px;
+  }
+
+  #v5Overview .notice {
+    font-size: 13px;
+  }
+
+  #v5OverviewHelp {
+    margin-top: 18px;
+  }
+
+  #v5OverviewHelp li {
+    margin: 8px 0;
+    font-size: 13px;
+  }
+
+  @media (max-width: 950px) {
+    .v5-month-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .v5-kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .v5-kpi { padding: 12px 10px; }
+    .v5-kpi strong { font-size: 18px; }
+    .v5-kpi-label { font-size: 12px; }
+    .v5-kpi small { font-size: 11px; }
+
+    .v5-month-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .v5-overview-head {
+      align-items: stretch;
+    }
+
+    .v5-overview-head h2 {
+      width: 100%;
+    }
+
+    .v5-year-control {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      width: 100%;
+    }
+
+    .v5-year-control select {
+      width: 100%;
+      text-align: center;
+    }
+
+    .v5-summary-line {
+      gap: 10px;
+    }
+
+    .v5-summary-line strong {
+      max-width: 58%;
+    }
+
+    .v5-rule-card > summary { padding: 13px; }
+
+    .v5-rule-edit {
+      padding: 0 13px 13px;
+    }
+
+    .mobile-nav {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mobile-nav a {
+      font-size: 13px;
+      padding: 8px 4px;
+    }
+
+    .v5-settings-block .row {
+      gap: 8px;
+    }
+  }
+</style>
+
+<script id="rayV5Script">
+"use strict";
+
+(() => {
+  if (window.__rayV5Installed) return;
+  window.__rayV5Installed = true;
+
+  /*
+    只擴充畫面與統計，不改 schema、RPC 或收入引擎。
+    預測及已完成收入均逐月計算後相加，
+    避免把雅蘭「整月比較」錯當成全年比較。
+  */
+
+  let overviewYear = Number(shownMonth.slice(0, 4));
+
+  const app = $("app");
+  const settings = $("settingsSection");
+
+  if (!app || !settings) {
+    console.error("v5 需要目前的手機整合版 v4。");
+    return;
+  }
+
+  /* ===================== 建立總覽 ===================== */
+
+  const overview = document.createElement("section");
+  overview.id = "v5Overview";
+  overview.className = "card";
+
+  overview.innerHTML = `
+    <div class="v5-overview-head">
+      <div>
+        <h2>工作及收入總覽</h2>
+        <small>逐月統計 · 排班／完成／結算／收款</small>
+      </div>
+
+      <div class="v5-year-control">
+        <button id="v5PreviousYear" type="button"
+          aria-label="上一年">←</button>
+        <select id="v5Year" aria-label="總覽年份"></select>
+        <button id="v5NextYear" type="button"
+          aria-label="下一年">→</button>
+      </div>
+    </div>
+
+    <p class="notice">
+      全月排班包含已完成班次，兩者不可相加。
+      已收款按「結算所屬月份」顯示，並非銀行實際入帳月份。
+      費用未齊或條款未確認時，收入及平均時薪仍屬暫估。
+    </p>
+
+    <div id="v5AnnualKpis" class="v5-kpis"></div>
+    <div id="v5AnnualRates" class="v5-summary-lines"></div>
+    <p id="v5AnnualNotes" class="muted"></p>
+
+    <details class="v5-subsection">
+      <summary>每月工作時數圖</summary>
+      <p class="muted">
+        藍色：有效排班；綠色：已完成。已取消班次不計。
+      </p>
+      <div id="v5HoursChart" class="v5-chart"></div>
+    </details>
+
+    <details class="v5-subsection">
+      <summary>每月收入比較圖</summary>
+      <p class="muted">
+        藍色：排班試算；綠色：完成試算；黃色：累計已收款。
+        有試算範圍時，長條以較高值繪畫，旁邊保留完整範圍。
+      </p>
+      <div id="v5IncomeChart" class="v5-chart"></div>
+    </details>
+
+    <div class="v5-subsection">
+      <h3>每月明細</h3>
+      <small>展開月份查看平均時薪、結算及收款進度。</small>
+      <div id="v5Months" class="v5-month-grid"></div>
+    </div>
+
+    <details id="v5OverviewHelp">
+      <summary>統計口徑及限制</summary>
+      <ul>
+        <li>
+          預測平均時薪：
+          全月有效排班收入試算 ÷ 有效排班工時。
+        </li>
+        <li>
+          已完成平均時薪：
+          已完成班次收入試算 ÷ 已完成工時，仍然係試算。
+        </li>
+        <li>
+          結算平均時薪：
+          已填診所結算額 ÷ 同一批結算對象的已完成工時。
+          未填結算額的對象不會加入分母。
+        </li>
+        <li>
+          收款折合時薪：
+          有月結記錄對象的累計已收款 ÷
+          同一批對象的已完成工時，反映收款進度，唔係最終時薪。
+        </li>
+        <li>
+          平均每月排班試算只除以有有效排班的月份；
+          其餘月份不當作零收入月份。
+        </li>
+        <li>
+          年度收入先逐月計算再相加；
+          年度平均時薪以總額除總工時，不取各月時薪的簡單平均。
+        </li>
+        <li>
+          冇工時顯示「—」。
+          若有結算／收款，但對應對象冇已完成工時，
+          該項平均時薪亦顯示「—」，避免錯配。
+        </li>
+        <li>
+          未建立月結記錄只代表「未記錄」，唔代表已確認未收款。
+          金額只計入目前已儲存資料。
+        </li>
+        <li>
+          目前未有逐筆收款及入帳日期，
+          因此唔可以用此總覽當作銀行現金流報表。
+        </li>
+      </ul>
+    </details>
+  `;
+
+  const warning = $("reloadWarning");
+  if (warning) warning.after(overview);
+  else app.prepend(overview);
+
+  /* ===================== 設定排版 ===================== */
+
+  const settingsSummary = settings.querySelector(":scope > summary");
+  const settingsBody = settings.querySelector(":scope > .body");
+
+  if (settingsSummary) {
+    settingsSummary.textContent = "設定：報酬規則／假期／備份";
+  }
+
+  if (settingsBody) {
+    const intro = document.createElement("p");
+    intro.className = "muted";
+    intro.textContent =
+      "以下摘要顯示目前已儲存規則。展開機構卡片修改，" +
+      "再按「儲存新班次規則」。未儲存修改不會更新摘要。";
+    settingsBody.prepend(intro);
+
+    /*
+      重用原有假期及備份節點；
+      原本事件處理器會保留。
+    */
+    const holidayDetails = $("holidayFile")?.closest("details");
+
+    if (holidayDetails && holidayDetails !== settings) {
+      holidayDetails.classList.remove("card");
+      holidayDetails.classList.add("v5-settings-block");
+      settingsBody.appendChild(holidayDetails);
+    }
+
+    const backupSection = $("backup")?.closest("section");
+
+    if (backupSection && backupSection !== overview) {
+      backupSection.classList.remove("card");
+      backupSection.classList.add("v5-settings-block");
+      settingsBody.appendChild(backupSection);
+    }
+
+    const applyButton = $("applyRules");
+
+    if (applyButton) {
+      const advanced = document.createElement("details");
+      advanced.className = "v5-advanced";
+
+      advanced.innerHTML = `
+        <summary>進階操作：重算已有班次</summary>
+        <p>
+          這不是日常儲存。
+          套用後會更新上方所選月份全部班次的報酬規則，
+          包括已完成及已取消班次。
+        </p>
+        <p id="v5ApplyRulesInfo" class="muted"></p>
+        <p class="notice">
+          月結及已收款不會被修改，但收入試算及月結比較差額可能改變。
+          請先儲存規則，並確認月份。
+        </p>
+      `;
+
+      advanced.appendChild(applyButton);
+      settingsBody.appendChild(advanced);
+    }
+  }
+
+  /*
+    包裝原 renderRules：
+    欄位、ID、表單及原有儲存功能全部保留。
+  */
+  const previousRenderRules = renderRules;
+
+  renderRules = function(force = false) {
+    const fields = $("rulesFields");
+
+    const openOrgs = new Set(
+      [...fields.querySelectorAll(".v5-rule-card[open]")]
+        .map(element => element.dataset.org)
+    );
+
+    if (dirty.rules && !force) {
+      previousRenderRules(force);
+      return;
+    }
+
+    previousRenderRules(force);
+
+    if (!state) return;
+
+    const originalChildren = [...fields.children];
+    const fragment = document.createDocumentFragment();
+
+    const basisLabels = {
+      unknown: "待確認",
+      session: "每節比較",
+      daily: "每日比較",
+      monthly: "整月比較"
+    };
+
+    const adminLabels = {
+      pending: "扣法待確認，暫不扣除",
+      none: "不扣行政費",
+      share: "只扣分成所得",
+      gross: "醫生費先扣，再計分成",
+      all: "時薪／保底及分成一併扣"
+    };
+
+    ruleOrgs.forEach((o, index) => {
+      const heading = originalChildren[index * 2];
+      const grid = originalChildren[index * 2 + 1];
+      if (!grid) return;
+
+      const r = state.rules[o];
+
+      const pct = value =>
+        (value / 100).toLocaleString("zh-HK", {
+          maximumFractionDigits: 2
+        }) + "%";
+
+      const shareText = o === "amc"
+        ? `小手術分成 ${pct(r.share)}；診金不分成`
+        : `診金及程序費分成 ${pct(r.share)}`;
+
+      const modelText = o === "alan"
+        ? "保底與分成取較高者"
+        : "時薪另加適用分成";
+
+      const adminText = r.adminMode === "none"
+        ? "行政費：不扣除"
+        : `行政費 ${pct(r.admin)}：${adminLabels[r.adminMode]}`;
+
+      const pending = (
+        r.adminMode === "pending" ||
+        !r.adminConfirmed ||
+        (o === "alan" && r.basis === "unknown")
+      );
+
+      const card = document.createElement("details");
+      card.className = "v5-rule-card";
+      card.dataset.org = o;
+      card.open = openOrgs.has(o);
+
+      card.innerHTML = `
+        <summary>
+          <span class="v5-rule-name">${esc(names[o])}</span>
+          <div class="v5-rule-summary">
+            <span>
+              ${o === "alan" ? "保底" : "時薪"}
+              <strong>${money(r.hourly)}／小時</strong>
+            </span>
+            <span>${esc(shareText)}</span>
+            <span>${esc(modelText)}</span>
+            ${o === "alan" ? `
+              <span>比較週期：${esc(basisLabels[r.basis])}</span>
+            ` : ""}
+            <span>${esc(adminText)}</span>
+            ${o === "amc" ? `
+              <span class="muted">適用：太古坊及銅鑼灣</span>
+            ` : ""}
+            <span>
+              <span class="v5-badge ${pending ? "" : "v5-ok"}">
+                ${pending ? "有待確認條款" : "設定已確認"}
+              </span>
+              <span class="muted"> · 展開修改</span>
+            </span>
+          </div>
+        </summary>
+        <div class="v5-rule-edit">
+          <p class="muted">
+            修改後請到下方按「儲存新班次規則」。
+            新設定只影響之後新增／產生的班次。
+          </p>
+        </div>
+      `;
+
+      if (heading) heading.remove();
+      card.querySelector(".v5-rule-edit").appendChild(grid);
+      fragment.appendChild(card);
+    });
+
+    fields.replaceChildren(fragment);
+  };
+
+  /* ===================== 手機導覽 ===================== */
+
+  const mobileNav = document.querySelector(".mobile-nav");
+
+  if (mobileNav &&
+      !mobileNav.querySelector('a[href="#v5Overview"]')) {
+    const link = document.createElement("a");
+    link.href = "#v5Overview";
+    link.textContent = "總覽";
+    mobileNav.prepend(link);
+  }
+
+  /* ===================== 統計工具 ===================== */
+
+  const emptyResult = () => ({
+    low: 0,
+    high: 0,
+    flags: []
+  });
+
+  function addResults(results) {
+    const result = emptyResult();
+    const flags = new Set();
+
+    for (const item of results) {
+      result.low += item.low;
+      result.high += item.high;
+      item.flags.forEach(flag => flags.add(flag));
+    }
+
+    if (!Number.isSafeInteger(result.low) ||
+        !Number.isSafeInteger(result.high)) {
+      throw Error("年度試算超出安全計算範圍。");
+    }
+
+    result.flags = [...flags];
+    return result;
+  }
+
+  function rateText(result, totalMinutes) {
+    if (totalMinutes <= 0) return "—";
+
+    return amount({
+      low: Math.round(result.low * 60 / totalMinutes),
+      high: Math.round(result.high * 60 / totalMinutes)
+    }) + "／小時";
+  }
+
+  function fixedRateText(cents, totalMinutes, blocked = false) {
+    if (blocked || totalMinutes <= 0) return "—";
+    return money(Math.round(cents * 60 / totalMinutes)) + "／小時";
+  }
+
+  function averageMonthText(result, count) {
+    if (!count) return "—";
+
+    return amount({
+      low: Math.round(result.low / count),
+      high: Math.round(result.high / count)
+    });
+  }
+
+  /*
+    同一月若出現 AMC 合併 + 分店重疊：
+    不猜測哪筆才正確，該月結算／收款統計暫停採用。
+  */
+  function settlementMetrics(month, completed) {
+    const records = state.settlements.filter(
+      item => item.month === month
+    );
+
+    const combined = records.some(item => item.scope === "amc");
+    const branch = records.some(
+      item => ["cwb", "tqb"].includes(item.scope)
+    );
+
+    const conflict = combined && branch;
+
+    const result = {
+      conflict,
+      records: records.length,
+      statements: 0,
+      statement: 0,
+      received: 0,
+      statementMinutes: 0,
+      receiptMinutes: 0,
+      statementBlocked: false,
+      receiptBlocked: false,
+      notes: []
+    };
+
+    if (conflict) {
+      result.notes.push(
+        "AMC 合併及分店月結重疊：本月結算及收款統計暫不採用，請先整理記錄。"
+      );
+      return result;
+    }
+
+    for (const record of records) {
+      const matching = scopeFilter(completed, record.scope);
+      const mins = matching.reduce(
+        (total, shift) => total + duration(shift), 0
+      );
+
+      result.received += record.received;
+      result.receiptMinutes += mins;
+
+      /*
+        有金額但沒有對應工時時，
+        不讓該金額被其他對象工時攤薄。
+      */
+      if (record.received > 0 && mins <= 0) {
+        result.receiptBlocked = true;
+      }
+
+      if (record.statement != null) {
+        result.statements++;
+        result.statement += record.statement;
+        result.statementMinutes += mins;
+
+        if (record.statement > 0 && mins <= 0) {
+          result.statementBlocked = true;
+        }
+      }
+    }
+
+    if (records.length) {
+      const recordedScopes = records.map(record => record.scope);
+
+      const unmatchedCompleted = completed.some(shift =>
+        !recordedScopes.some(scope =>
+          scope === "amc"
+            ? org(shift.location) === "amc"
+            : shift.location === scope
+        )
+      );
+
+      if (unmatchedCompleted) {
+        result.notes.push(
+          "部分已完成班次尚未建立對應月結；結算及收款只反映已記錄對象。"
+        );
+      }
+
+      if (records.some(record => record.statement == null)) {
+        result.notes.push("部分月結未填診所結算額。");
+      }
+
+      if (result.statementBlocked || result.receiptBlocked) {
+        result.notes.push(
+          "部分金額沒有對應已完成工時，相關平均時薪暫不顯示。"
+        );
+      }
+    }
+
+    return result;
+  }
+
+  function buildMonths(year) {
+    const result = [];
+
+    for (let m = 1; m <= 12; m++) {
+      const month = `${year}-${pad(m)}`;
+
+      const all = active(monthShifts(month));
+      const completed = all.filter(
+        shift => shift.status === "completed"
+      );
+
+      const plannedMinutes = all.reduce(
+        (total, shift) => total + duration(shift), 0
+      );
+
+      const completedMinutes = completed.reduce(
+        (total, shift) => total + duration(shift), 0
+      );
+
+      const forecast = calculate(all);
+      const earned = calculate(completed);
+      const settlement = settlementMetrics(month, completed);
+
+      result.push({
+        month,
+        number: m,
+        all,
+        completed,
+        plannedMinutes,
+        completedMinutes,
+        forecast,
+        earned,
+        settlement
+      });
+    }
+
+    return result;
+  }
+
+  function kpi(label, value, note) {
+    return `
+      <div class="v5-kpi">
+        <span class="v5-kpi-label">${esc(label)}</span>
+        <strong>${esc(value)}</strong>
+        <small>${esc(note)}</small>
+      </div>
+    `;
+  }
+
+  function summaryLine(label, value) {
+    return `
+      <div class="v5-summary-line">
+        <span>${esc(label)}</span>
+        <strong>${esc(value)}</strong>
+      </div>
+    `;
+  }
+
+  function metric(label, value) {
+    return `
+      <div class="v5-metric">
+        <span>${esc(label)}</span>
+        <strong>${esc(value)}</strong>
+      </div>
+    `;
+  }
+
+  function updateYearOptions() {
+    const years = new Set([
+      overviewYear,
+      Number(todayHK().slice(0, 4)),
+      Number(shownMonth.slice(0, 4))
+    ]);
+
+    if (state) {
+      state.shifts.forEach(shift =>
+        years.add(Number(shift.date.slice(0, 4)))
+      );
+
+      state.settlements.forEach(item =>
+        years.add(Number(item.month.slice(0, 4)))
+      );
+    }
+
+    $("v5Year").innerHTML = [...years]
+      .sort((a, b) => a - b)
+      .map(year => `
+        <option value="${year}"
+          ${year === overviewYear ? "selected" : ""}>
+          ${year} 年
+        </option>
+      `).join("");
+  }
+
+  /* ===================== 圖表 ===================== */
+
+  function seriesHTML(label, value, max, colorClass, text) {
+    const width = max > 0
+      ? Math.max(0, Math.min(100, value / max * 100))
+      : 0;
+
+    return `
+      <div class="v5-chart-series">
+        <span class="v5-series-name">${esc(label)}</span>
+        <div>
+          <div class="v5-track" aria-hidden="true">
+            <span class="v5-bar ${colorClass}"
+              style="width:${width.toFixed(2)}%"></span>
+          </div>
+          <span class="v5-chart-value">${esc(text)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderCharts(months) {
+    const maxMinutes = Math.max(
+      0,
+      ...months.map(item => item.plannedMinutes),
+      ...months.map(item => item.completedMinutes)
+    );
+
+    $("v5HoursChart").innerHTML = months.map(item => `
+      <div class="v5-chart-month">
+        <span class="v5-chart-month-label">${item.number} 月</span>
+        <div class="v5-chart-bars">
+          ${seriesHTML(
+            "排班",
+            item.plannedMinutes,
+            maxMinutes,
+            "v5-blue",
+            hours(item.plannedMinutes / 60) + " 小時"
+          )}
+          ${seriesHTML(
+            "完成",
+            item.completedMinutes,
+            maxMinutes,
+            "v5-green",
+            hours(item.completedMinutes / 60) + " 小時"
+          )}
+        </div>
+      </div>
+    `).join("");
+
+    const maxIncome = Math.max(
+      0,
+      ...months.map(item => item.forecast.high),
+      ...months.map(item => item.earned.high),
+      ...months.map(item =>
+        item.settlement.conflict ? 0 : item.settlement.received
+      )
+    );
+
+    $("v5IncomeChart").innerHTML = months.map(item => {
+      const s = item.settlement;
+
+      const receivedText = s.conflict
+        ? "記錄重疊，待整理"
+        : s.records
+          ? money(s.received)
+          : "未記錄";
+
+      return `
+        <div class="v5-chart-month">
+          <span class="v5-chart-month-label">${item.number} 月</span>
+          <div class="v5-chart-bars">
+            ${seriesHTML(
+              "排班",
+              item.forecast.high,
+              maxIncome,
+              "v5-blue",
+              item.all.length ? amount(item.forecast) : "未有有效班次"
+            )}
+            ${seriesHTML(
+              "完成",
+              item.earned.high,
+              maxIncome,
+              "v5-green",
+              item.completed.length ? amount(item.earned) : "未有完成班次"
+            )}
+            ${seriesHTML(
+              "已收",
+              s.conflict ? 0 : s.received,
+              maxIncome,
+              "v5-amber",
+              receivedText
+            )}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  /* ===================== 每月卡片 ===================== */
+
+  function renderMonthCards(months) {
+    const opened = new Set(
+      [...$("v5Months").querySelectorAll("details[open]")]
+        .map(element => element.dataset.month)
+    );
+
+    const firstRender = !$("v5Months").children.length;
+
+    $("v5Months").innerHTML = months.map(item => {
+      const s = item.settlement;
+      const selected = item.month === shownMonth;
+
+      const isOpen = opened.has(item.month) ||
+        (firstRender && selected);
+
+      const statementText = s.conflict
+        ? "待整理"
+        : s.statements
+          ? money(s.statement)
+          : "未填結算額";
+
+      const receivedText = s.conflict
+        ? "待整理"
+        : s.records
+          ? money(s.received)
+          : "未記錄";
+
+      /*
+        結算減已收只比較已填結算額的那批記錄，
+        避免把尚未填結算額對象的收款扣進去。
+      */
+      const statementRecords = state.settlements.filter(record =>
+        record.month === item.month && record.statement != null
+      );
+
+      const comparableReceived = statementRecords.reduce(
+        (total, record) => total + record.received, 0
+      );
+
+      const difference = s.conflict || !s.statements
+        ? "—"
+        : money(s.statement - comparableReceived);
+
+      const notes = [...new Set([
+        ...item.forecast.flags,
+        ...item.earned.flags,
+        ...s.notes
+      ])];
+
+      return `
+        <details class="v5-month-card ${selected ? "v5-selected" : ""}"
+          data-month="${item.month}" ${isOpen ? "open" : ""}>
+          <summary>
+            <span class="v5-month-title">
+              ${item.number} 月${selected ? " · 排班所選月份" : ""}
+            </span>
+            <span class="v5-month-subtitle">
+              排班 ${hours(item.plannedMinutes / 60)} 小時 ·
+              完成 ${hours(item.completedMinutes / 60)} 小時
+            </span>
+            <span class="v5-month-subtitle">
+              ${item.all.length
+                ? "排班試算 " + esc(amount(item.forecast))
+                : "未有有效排班"}
+            </span>
+          </summary>
+
+          <div class="v5-month-body">
+            ${metric(
+              "有效班次／已完成",
+              `${item.all.length}／${item.completed.length} 節`
+            )}
+
+            ${metric(
+              "排班工時",
+              hours(item.plannedMinutes / 60) + " 小時"
+            )}
+
+            ${metric(
+              "已完成工時",
+              hours(item.completedMinutes / 60) + " 小時"
+            )}
+
+            ${metric(
+              "排班收入試算",
+              item.all.length ? amount(item.forecast) : "—"
+            )}
+
+            ${metric(
+              "已完成收入試算",
+              item.completed.length ? amount(item.earned) : "—"
+            )}
+
+            ${metric(
+              "預測平均時薪",
+              rateText(item.forecast, item.plannedMinutes)
+            )}
+
+            ${metric(
+              "已完成平均時薪（試算）",
+              rateText(item.earned, item.completedMinutes)
+            )}
+
+            ${metric("診所結算額（已填部分）", statementText)}
+            ${metric("累計已收款（已記錄）", receivedText)}
+
+            ${metric(
+              "結算減已收（已填結算對象）",
+              difference
+            )}
+
+            ${metric(
+              "結算平均時薪",
+              s.conflict || !s.statements
+                ? "—"
+                : fixedRateText(
+                    s.statement,
+                    s.statementMinutes,
+                    s.statementBlocked
+                  )
+            )}
+
+            ${metric(
+              "收款折合時薪",
+              s.conflict || !s.records
+                ? "—"
+                : fixedRateText(
+                    s.received,
+                    s.receiptMinutes,
+                    s.receiptBlocked
+                  )
+            )}
+
+            ${notes.length ? `
+              <div class="v5-month-note">
+                ${notes.map(esc).join("<br>")}
+              </div>
+            ` : ""}
+
+            <button type="button" data-v5-open-month="${item.month}">
+              查看 ${item.number} 月排班
+            </button>
+          </div>
+        </details>
+      `;
+    }).join("");
+  }
+
+  /* ===================== 年度統計 ===================== */
+
+  function renderOverview() {
+    updateYearOptions();
+    if (!state) return;
+
+    const months = buildMonths(overviewYear);
+
+    const plannedMinutes = months.reduce(
+      (total, item) => total + item.plannedMinutes, 0
+    );
+
+    const completedMinutes = months.reduce(
+      (total, item) => total + item.completedMinutes, 0
+    );
+
+    const forecast = addResults(
+      months.map(item => item.forecast)
+    );
+
+    const earned = addResults(
+      months.map(item => item.earned)
+    );
+
+    const activeMonths = months.filter(
+      item => item.all.length > 0
+    ).length;
+
+    const validSettlementMonths = months.filter(
+      item => !item.settlement.conflict
+    );
+
+    const conflictCount = months.filter(
+      item => item.settlement.conflict
+    ).length;
+
+    const settlementCount = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.statements, 0
+    );
+
+    const receiptCount = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.records, 0
+    );
+
+    const statement = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.statement, 0
+    );
+
+    const received = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.received, 0
+    );
+
+    const statementMinutes = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.statementMinutes, 0
+    );
+
+    const receiptMinutes = validSettlementMonths.reduce(
+      (total, item) => total + item.settlement.receiptMinutes, 0
+    );
+
+    const statementBlocked = validSettlementMonths.some(
+      item => item.settlement.statementBlocked
+    );
+
+    const receiptBlocked = validSettlementMonths.some(
+      item => item.settlement.receiptBlocked
+    );
+
+    const forecastWarningMonths = months.filter(
+      item => item.all.length && item.forecast.flags.length
+    ).length;
+
+    $("v5AnnualKpis").innerHTML = [
+      kpi(
+        "全年有效排班工時",
+        hours(plannedMinutes / 60) + " 小時",
+        `${activeMonths} 個有排班月份；不含已取消班次`
+      ),
+
+      kpi(
+        "全年已完成工時",
+        hours(completedMinutes / 60) + " 小時",
+        "已包含在有效排班工時內"
+      ),
+
+      kpi(
+        "全年排班收入試算",
+        activeMonths ? amount(forecast) : "—",
+        forecast.flags.length
+          ? "有未齊費用或待確認條款，屬暫估"
+          : "逐月試算後相加，含已完成班次"
+      ),
+
+      kpi(
+        "全年已完成收入試算",
+        completedMinutes ? amount(earned) : "—",
+        earned.flags.length
+          ? "有未齊費用或待確認條款，屬暫估"
+          : "只計已完成班次，並非診所最終結算"
+      ),
+
+      kpi(
+        "診所結算額",
+        settlementCount ? money(statement) : "未填結算額",
+        `${settlementCount} 筆已填結算額；只計已填部分` +
+        (conflictCount ? `，排除 ${conflictCount} 個重疊月份` : "")
+      ),
+
+      kpi(
+        "累計已收款",
+        receiptCount ? money(received) : "未記錄",
+        "按結算所屬月份，並非銀行入帳月份" +
+        (conflictCount ? `；排除 ${conflictCount} 個重疊月份` : "")
+      )
+    ].join("");
+
+    $("v5AnnualRates").innerHTML = [
+      summaryLine(
+        "全年預測平均時薪",
+        rateText(forecast, plannedMinutes)
+      ),
+
+      summaryLine(
+        "全年已完成平均時薪（試算）",
+        rateText(earned, completedMinutes)
+      ),
+
+      summaryLine(
+        "結算平均時薪（已填對象）",
+        settlementCount
+          ? fixedRateText(
+              statement,
+              statementMinutes,
+              statementBlocked
+            )
+          : "—"
+      ),
+
+      summaryLine(
+        "收款折合時薪（已記錄對象）",
+        receiptCount
+          ? fixedRateText(
+              received,
+              receiptMinutes,
+              receiptBlocked
+            )
+          : "—"
+      ),
+
+      summaryLine(
+        `平均每月排班試算（${activeMonths} 個有排班月份）`,
+        averageMonthText(forecast, activeMonths)
+      )
+    ].join("");
+
+    const notes = [
+      `${overviewYear} 年統計只反映目前已儲存資料；未儲存輸入不會計入。`,
+      "總覽年份可獨立切換，不會更改上方排班月份。"
+    ];
+
+    if (forecastWarningMonths) {
+      notes.push(
+        `${forecastWarningMonths} 個月份有未齊費用或待確認條款，` +
+        "相關金額及平均時薪只可作暫估。"
+      );
+    }
+
+    if (conflictCount) {
+      notes.push(
+        `${conflictCount} 個月份有 AMC 月結重疊，` +
+        "已暫停採用這些月份的結算／收款統計。"
+      );
+    }
+
+    if (statementBlocked || receiptBlocked) {
+      notes.push(
+        "部分金額缺少對應已完成工時，相關年度平均時薪顯示「—」。"
+      );
+    }
+
+    $("v5AnnualNotes").textContent = notes.join(" ");
+
+    renderCharts(months);
+    renderMonthCards(months);
+  }
+
+  /* ===================== 進階操作提示 ===================== */
+
+  function renderAdvancedInfo() {
+    const target = $("v5ApplyRulesInfo");
+    if (!target || !state) return;
+
+    const shifts = monthShifts();
+    const done = shifts.filter(
+      shift => shift.status === "completed"
+    ).length;
+
+    target.textContent =
+      `目前排班所選月份：${selectedMonth()}；` +
+      `共 ${shifts.length} 節，包括 ${done} 節已完成班次。` +
+      "注意：此月份跟總覽年份選擇無關。";
+  }
+
+  /* ===================== 整合原有 render ===================== */
+
+  const previousRender = render;
+
+  render = function(forceForms = false) {
+    previousRender(forceForms);
+
+    if (state) {
+      renderOverview();
+      renderAdvancedInfo();
+    }
+  };
+
+  /* ===================== 年份及月份操作 ===================== */
+
+  function chooseYear(year) {
+    if (busy) return;
+
+    if (!Number.isInteger(year) || year < 1000 || year > 9999) {
+      return;
+    }
+
+    overviewYear = year;
+    renderOverview();
+    updateControls();
+  }
+
+  $("v5PreviousYear").addEventListener("click", () => {
+    chooseYear(overviewYear - 1);
+  });
+
+  $("v5NextYear").addEventListener("click", () => {
+    chooseYear(overviewYear + 1);
+  });
+
+  $("v5Year").addEventListener("change", () => {
+    chooseYear(Number($("v5Year").value));
+  });
+
+  $("v5Months").addEventListener("click", event => {
+    if (busy || !state ||
+        !(event.target instanceof Element)) return;
+
+    const button = event.target.closest("[data-v5-open-month]");
+    if (!button) return;
+
+    const target = button.dataset.v5OpenMonth;
+
+    /*
+      使用原有切月方法：
+      原有未儲存輸入確認保護繼續生效。
+    */
+    switchMonth(target);
+
+    if (shownMonth === target) {
+      $("calendarSection").scrollIntoView({
+        block: "start",
+        behavior: "auto"
+      });
+    }
+  });
+
+  /*
+    登出時清除新增畫面內容，避免重新登入前留下總覽。
+  */
+  const previousClearSession = clearSession;
+
+  clearSession = function() {
+    previousClearSession();
+
+    [
+      "v5AnnualKpis",
+      "v5AnnualRates",
+      "v5HoursChart",
+      "v5IncomeChart",
+      "v5Months"
+    ].forEach(id => {
+      $(id).replaceChildren();
+    });
+
+    $("v5AnnualNotes").textContent = "";
+
+    if ($("v5ApplyRulesInfo")) {
+      $("v5ApplyRulesInfo").textContent = "";
+    }
+  };
+
+  /*
+    原本 boot 已經開始：
+    若資料尚未載入，之後的 render 會自動更新；
+    若已載入，立即重畫。
+  */
+  if (state) {
+    render();
+  } else {
+    updateYearOptions();
+  }
+
+  updateControls();
+})();
+</script>
+<!-- ===== v5 升級區塊完 ===== -->
 </body>
 </html>
