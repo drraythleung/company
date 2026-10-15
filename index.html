@@ -846,9 +846,7 @@
 <main>
   <header class="row between">
     <div>
-      <h1>Dr. Ray｜駐診管理</h1>
-      <small>香港日期及本地駐診時間 · 排班／收入試算／月結</small>
-    </div>
+      <h1>Dr. Ray 的工作日程</h1>    </div>
     <div class="row header-account">
       <small id="user"></small>
       <button id="logout" type="button" hidden>登出</button>
@@ -1008,11 +1006,6 @@
 
     <section id="settlementSection" class="card">
       <h2>月結及收款</h2>
-      <p class="muted">
-        結算月份跟上方所選月份。
-        AMC 同一月份只能採用合併或分店結算，避免重複計算。
-        「已收款」填累計金額，並非逐筆付款紀錄。
-      </p>
 
       <form id="settlementForm" class="grid">
         <label>結算對象
@@ -2130,10 +2123,10 @@ function renderIncome(live) {
   ).join("") + incomeRow("所有診所合計", live, true);
 
   $("amcBreakdown").textContent =
-    "合計包含雅蘭、AMC 銅鑼灣、AMC 太古坊及司徒拔，沒有另外重複加入 AMC 合併。" +
-    "全月排班包含已完成班次，兩欄不可相加。" +
-    "已完成欄只以已完成班次試算；如雅蘭按每日／整月比較，" +
-    "未完成班次可能影響最終月結。";
+    "" +
+    "" +
+    "" +
+    "";
 }
 
 /* ===================== 班次新增／修改／刪除 ===================== */
@@ -3179,7 +3172,7 @@ async function start() {
   $("user").textContent = user.email || "";
 
   message(
-    "已登入並載入資料。首次使用請先匯入及核對假期，再產生排班。"
+    "登入成功。"
   );
 }
 
@@ -3831,7 +3824,6 @@ run(boot);
     <div class="v5-overview-head">
       <div>
         <h2>工作及收入總覽</h2>
-        <small>逐月統計 · 排班／完成／結算／收款</small>
       </div>
 
       <div class="v5-year-control">
@@ -3842,12 +3834,6 @@ run(boot);
           aria-label="下一年">→</button>
       </div>
     </div>
-
-    <p class="notice">
-      全月排班包含已完成班次，兩者不可相加。
-      已收款按「結算所屬月份」顯示，並非銀行實際入帳月份。
-      費用未齊或條款未確認時，收入及平均時薪仍屬暫估。
-    </p>
 
     <div id="v5AnnualKpis" class="v5-kpis"></div>
     <div id="v5AnnualRates" class="v5-summary-lines"></div>
@@ -5119,8 +5105,7 @@ run(boot);
 
   const caption = document.createElement("p");
   caption.className = "v6-month-caption";
-  caption.textContent =
-    "操作月份：排班、月結、假期及重算規則共用；總覽年份獨立選擇。";
+  caption.textContent = "";
   common.prepend(caption);
 
   const toolbar = common.querySelector(".month-toolbar");
@@ -5326,7 +5311,7 @@ run(boot);
 
   const footer = document.querySelector("main > footer small");
   if (footer) {
-    footer.textContent = "介面版本：四分頁版 v6 · 資料 schema 1";
+    footer.textContent = "";
   }
 
   updateControls();
