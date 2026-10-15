@@ -4910,5 +4910,428 @@ run(boot);
 })();
 </script>
 <!-- ===== v5 升級區塊完 ===== -->
+
+  <!-- ===== Dr. Ray v6：四分頁介面 ===== -->
+<style id="rayV6Style">
+  .v6-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    position: sticky;
+    top: 8px;
+    z-index: 20;
+    margin: 16px 0;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fffffff5;
+    box-shadow: 0 4px 18px #1723370a;
+  }
+
+  .v6-nav button {
+    min-height: 46px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 650;
+  }
+
+  .v6-nav button[aria-pressed="true"] {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .v6-page { min-width: 0; }
+
+  .v6-month-caption {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .v6-common .month-toolbar {
+    gap: 12px;
+  }
+
+  .v6-common #reload {
+    flex: 0 0 auto;
+  }
+
+  .v6-actions {
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  .v6-fold > summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+  }
+
+  .v6-fold > summary::before {
+    content: "＋";
+    color: var(--blue);
+  }
+
+  .v6-fold[open] > summary::before {
+    content: "－";
+  }
+
+  .v6-fold > summary {
+    list-style: none;
+  }
+
+  .v6-fold > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .v6-fold > .body {
+    margin-top: 14px;
+  }
+
+  #v6Page-settings > .v5-settings-block {
+    margin: 16px 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: #fff;
+  }
+
+  @media (max-width: 700px) {
+    .v6-nav {
+      position: fixed;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      gap: 4px;
+      border-radius: 0;
+      border: 0;
+      border-top: 1px solid var(--line);
+      padding: 8px 12px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 18px #1723370a;
+    }
+
+    .v6-nav button {
+      min-width: 0;
+      padding: 8px 4px;
+      font-size: 14px;
+    }
+
+    body.modal-open .v6-nav {
+      display: none;
+    }
+
+    .v6-common .month-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .v6-common #reload {
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .v6-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+
+    #v6Page-settings > .v5-settings-block {
+      margin: 12px 0;
+      padding: 15px;
+    }
+  }
+</style>
+
+<script id="rayV6Script">
+"use strict";
+
+(() => {
+  if (window.__rayV6Installed) return;
+
+  const app = $("app");
+  const overview = $("v5Overview");
+  const settings = $("settingsSection");
+  const calendar = $("calendarSection");
+  const settlement = $("settlementSection");
+  const common = $("month")?.closest("section");
+  const shiftSection = $("shiftRows")?.closest("section");
+  const incomeSection = $("incomeRows")?.closest("section");
+
+  if (!app || !overview || !settings || !calendar ||
+      !settlement || !common || !shiftSection || !incomeSection) {
+    console.error("v6 未安裝：請保留完整 v4 及 v5 區塊。");
+    return;
+  }
+
+  window.__rayV6Installed = true;
+
+  /*
+    只搬動原有畫面節點。
+    表單、ID、事件處理器及資料儲存方法保留。
+  */
+  const labels = {
+    overview: "總覽",
+    schedule: "排班",
+    settlement: "月結",
+    settings: "設定"
+  };
+
+  const pages = {};
+  const scrollPositions = {};
+  let currentPage = "overview";
+
+  /* 移除舊版只作頁內跳轉的手機導覽。 */
+  app.querySelector(".mobile-nav")?.remove();
+
+  const nav = document.createElement("nav");
+  nav.className = "v6-nav";
+  nav.setAttribute("aria-label", "主要分頁");
+
+  for (const [key, label] of Object.entries(labels)) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.dataset.v6Page = key;
+    button.setAttribute("aria-controls", `v6Page-${key}`);
+    button.setAttribute("aria-pressed", String(key === currentPage));
+    nav.appendChild(button);
+
+    const page = document.createElement("div");
+    page.id = `v6Page-${key}`;
+    page.className = "v6-page";
+    page.setAttribute("role", "region");
+    page.setAttribute("aria-label", label);
+    page.hidden = key !== currentPage;
+    pages[key] = page;
+  }
+
+  /* 共用月份及重新載入：四頁都可以使用。 */
+  common.classList.add("v6-common");
+
+  const caption = document.createElement("p");
+  caption.className = "v6-month-caption";
+  caption.textContent =
+    "操作月份：排班、月結、假期及重算規則共用；總覽年份獨立選擇。";
+  common.prepend(caption);
+
+  const toolbar = common.querySelector(".month-toolbar");
+  const actions = common.querySelector(".main-actions");
+  const reload = $("reload");
+  const tools = common.querySelector(".month-tools");
+  const stats = $("stats");
+
+  /* 排班專用操作不再出現在其他頁。 */
+  const scheduleTools = document.createElement("section");
+  scheduleTools.className = "card";
+
+  const scheduleHeading = document.createElement("h2");
+  scheduleHeading.textContent = "排班操作";
+  scheduleTools.appendChild(scheduleHeading);
+
+  toolbar.appendChild(reload);
+  actions.classList.remove("main-actions");
+  actions.classList.add("v6-actions");
+
+  scheduleTools.appendChild(actions);
+  if (tools) scheduleTools.appendChild(tools);
+  scheduleTools.appendChild(stats);
+
+  /* 將既有區塊整理成可展開明細，保留其內容及事件。 */
+  function foldSection(section, title) {
+    const fold = document.createElement("details");
+    fold.className = "card v6-fold";
+
+    const summary = document.createElement("summary");
+    summary.textContent = title;
+
+    const body = document.createElement("div");
+    body.className = "body";
+
+    section.querySelector("h2")?.remove();
+
+    while (section.firstChild) {
+      body.appendChild(section.firstChild);
+    }
+
+    fold.append(summary, body);
+    section.replaceWith(fold);
+    return fold;
+  }
+
+  const shiftDetails = foldSection(
+    shiftSection, "班次明細及 CSV 匯出"
+  );
+
+  /* 總覽十二個月卡片整組預設收起。 */
+  const monthGrid = $("v5Months");
+  const monthGroup = monthGrid?.parentElement;
+
+  if (monthGroup && monthGroup.tagName !== "DETAILS") {
+    const fold = document.createElement("details");
+    fold.className = "v5-subsection v6-fold";
+
+    const summary = document.createElement("summary");
+    summary.textContent = "每月明細";
+
+    monthGroup.querySelector("h3")?.remove();
+
+    fold.appendChild(summary);
+
+    while (monthGroup.firstChild) {
+      fold.appendChild(monthGroup.firstChild);
+    }
+
+    monthGroup.replaceWith(fold);
+  }
+
+  /*
+    設定頁拆開：
+    報酬規則、假期、備份各自獨立，
+    不再全部藏在同一個大型設定折疊內。
+  */
+  const holidayBlock = $("holidayFile").closest("details");
+  const backupBlock = $("backup").closest("section");
+
+  settings.open = true;
+  settings.querySelector(":scope > summary").textContent =
+    "報酬規則與條款";
+
+  /* 組合四頁。 */
+  pages.overview.appendChild(overview);
+
+  pages.schedule.append(
+    scheduleTools,
+    calendar,
+    shiftDetails
+  );
+
+  pages.settlement.append(
+    incomeSection,
+    settlement
+  );
+
+  pages.settings.appendChild(settings);
+
+  if (holidayBlock && holidayBlock !== settings) {
+    pages.settings.appendChild(holidayBlock);
+  }
+
+  if (backupBlock && backupBlock !== settings) {
+    pages.settings.appendChild(backupBlock);
+  }
+
+  /* 顯示順序：警告 → 分頁列 → 共用月份 → 所選頁。 */
+  app.append(nav, common, ...Object.values(pages));
+
+  function showPage(key, restoreScroll = true) {
+    if (!pages[key] || busy || !state) return;
+
+    const changed = key !== currentPage;
+
+    if (changed) {
+      scrollPositions[currentPage] = window.scrollY;
+    }
+
+    currentPage = key;
+
+    for (const [name, page] of Object.entries(pages)) {
+      page.hidden = name !== key;
+    }
+
+    nav.querySelectorAll("[data-v6-page]").forEach(button => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.v6Page === key)
+      );
+    });
+
+    /*
+      切頁不 render、不 resetDirty：
+      未儲存表單留在原有節點內。
+    */
+    if (changed && restoreScroll) {
+      window.scrollTo({
+        top: scrollPositions[key] || 0,
+        behavior: "auto"
+      });
+    }
+  }
+
+  nav.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest("[data-v6-page]");
+    if (button) showPage(button.dataset.v6Page);
+  });
+
+  /*
+    總覽「查看 X 月排班」：
+    先用原本切月保護；成功後才切入排班頁。
+    捕獲階段攔截，避免舊事件嘗試捲動隱藏月曆。
+  */
+  monthGrid.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+
+    const button = event.target.closest("[data-v5-open-month]");
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (busy || !state) return;
+
+    const target = button.dataset.v5OpenMonth;
+    switchMonth(target);
+
+    if (shownMonth === target) {
+      showPage("schedule", false);
+      calendar.scrollIntoView({
+        block: "start",
+        behavior: "auto"
+      });
+    }
+  }, true);
+
+  /* 登出時回到總覽，清除各頁捲動位置。 */
+  const oldClearSession = clearSession;
+
+  clearSession = function() {
+    oldClearSession();
+
+    currentPage = "overview";
+
+    for (const key of Object.keys(scrollPositions)) {
+      delete scrollPositions[key];
+    }
+
+    for (const [key, page] of Object.entries(pages)) {
+      page.hidden = key !== currentPage;
+    }
+
+    nav.querySelectorAll("[data-v6-page]").forEach(button => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.v6Page === currentPage)
+      );
+    });
+  };
+
+  const footer = document.querySelector("main > footer small");
+  if (footer) {
+    footer.textContent = "介面版本：四分頁版 v6 · 資料 schema 1";
+  }
+
+  updateControls();
+})();
+</script>
+<!-- ===== v6 四分頁介面完 ===== -->
 </body>
 </html>
