@@ -6,7 +6,11 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#2463eb">
-  <title>Dr. Ray｜駐診排班與收入</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description"
+    content="Dr. Ray 已確認駐診日期、時間及地點。所有時間均為香港時間。">
+
+  <title>Dr. Ray｜駐診時間及地點</title>
 
   <style>
     :root {
@@ -16,827 +20,570 @@
       --muted: #637087;
       --line: #dce3ed;
       --blue: #2463eb;
-      --amber: #8a5700;
+
+      --alan-color: #7650bd;
+      --alan-bg: #f3edfc;
+
+      --tqb-color: #007d63;
+      --tqb-bg: #e5f5ee;
+
+      --cwb-color: #245dbe;
+      --cwb-bg: #eaf1ff;
+
+      --stubbs-color: #a95b00;
+      --stubbs-bg: #fff2df;
     }
 
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-padding-top: 16px;
-      -webkit-text-size-adjust: 100%;
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
-      line-height: 1.5;
+      background: var(--bg);
+      font-family: system-ui, -apple-system,
+        "Noto Sans TC", sans-serif;
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
     }
-
-    body.modal-open { overflow: hidden; }
 
     main {
-      max-width: 1180px;
+      max-width: 1240px;
       margin: auto;
-      padding: 20px;
-      min-width: 0;
+      padding: 24px 18px 40px;
     }
 
-    h1 { font-size: 25px; margin: 0 0 5px; line-height: 1.35; }
-    h2 { font-size: 19px; margin: 0 0 16px; }
-    h3 { font-size: 16px; }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.35;
+    }
 
-    p, small { line-height: 1.6; }
-    small, .muted { color: var(--muted); }
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
 
-    a { color: var(--blue); }
+    p {
+      margin: 8px 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+      min-height: 44px;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: white;
+    }
+
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #2463eb66;
+      outline-offset: 3px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      margin-bottom: 5px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
 
     .card {
       min-width: 0;
-      background: var(--card);
+      margin-top: 16px;
       padding: 20px;
-      border-radius: 15px;
       border: 1px solid var(--line);
-      margin: 16px 0;
-      scroll-margin-top: 16px;
+      border-radius: 16px;
+      background: var(--card);
     }
 
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      min-width: 0;
-    }
-
-    .row > * { min-width: 0; }
-    .between { justify-content: space-between; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      min-width: 0;
-    }
-
-    .grid > * { min-width: 0; }
-
-    label { display: block; font-size: 14px; }
-    input, select, textarea, button { font: inherit; }
-
-    input, select, textarea {
-      width: 100%;
-      min-width: 0;
-      max-width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      margin-top: 5px;
-      background: #fff;
-      color: var(--text);
-      font-size: 16px;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    input[type="file"] {
-      padding: 8px;
-      overflow: hidden;
-    }
-
-    button, .linkbutton {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-      min-height: 44px;
-      max-width: 100%;
-      border: 0;
-      border-radius: 9px;
-      padding: 10px 14px;
-      background: #eaf0fb;
-      color: #244779;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button.primary { background: var(--blue); color: white; }
-    button.danger { background: #ffeded; color: #b42318; }
-    button:disabled { opacity: .5; cursor: wait; }
-
-    input:disabled, select:disabled, textarea:disabled {
-      opacity: .7;
-      cursor: wait;
-    }
-
-    button:focus-visible, a:focus-visible,
-    input:focus-visible, select:focus-visible, textarea:focus-visible,
-    summary:focus-visible {
-      outline: 3px solid #2463eb66;
-      outline-offset: 2px;
-    }
-
-    [hidden] { display: none !important; }
-
-    .notice {
-      padding: 12px;
-      background: #fff5de;
-      border-radius: 9px;
-      color: var(--amber);
-      overflow-wrap: anywhere;
-    }
-
-    #message {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    #message:empty { display: none; }
-    #user { overflow-wrap: anywhere; }
-
-    .header-account { justify-content: flex-end; }
-
-    .month-navigation {
-      display: grid;
-      grid-template-columns: 44px minmax(150px, 210px) 44px;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .month-navigation input { margin-top: 0; }
-    .month-navigation button { padding: 10px; font-size: 19px; }
-
-    .main-actions { justify-content: flex-end; }
-    .month-tools { margin-top: 16px; }
-    .month-tools .body { margin-top: 12px; }
-
-    .checkbox {
-      width: 22px;
-      height: 22px;
-      min-height: 22px;
-      flex: 0 0 22px;
-      margin: 0;
-      accent-color: var(--blue);
-    }
-
-    label.row { min-height: 44px; }
-
-    .calendar-controls { margin-bottom: 14px; }
-    .calendar-controls h2 { margin: 0; }
-
-    .calendar-controls select {
-      width: auto;
-      max-width: 100%;
-      margin: 0;
-    }
-
-    .calendar-viewport {
-      min-width: 0;
-      max-width: 100%;
-      overflow-x: auto;
-      padding: 2px;
-      overscroll-behavior-x: contain;
-    }
-
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 5px;
-    }
-
-    .calendar.weekdays {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-
-    .weekday {
-      text-align: center;
-      padding: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .day {
-      display: grid;
-      grid-template-rows: 50px minmax(76px, 1fr) minmax(76px, 1fr);
-      min-height: 215px;
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      padding: 7px;
-      background: #fff;
-    }
-
-    .day.off { background: #f7f8fb; }
-    .day.today { outline: 2px solid var(--blue); outline-offset: -2px; }
-    .day-header { min-width: 0; overflow: auto; }
-
-    .date {
+    .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 5px;
+      flex-wrap: wrap;
+      gap: 14px;
     }
 
-    .date-number {
+    .month-nav {
+      display: grid;
+      grid-template-columns: 44px minmax(150px, 200px) 44px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .month-nav button {
+      padding: 8px;
+      font-size: 20px;
+    }
+
+    .month-nav input {
+      min-width: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .actions {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .view-switch {
+      display: flex;
       gap: 6px;
     }
 
-    .date-add {
-      min-width: 32px;
-      min-height: 32px;
-      padding: 3px 6px;
-      flex: 0 0 auto;
+    .view-switch button[aria-pressed="true"] {
+      color: var(--blue);
+      border-color: #abc2fb;
+      background: #edf3ff;
+      font-weight: 700;
     }
 
-    .day-weekday { display: none; }
-    .today-label { font-size: 11px; color: var(--blue); }
-
-    .holiday {
-      font-size: 11px;
-      color: #b42318;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
+    .locations-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 16px;
     }
 
-    .day-slot { min-width: 0; padding: 4px 0; }
-    .day-slot.pm { border-top: 1px dashed var(--line); }
-
-    .slot-label {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      margin-bottom: 3px;
-    }
-
-    .empty-day { display: none; }
-
-    .event {
-      display: block;
-      width: 100%;
-      text-align: left;
-      margin-top: 4px;
-      padding: 6px;
-      font-size: 12px;
-      border-left: 4px solid;
-      border-radius: 7px;
-      overflow-wrap: anywhere;
-    }
-
-    .event.alan { background: #f0edff; border-color: #7164e8; }
-    .event.amc { background: #e6f7f3; border-color: #009688; }
-    .event.stubbs { background: #fff3dc; border-color: #e29820; }
-
-    .event.alan.confirmed { background: #ded7ff; border-color: #6352d8; }
-    .event.amc.confirmed { background: #bcebdd; border-color: #008577; }
-    .event.stubbs.confirmed { background: #ffe0a6; border-color: #c78316; }
-
-    .event.alan.completed { background: #c9bef8; border-color: #5141b8; }
-    .event.amc.completed { background: #99dcc9; border-color: #006d61; }
-    .event.stubbs.completed { background: #f6cd80; border-color: #a96a08; }
-
-    .event.cancelled { opacity: .45; text-decoration: line-through; }
-
-    .event-main {
-      display: block;
-      width: 100%;
-      min-height: 44px;
+    .locations-heading p {
       margin: 0;
-      padding: 2px 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      color: var(--text);
-      font-size: inherit;
-      line-height: 1.5;
-      text-align: left;
+      font-size: 13px;
     }
 
-    .quick-confirm {
-      margin-top: 5px;
-      min-height: 34px;
-      padding: 5px 8px;
-      background: #ffffffc9;
-      color: #244779;
-      font-size: 12px;
-      font-weight: 650;
-    }
-
-    .scroll {
-      min-width: 0;
-      max-width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    th, td {
-      padding: 11px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
-      overflow-wrap: anywhere;
-    }
-
-    th { white-space: nowrap; color: var(--muted); }
-
-    .money {
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .cell-value { min-width: 0; }
-
-    .total-row { background: #eef3ff; font-weight: 700; }
-
-    .stats {
+    .location-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
 
-    .stat {
-      min-width: 0;
-      padding: 14px;
-      background: #f6f8fc;
-      border-radius: 10px;
+    .alan {
+      --place-color: var(--alan-color);
+      --place-bg: var(--alan-bg);
     }
 
-    .stat strong {
+    .tqb {
+      --place-color: var(--tqb-color);
+      --place-bg: var(--tqb-bg);
+    }
+
+    .cwb {
+      --place-color: var(--cwb-color);
+      --place-bg: var(--cwb-bg);
+    }
+
+    .stubbs {
+      --place-color: var(--stubbs-color);
+      --place-bg: var(--stubbs-bg);
+    }
+
+    .location-card {
       display: block;
-      font-size: 23px;
-      margin-top: 6px;
-    }
-
-    dialog {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding: 16px;
+      border: 1px solid var(--place-color);
+      border-left: 5px solid var(--place-color);
+      border-radius: 12px;
       color: var(--text);
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      max-width: 650px;
-      width: calc(100% - 24px);
-      max-height: 90vh;
-      max-height: 90dvh;
-      padding: 0;
-      overflow: hidden;
-      box-shadow: 0 20px 70px #0004;
+      background: var(--place-bg);
+      text-align: left;
+      transition:
+        opacity .15s ease,
+        background-color .15s ease,
+        box-shadow .15s ease;
     }
 
-    dialog::backdrop { background: #10203980; }
+    .location-card:hover {
+      box-shadow: 0 3px 12px #17233712;
+    }
 
-    #shiftForm {
+    .location-card[aria-pressed="false"] {
+      opacity: .5;
+      background: #f5f6f8;
+      border-color: #cbd2dd;
+      border-left-color: var(--place-color);
+    }
+
+    .location-card[aria-pressed="false"]:hover {
+      opacity: .75;
+    }
+
+    .location-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .location-name {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .selection-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 23px;
+      width: 23px;
+      height: 23px;
+      margin-top: 2px;
+      border: 2px solid var(--place-color);
+      border-radius: 6px;
+      color: white;
+      background: var(--place-color);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .location-card[aria-pressed="false"] .selection-mark {
+      color: transparent;
+      background: white;
+      border-color: #919bac;
+    }
+
+    .location-address {
+      display: block;
+      margin-top: 8px;
+      color: #465268;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .location-state {
+      display: block;
+      margin-top: 10px;
+      color: var(--place-color);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .control-card {
+      margin-top: 16px;
+    }
+
+    #status {
+      min-height: 24px;
+      margin-top: 14px;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    #status.error {
+      color: #b42318;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    #summary {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .calendar-hint {
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .calendar-scroll {
+      overflow-x: auto;
+      padding: 2px;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      min-width: 1050px;
+    }
+
+    .weekday {
+      padding: 8px 2px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .day {
       display: flex;
       flex-direction: column;
-      max-height: 90vh;
-      max-height: 90dvh;
-      min-height: 0;
-      margin: 0;
+      min-width: 0;
+      min-height: 260px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
     }
 
-    .dialog-header {
+    .day.weekend {
+      background: #fafbfe;
+    }
+
+    .day.past {
+      color: #8c95a5;
+      background: #f7f8fa;
+    }
+
+    .day.today {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+    }
+
+    .date-number {
+      display: flex;
+      align-items: center;
       flex: 0 0 auto;
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .dialog-header h2 { margin: 0; }
-
-    .dialog-body {
-      min-height: 0;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-      padding: 20px 22px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .dialog-footer {
-      flex: 0 0 auto;
-      padding: 12px 22px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      border-top: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .dialog-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 8px;
-    }
-
-    #shiftMessage {
-      margin: 0 0 10px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      gap: 6px;
+      margin-bottom: 6px;
       font-size: 14px;
-      max-height: 100px;
-      overflow-y: auto;
     }
 
-    #shiftMessage:empty { display: none; }
+    .today-label {
+      color: var(--blue);
+      font-size: 11px;
+    }
 
-    details summary {
-      cursor: pointer;
+    /*
+      每日日期下方分成兩個等高區域。
+      即使上午沒有更，下午的更仍然放在下半部。
+    */
+    .day-sessions {
+      display: grid;
+      grid-template-rows:
+        minmax(100px, 1fr)
+        minmax(100px, 1fr);
+      flex: 1;
+      min-height: 0;
+    }
+
+    .session-half {
+      min-width: 0;
+      padding: 6px 0;
+    }
+
+    .session-half.afternoon {
+      border-top: 1px dashed #ccd5e2;
+    }
+
+    .event {
+      min-width: 0;
+      padding: 9px;
+      border-left: 4px solid var(--place-color);
+      border-radius: 8px;
+      background: var(--place-bg);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .session-half .event + .event {
+      margin-top: 7px;
+    }
+
+    .event strong {
+      display: block;
+      line-height: 1.6;
+    }
+
+    .event-time {
+      margin-top: 5px;
       font-weight: 650;
-      min-height: 30px;
-      padding: 3px 0;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
-    details .body { margin-top: 18px; }
-    footer { margin: 18px 0; }
-
-    .mobile-only, .mobile-nav { display: none; }
-
-    @media (pointer: coarse) {
-      .date-add { min-width: 44px; min-height: 44px; }
-      .quick-confirm { min-height: 44px; }
-      .day { grid-template-rows: 62px minmax(76px, 1fr) minmax(76px, 1fr); }
+    .agenda {
+      display: grid;
+      gap: 14px;
     }
 
-    @media (min-width: 701px) and (max-width: 1000px) {
-      .calendar { min-width: 850px; }
-      .calendar.weekdays { min-width: 660px; }
+    .agenda-day {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .agenda-day.today {
+      border-color: #9db9fa;
+      background: #fcfdff;
+    }
+
+    .agenda-date {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .agenda-date strong {
+      font-size: 18px;
+    }
+
+    .agenda-date span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .agenda .event {
+      padding: 14px;
+      font-size: 15px;
+    }
+
+    .agenda .event + .event {
+      margin-top: 10px;
+    }
+
+    .agenda-event-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .agenda-event-head .event-time {
+      flex: 0 0 auto;
+      margin-top: 0;
+    }
+
+    .event-address {
+      margin-top: 7px;
+      color: #465268;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .empty {
+      margin-bottom: 14px;
+      padding: 28px 16px;
+      border-radius: 12px;
+      color: var(--muted);
+      background: #f6f8fc;
+      text-align: center;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .notice strong {
+      color: var(--text);
+    }
+
+    footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
     }
 
     @media (max-width: 700px) {
       main {
-        padding: 14px 12px;
+        padding: 20px 12px 30px;
         padding-left: max(12px, env(safe-area-inset-left));
         padding-right: max(12px, env(safe-area-inset-right));
-        padding-bottom: calc(90px + env(safe-area-inset-bottom));
       }
 
-      h1 { font-size: 22px; }
-      h2 { font-size: 18px; }
-
-      .card { padding: 15px; margin: 12px 0; }
-      .grid { grid-template-columns: 1fr; }
-
-      .header-account {
-        width: 100%;
-        justify-content: space-between;
+      h1 {
+        font-size: 25px;
       }
 
-      #user {
-        flex: 1;
-        font-size: 12px;
+      .card {
+        padding: 15px;
       }
 
-      .month-toolbar { display: block; }
+      .location-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
 
-      .month-navigation {
-        width: 100%;
+      .location-card {
+        padding: 14px;
+      }
+
+      .toolbar {
+        display: block;
+      }
+
+      .month-nav {
         grid-template-columns: 44px minmax(0, 1fr) 44px;
-      }
-
-      .month-navigation input {
         width: 100%;
-        text-align: center;
       }
 
-      .main-actions {
+      .actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        width: 100%;
         margin-top: 12px;
-        gap: 8px;
       }
 
-      .main-actions #reload { grid-column: 1 / -1; }
-
-      .month-tools .row,
-      .form-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-        width: 100%;
-      }
-
-      .month-tools button,
-      .form-actions button { width: 100%; }
-
-      .stats { gap: 7px; }
-
-      .stat {
-        padding: 11px 7px;
-        font-size: 12px;
-        text-align: center;
-      }
-
-      .stat strong {
-        font-size: 18px;
-        margin-top: 5px;
-        overflow-wrap: anywhere;
-      }
-
-      .calendar-controls {
-        align-items: stretch;
-        gap: 10px;
-      }
-
-      .calendar-controls h2 { width: 100%; }
-
-      .calendar-controls .row {
-        width: 100%;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 8px;
-      }
-
-      .calendar-controls select { width: 100%; }
-      .mobile-only { display: block; }
-      button.mobile-only { display: inline-flex; }
-
-      .calendar {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 12px;
-      }
-
-      .calendar.weekdays { grid-template-columns: minmax(0, 1fr); }
-
-      .calendar .weekday,
-      .calendar .calendar-empty { display: none; }
-
-      .calendar .day {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        min-height: 0;
-        padding: 12px;
-        gap: 10px;
-        border-radius: 12px;
-      }
-
-      .calendar .day-header {
+      .view-switch {
         grid-column: 1 / -1;
-        overflow: visible;
-        padding-bottom: 7px;
-        border-bottom: 1px solid var(--line);
+        width: 100%;
       }
 
-      .calendar .date-add {
-        min-width: 44px;
-        min-height: 44px;
-        font-size: 20px;
+      .view-switch button {
+        flex: 1;
       }
 
-      .calendar .date-number strong { font-size: 20px; }
-      .calendar .day-weekday { display: inline; font-size: 14px; }
-
-      .calendar .holiday {
-        margin-top: 4px;
-        font-size: 13px;
+      .agenda-day {
+        padding: 13px;
       }
 
-      .calendar .day-slot { padding: 0; }
-      .calendar .day-slot.pm { border-top: 0; }
-
-      .calendar .slot-label {
-        font-size: 12px;
-        margin-bottom: 5px;
+      .agenda-event-head {
+        display: block;
       }
 
-      .calendar .event {
-        padding: 9px;
+      .agenda-event-head .event-time {
         margin-top: 6px;
-        font-size: 14px;
-      }
-
-      .calendar .event-main {
-        min-height: 54px;
-        line-height: 1.65;
-      }
-
-      .calendar .quick-confirm {
-        width: 100%;
-        min-height: 44px;
-        font-size: 13px;
-      }
-
-      .calendar .no-events .day-slot { display: none; }
-
-      .calendar .empty-day {
-        display: block;
-        grid-column: 1 / -1;
-        margin: 0;
-        font-size: 13px;
-        color: var(--muted);
-      }
-
-      /* 手機選擇月曆格時，只在月曆區內橫向捲動。 */
-      .calendar-viewport.is-month .calendar {
-        min-width: 900px;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 5px;
-      }
-
-      .calendar-viewport.is-month .calendar.weekdays {
-        min-width: 680px;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-      }
-
-      .calendar-viewport.is-month .weekday,
-      .calendar-viewport.is-month .calendar-empty { display: block; }
-
-      .calendar-viewport.is-month .day {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: 68px minmax(76px, 1fr) minmax(76px, 1fr);
-        min-height: 235px;
-        gap: 0;
-        padding: 7px;
-      }
-
-      .calendar-viewport.is-month .day-header {
-        grid-column: auto;
-        border-bottom: 0;
-        overflow: auto;
-        padding-bottom: 0;
-      }
-
-      .calendar-viewport.is-month .date-number strong { font-size: 16px; }
-      .calendar-viewport.is-month .day-weekday { display: none; }
-      .calendar-viewport.is-month .holiday { font-size: 11px; }
-
-      .calendar-viewport.is-month .day-slot {
-        display: block;
-        padding: 4px 0;
-      }
-
-      .calendar-viewport.is-month .day-slot.pm {
-        border-top: 1px dashed var(--line);
-      }
-
-      .calendar-viewport.is-month .empty-day { display: none; }
-
-      .calendar-viewport.is-month .event {
-        font-size: 12px;
-        padding: 6px;
-      }
-
-      /* 手機表格卡片 */
-      .responsive-table,
-      .responsive-table tbody {
-        display: block;
-        width: 100%;
-      }
-
-      .responsive-table thead {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-
-      .responsive-table tbody tr {
-        display: block;
-        border: 1px solid var(--line);
-        border-radius: 11px;
-        margin: 12px 0;
-        padding: 5px 12px;
-        background: #fff;
-        overflow: hidden;
-      }
-
-      .responsive-table tbody tr.total-row {
-        background: #eef3ff;
-        border-color: #c5d5fc;
-      }
-
-      .responsive-table tbody td {
-        display: grid;
-        grid-template-columns: minmax(88px, 36%) minmax(0, 1fr);
-        gap: 10px;
-        padding: 10px 0;
-        border-bottom: 1px solid #edf0f5;
-        white-space: normal;
-        font-size: 14px;
-      }
-
-      .responsive-table tbody td::before {
-        content: attr(data-label);
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 500;
-      }
-
-      .responsive-table tbody td:last-child { border-bottom: 0; }
-
-      .responsive-table .cell-value {
-        overflow-wrap: anywhere;
-        min-width: 0;
-      }
-
-      .responsive-table tbody td.empty-cell {
-        display: block;
-        padding: 12px 0;
-      }
-
-      .responsive-table tbody td.empty-cell::before { display: none; }
-
-      .responsive-table .row { gap: 7px; }
-      .responsive-table .row button { flex: 1 1 65px; padding: 9px; }
-
-      .section-heading {
-        align-items: flex-start;
-        margin-bottom: 10px;
-      }
-
-      .section-heading h2 { margin-bottom: 0; }
-      .section-heading button { font-size: 14px; }
-
-      .backup-row { display: block; }
-      .backup-row button { width: 100%; margin-top: 14px; }
-
-      #rulesForm > .row {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-top: 18px;
-      }
-
-      .mobile-spacer { display: none; }
-
-      dialog {
-        width: calc(100% - 16px);
-        max-width: none;
-        max-height: 94vh;
-        max-height: 94dvh;
-        border-radius: 15px;
-      }
-
-      #shiftForm {
-        max-height: 94vh;
-        max-height: 94dvh;
-      }
-
-      .dialog-header { padding: 14px 16px; }
-      .dialog-body { padding: 16px; }
-      .dialog-footer {
-        padding: 10px 12px;
-        padding-bottom: max(10px, env(safe-area-inset-bottom));
-      }
-
-      .dialog-actions { grid-template-columns: 1fr 1fr; }
-      .dialog-actions .danger { grid-column: 1 / -1; }
-
-      .mobile-nav {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 20;
-        gap: 6px;
-        border-top: 1px solid var(--line);
-        background: #fffffff5;
-        padding: 8px 12px;
-        padding-bottom: max(8px, env(safe-area-inset-bottom));
-        box-shadow: 0 -4px 18px #1723370a;
-      }
-
-      .mobile-nav a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 44px;
-        padding: 8px;
-        border-radius: 9px;
-        color: #244779;
-        background: #eef3fc;
-        text-decoration: none;
-        font-weight: 650;
-        font-size: 14px;
-      }
-
-      body.modal-open .mobile-nav { display: none; }
-    }
-
-    @media (max-width: 360px) {
-      .calendar:not(.unused) .day { column-gap: 7px; }
-      .calendar .event { font-size: 13px; padding: 7px; }
-      .stat strong { font-size: 16px; }
-      .responsive-table tbody td {
-        grid-template-columns: 88px minmax(0, 1fr);
       }
     }
   </style>
@@ -844,4479 +591,726 @@
 
 <body>
 <main>
-  <header class="row between">
-    <div>
-      <h1>Dr. Ray 的工作日程</h1>    </div>
-    <div class="row header-account">
-      <small id="user"></small>
-      <button id="logout" type="button" hidden>登出</button>
-    </div>
+  <header class="header">
+    <div class="eyebrow">CLINIC SCHEDULE</div>
+    <h1>Dr. Ray 駐診時間</h1>
+    <p class="muted">查看已確認的駐診安排及地點</p>
   </header>
 
-  <p id="message" role="status" aria-live="polite"></p>
+  <!-- 地點方框同時作為多選篩選器 -->
+  <section class="card" aria-labelledby="locationsTitle">
+    <div class="locations-heading">
+      <h2 id="locationsTitle">駐診地點及地址</h2>
+      <p class="muted">點擊方框選取／取消選取，可同時選擇多個地點。</p>
+    </div>
 
-  <section id="loginCard" class="card">
-    <h2>登入</h2>
-    <form id="loginForm" class="grid">
-      <label>Email
-        <input id="email" type="email" autocomplete="username"
-          autocapitalize="none" spellcheck="false" required>
-      </label>
-      <label>密碼
-        <input id="password" type="password"
-          autocomplete="current-password" required>
-      </label>
-      <div>
-        <button id="loginButton" type="submit" class="primary">登入</button>
-      </div>
-    </form>
-    <p class="muted">請先在 Supabase Authentication 建立你的使用者。</p>
+    <div id="locationCards"
+      class="location-grid"
+      role="group"
+      aria-label="選擇要顯示的駐診地點"></div>
   </section>
 
-  <div id="app" hidden>
-    <p id="reloadWarning" class="notice" role="alert" hidden>
-      上次儲存未能確認成功，或資料版本已改變。
-      請先備下未儲存輸入，再按「重新載入」。
-      重新載入成功前，暫停寫入資料。
+  <section class="card control-card" aria-label="日曆控制">
+    <div class="toolbar">
+      <div class="month-nav">
+        <button id="previous"
+          type="button"
+          aria-label="上一個月">←</button>
+
+        <input id="month"
+          type="month"
+          aria-label="所選月份"
+          required>
+
+        <button id="next"
+          type="button"
+          aria-label="下一個月">→</button>
+      </div>
+
+      <div class="actions">
+        <button id="thisMonth" type="button">本月</button>
+        <button id="refresh" type="button">重新整理</button>
+
+        <div class="view-switch"
+          role="group"
+          aria-label="顯示方式">
+          <button id="monthView"
+            type="button"
+            aria-pressed="false">月曆</button>
+
+          <button id="listView"
+            type="button"
+            aria-pressed="false">清單</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="status"
+      class="muted"
+      role="status"
+      aria-live="polite">
+      正在載入駐診時間…
+    </p>
+  </section>
+
+  <section id="schedule"
+    class="card"
+    aria-label="駐診時間"
+    aria-busy="true">
+
+    <div class="section-heading">
+      <h2 id="monthTitle"></h2>
+      <span id="summary" aria-live="polite"></span>
+    </div>
+
+    <div id="empty" class="empty" hidden></div>
+
+    <p id="calendarHint" class="calendar-hint" hidden>
+      每日上半部：13:00 前開始的更期；
+      下半部：13:00 或之後開始的更期。
+      月曆可左右滑動。
     </p>
 
-    <section class="card">
-      <div class="row between month-toolbar">
-        <div class="month-navigation">
-          <button id="previous" type="button" aria-label="上一個月">←</button>
-          <input id="month" type="month" aria-label="所選月份" required>
-          <button id="next" type="button" aria-label="下一個月">→</button>
-        </div>
+    <div id="calendarWrap"
+      class="calendar-scroll"
+      hidden>
+      <div id="calendar" class="month-grid"></div>
+    </div>
 
-        <div class="row main-actions">
-          <button id="generate" type="button" class="primary">
-            產生固定排班
-          </button>
-          <button id="add" type="button">＋ 新增班次</button>
-          <button id="reload" type="button">重新載入</button>
-        </div>
-      </div>
+    <div id="agenda" class="agenda" hidden></div>
+  </section>
 
-      <details class="month-tools">
-        <summary>整月操作及排班說明</summary>
-        <div class="body">
-          <div class="row">
-            <button id="confirmMonth" type="button">
-              ✓ 確認本月全部暫定班
-            </button>
-            <button id="deleteMonthShifts" type="button" class="danger">
-              刪除所選月份全部班次
-            </button>
-          </div>
-          <p class="muted">
-            模板：一／三雅蘭、二 AMC 太古坊、四司徒拔、五 AMC 銅鑼灣。
-            同日已有任何班次便整日跳過；不覆蓋手動改班，取消的班次亦保留。
-          </p>
-        </div>
-      </details>
+  <aside class="card notice">
+    <p><strong>所有時間均為香港時間（UTC+8）。</strong></p>
+    <p>
+      本頁只列出今日起已確認的駐診安排，不代表尚有預約名額。
+      如需預約或確認安排，請聯絡相關診所。
+    </p>
+    <p>
+      未列出的日期不代表接受預約；
+      駐診時間如有更改，以診所確認為準。
+    </p>
+  </aside>
 
-      <div id="stats" class="stats"></div>
-    </section>
-
-    <section id="calendarSection" class="card">
-      <div class="row between calendar-controls">
-        <h2>月曆／排班</h2>
-        <div class="row">
-          <select id="calendarView" aria-label="月曆顯示範圍">
-            <option value="week">顯示全周</option>
-            <option value="weekdays">只顯示星期一至五</option>
-          </select>
-          <button id="toggleCalendar" type="button" class="mobile-only"
-            aria-controls="calendar" aria-pressed="false">
-            切換月曆格
-          </button>
-        </div>
-      </div>
-
-      <p id="calendarLayoutHint" class="muted mobile-only">
-        手機以每日清單顯示；點班次可修改，點「＋」可新增。
-      </p>
-
-      <div id="calendarViewport" class="calendar-viewport">
-        <div id="calendar" class="calendar"></div>
-      </div>
-
-      <p id="calendarHint" class="muted"></p>
-      <small>
-        暫定：淺色 · 已確認：較深色 · 已完成：深色 · 已取消：淡化及刪線
-      </small>
-    </section>
-
-    <section class="card">
-      <div class="row between section-heading">
-        <h2>班次明細</h2>
-        <button id="exportShifts" type="button">匯出班次 CSV</button>
-      </div>
-      <div class="scroll">
-        <table class="responsive-table" role="table" aria-label="班次明細">
-          <thead role="rowgroup">
-            <tr role="row">
-              <th scope="col" role="columnheader">日期</th>
-              <th scope="col" role="columnheader">地點／時間</th>
-              <th scope="col" role="columnheader">狀態</th>
-              <th scope="col" role="columnheader">工時</th>
-              <th scope="col" role="columnheader">診金</th>
-              <th scope="col" role="columnheader">小手術費</th>
-              <th scope="col" role="columnheader">操作</th>
-            </tr>
-          </thead>
-          <tbody id="shiftRows" role="rowgroup"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="row between section-heading">
-        <h2>收入試算</h2>
-        <button id="exportSummary" type="button">匯出試算 CSV</button>
-      </div>
-
-      <details>
-        <summary>試算注意事項</summary>
-        <p class="notice">
-          全月排班試算包含已完成班次，兩欄不可相加。
-          未填費用不是零；「已知部分」可能未包括額外分成。
-          行政費計法選「待確認」時不扣除；如自行選擇扣法但未確認，
-          會按所選扣法顯示暫估。
-          試算範圍只反映已知費用及保底比較週期，不是最終收入上下限。
-        </p>
-      </details>
-
-      <div class="scroll">
-        <table class="responsive-table" role="table" aria-label="收入試算">
-          <thead role="rowgroup">
-            <tr role="row">
-              <th scope="col" role="columnheader">機構</th>
-              <th scope="col" role="columnheader">全月排班試算</th>
-              <th scope="col" role="columnheader">已完成班次試算</th>
-              <th scope="col" role="columnheader">提示</th>
-            </tr>
-          </thead>
-          <tbody id="incomeRows" role="rowgroup"></tbody>
-        </table>
-      </div>
-
-      <p id="amcBreakdown" class="muted"></p>
-    </section>
-
-    <section id="settlementSection" class="card">
-      <h2>月結及收款</h2>
-
-      <form id="settlementForm" class="grid">
-        <label>結算對象
-          <select id="settleScope">
-            <option value="alan">雅蘭專科</option>
-            <option value="amc">AMC 合併</option>
-            <option value="cwb">AMC 銅鑼灣</option>
-            <option value="tqb">AMC 太古坊</option>
-            <option value="stubbs">司徒拔醫院</option>
-          </select>
-        </label>
-
-        <label>診所結算金額 HK$（未知可留空）
-          <input id="statement" type="number" inputmode="decimal"
-            min="0" step=".01">
-        </label>
-
-        <label>累計已收 HK$
-          <input id="received" type="number" inputmode="decimal"
-            min="0" step=".01" value="0">
-        </label>
-
-        <label>備註／付款日期
-          <input id="settleNote" maxlength="500">
-        </label>
-
-        <div class="row form-actions">
-          <button type="submit" class="primary">儲存月結</button>
-          <button id="deleteSettlement" type="button" class="danger">
-            刪除此月結記錄
-          </button>
-        </div>
-      </form>
-
-      <div class="scroll">
-        <table class="responsive-table" role="table" aria-label="月結及收款">
-          <thead role="rowgroup">
-            <tr role="row">
-              <th scope="col" role="columnheader">對象</th>
-              <th scope="col" role="columnheader">診所結算</th>
-              <th scope="col" role="columnheader">已收</th>
-              <th scope="col" role="columnheader">結算減已收</th>
-              <th scope="col" role="columnheader">結算減完成班次試算</th>
-              <th scope="col" role="columnheader">備註</th>
-            </tr>
-          </thead>
-          <tbody id="settlementRows" role="rowgroup"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <details id="settingsSection" class="card">
-      <summary>報酬規則與未確認條款</summary>
-      <div class="body">
-        <p class="notice">
-          新設定只用於之後新增／產生的班次。
-          已有班次保留當時規則；要重算本月，請使用下方明確更新按鈕。
-          套用本月時只使用已儲存規則，請先儲存修改。
-        </p>
-        <form id="rulesForm">
-          <div id="rulesFields"></div>
-          <div class="row">
-            <button type="submit" class="primary">儲存新班次規則</button>
-            <button id="applyRules" type="button">
-              將已儲存規則套用本月班次
-            </button>
-          </div>
-        </form>
-      </div>
-    </details>
-
-    <details class="card">
-      <summary>香港公眾假期：匯入及核對</summary>
-      <div class="body">
-        <p>
-          先嘗試載入 1823 日曆；若瀏覽器阻擋跨域讀取，
-          下載官方 ICS 後使用檔案匯入。
-        </p>
-        <div class="row">
-          <button id="fetchHolidays" type="button">嘗試載入官方假期</button>
-          <a class="linkbutton"
-            href="https://www.1823.gov.hk/common/ical/tc.ics"
-            target="_blank" rel="noopener noreferrer">下載官方 ICS</a>
-        </div>
-
-        <label>匯入 ICS 檔案
-          <input id="holidayFile" type="file" accept=".ics,text/calendar">
-        </label>
-
-        <p id="holidayStatus"></p>
-
-        <label>所選月份之年份的假期日期（每行一項）
-          <textarea id="holidayText"
-            placeholder="YYYY-MM-DD 假期名稱"></textarea>
-        </label>
-
-        <label class="row">
-          <input id="holidayVerified" type="checkbox" class="checkbox">
-          我已核對這一年的公眾假期清單完整
-        </label>
-
-        <p>
-          <button id="saveHolidays" type="button" class="primary">
-            儲存全年假期清單
-          </button>
-        </p>
-
-        <small>
-          沒有確認全年資料時，不會產生模板排班。
-          匯入會替換檔案所含年份的假期，並取消該年份的核對標記。
-          匯入／修改假期不會自動刪除已有班次。
-        </small>
-      </div>
-    </details>
-
-    <section class="card">
-      <div class="row between backup-row">
-        <div>
-          <h2>資料備份</h2>
-          <small>
-            只記錄總金額；請勿輸入病人姓名、身份證或病歷。
-            JSON 備份包含已載入／已儲存資料，不包含表單未儲存輸入。
-          </small>
-        </div>
-        <button id="backup" type="button">下載完整 JSON 備份</button>
-      </div>
-    </section>
-
-    <nav class="mobile-nav" aria-label="手機頁內導覽">
-      <a href="#calendarSection">排班</a>
-      <a href="#settlementSection">月結</a>
-      <a href="#settingsSection">設定</a>
-    </nav>
-  </div>
-
-  <footer>
-    <small>介面版本：手機整合版 v4 · 資料 schema 1</small>
-  </footer>
+  <footer>Dr. Ray · 公開駐診日曆</footer>
 </main>
-
-<dialog id="shiftDialog" aria-labelledby="shiftTitle">
-  <form id="shiftForm">
-    <div class="dialog-header">
-      <h2 id="shiftTitle" tabindex="-1">班次</h2>
-    </div>
-
-    <div class="dialog-body">
-      <input id="shiftId" type="hidden">
-
-      <div class="grid">
-        <label>日期
-          <input id="shiftDate" type="date" required>
-        </label>
-
-        <label>地點
-          <select id="location">
-            <option value="alan">雅蘭專科</option>
-            <option value="tqb">AMC－太古坊</option>
-            <option value="cwb">AMC－銅鑼灣</option>
-            <option value="stubbs">司徒拔醫院</option>
-          </select>
-        </label>
-
-        <label>開始
-          <input id="start" type="time" required>
-        </label>
-
-        <label>結束
-          <input id="end" type="time" required>
-        </label>
-
-        <label>狀態
-          <select id="status">
-            <option value="planned">暫定</option>
-            <option value="confirmed">已確認</option>
-            <option value="completed">已完成</option>
-            <option value="cancelled">已取消</option>
-          </select>
-        </label>
-
-        <div class="mobile-spacer"></div>
-
-        <label>診金／身體檢查醫生費 HK$
-          <input id="consultation" type="number" inputmode="decimal"
-            min="0" step=".01">
-        </label>
-
-        <label>小手術／門診程序醫生費 HK$
-          <input id="procedure" type="number" inputmode="decimal"
-            min="0" step=".01">
-        </label>
-      </div>
-
-      <p class="muted">
-        暫定／已確認：填預測費用；已完成：填實際費用。
-        留空代表未知；確定沒有收入請填 0。
-        AMC 替更不計診金分成。
-      </p>
-
-      <label>備註
-        <textarea id="shiftNote" maxlength="1000"></textarea>
-      </label>
-
-      <p id="snapshotInfo" class="muted"></p>
-    </div>
-
-    <div class="dialog-footer">
-      <p id="shiftMessage" role="status" aria-live="polite"></p>
-      <div class="dialog-actions">
-        <button type="submit" class="primary">儲存班次</button>
-        <button id="closeDialog" type="button">關閉</button>
-        <button id="deleteShift" type="button" class="danger">永久刪除</button>
-      </div>
-    </div>
-  </form>
-</dialog>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 "use strict";
 
-/*
-  手機整合版 v4
-  保留原有：
-  ray_workspace
-  ray_save(p_expected, p_data)
-  schema: 1
-*/
-
-const SUPABASE_URL = "https://vuzzgyzyucyuedxabjss.supabase.co";
-const SUPABASE_KEY = "sb_publishable_meYS5Q2OrY2T0pwrUE8lbQ__jjeEkTt";
-const HOLIDAY_URL = "https://www.1823.gov.hk/common/ical/tc.ics";
-
-const $ = id => document.getElementById(id);
-const copy = value => structuredClone(value);
-
-const names = {
-  alan: "雅蘭專科",
-  amc: "AMC 中心",
-  stubbs: "司徒拔醫院",
-  cwb: "AMC－銅鑼灣",
-  tqb: "AMC－太古坊"
-};
-
-const statuses = {
-  planned: "暫定",
-  confirmed: "已確認",
-  completed: "已完成",
-  cancelled: "已取消"
-};
-
-const locations = ["alan", "tqb", "cwb", "stubbs"];
-const scopes = ["alan", "cwb", "tqb", "stubbs"];
-const ruleOrgs = ["alan", "amc", "stubbs"];
-const adminModes = ["pending", "none", "share", "gross", "all"];
-const bases = ["unknown", "session", "daily", "monthly"];
-
-const templates = {
-  1: ["alan", [["09:00", "13:00"], ["14:00", "18:00"]]],
-  2: ["tqb", [["09:00", "12:00"], ["13:00", "18:00"]]],
-  3: ["alan", [["09:00", "13:00"], ["14:00", "18:00"]]],
-  4: ["stubbs", [["09:00", "13:00"], ["14:00", "18:00"]]],
-  5: ["cwb", [["09:00", "12:00"], ["13:00", "17:30"]]]
-};
-
-const org = location =>
-  ["cwb", "tqb"].includes(location) ? "amc" : location;
-
-const esc = value => String(value ?? "").replace(
-  /[&<>"']/g,
-  c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[c]
-);
-
-const moneyFormatter = new Intl.NumberFormat("zh-HK", {
-  style: "currency",
-  currency: "HKD",
-  minimumFractionDigits: 2
-});
-
-const hourFormatter = new Intl.NumberFormat("zh-HK", {
-  maximumFractionDigits: 2
-});
-
-const money = cents => moneyFormatter.format(cents / 100);
-const hours = value => hourFormatter.format(value);
-const pad = n => String(n).padStart(2, "0");
-const dateString = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
-
-function todayHK() {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Hong_Kong",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(new Date());
-
-  const p = Object.fromEntries(parts.map(x => [x.type, x.value]));
-  return `${p.year}-${p.month}-${p.day}`;
-}
-
-function validMonth(value) {
-  return /^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(value);
-}
-
-function validDate(value) {
-  if (typeof value !== "string" ||
-      !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return false;
-
-  const date = new Date(value + "T00:00:00Z");
-  return Number.isFinite(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value;
-}
-
-function validTime(value) {
-  return typeof value === "string" &&
-    /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
-}
-
-function minutes(time) {
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-}
-
-const duration = shift => minutes(shift.end) - minutes(shift.start);
-const percent = (cents, bps) => Math.round(cents * bps / 10000);
-const displayInput = cents =>
-  cents == null ? "" : (cents / 100).toFixed(2);
-
-function numeric(id) {
-  const raw = $(id).value.trim();
-  if (raw === "") return null;
-
-  const n = Number(raw);
-  const cents = Math.round(n * 100);
-
-  if (!Number.isFinite(n) || n < 0 || !Number.isSafeInteger(cents)) {
-    throw Error("金額必須是有效的非負數，且不可超出安全計算範圍。");
-  }
-
-  return cents;
-}
-
-function percentageInput(id) {
-  const raw = $(id).value.trim();
-  const value = Number(raw);
-
-  if (raw === "" || !Number.isFinite(value) ||
-      value < 0 || value > 100) {
-    throw Error("請填寫 0–100% 的有效比例。");
-  }
-
-  return Math.round(value * 100);
-}
-
-let db = null;
-let uid = null;
-let state = null;
-let revision = null;
-let busy = false;
-let needsReload = false;
-let sessionEpoch = 0;
-let shownMonth = todayHK().slice(0, 7);
-let shownSettlementScope = "alan";
-let mobileMonthGrid = false;
-
-const dirty = {
-  rules: false,
-  holidays: false,
-  settlement: false,
-  shift: false
-};
-
-/* ===================== 初始資料 ===================== */
-
-function initialState() {
-  return {
-    schema: 1,
-    rules: {
-      alan: {
-        hourly: 80000,
-        share: 7000,
-        basis: "unknown",
-        admin: 0,
-        adminMode: "none",
-        adminConfirmed: true
-      },
-      amc: {
-        hourly: 85000,
-        share: 3000,
-        basis: "session",
-        admin: 100,
-        adminMode: "pending",
-        adminConfirmed: false
-      },
-      stubbs: {
-        hourly: 90000,
-        share: 2000,
-        basis: "session",
-        admin: 100,
-        adminMode: "pending",
-        adminConfirmed: false
-      }
-    },
-    shifts: [],
-    settlements: [],
-    holidays: {},
-    verifiedYears: []
-  };
-}
-
-/* ===================== 資料檢查 ===================== */
-
-function isObject(value) {
-  return value !== null &&
-    typeof value === "object" &&
-    !Array.isArray(value);
-}
-
-function validCents(value) {
-  return Number.isSafeInteger(value) && value >= 0;
-}
-
-function validateRule(rule) {
-  if (!isObject(rule) ||
-      !validCents(rule.hourly) ||
-      !Number.isInteger(rule.share) ||
-      rule.share < 0 || rule.share > 10000 ||
-      !Number.isInteger(rule.admin) ||
-      rule.admin < 0 || rule.admin > 10000 ||
-      !bases.includes(rule.basis) ||
-      !adminModes.includes(rule.adminMode) ||
-      typeof rule.adminConfirmed !== "boolean") {
-    throw Error("報酬規則資料不完整或無效；未覆蓋資料，請檢查原有記錄。");
-  }
-}
-
-function validateState(value) {
-  if (!isObject(value) || value.schema !== 1) {
-    throw Error("資料版本不支援，請勿覆蓋。");
-  }
-
-  if (!isObject(value.rules) ||
-      !Array.isArray(value.shifts) ||
-      !Array.isArray(value.settlements) ||
-      !isObject(value.holidays) ||
-      !Array.isArray(value.verifiedYears)) {
-    throw Error("工作區資料結構不完整；未覆蓋資料。");
-  }
-
-  for (const o of ruleOrgs) validateRule(value.rules[o]);
-
-  const ids = new Set();
-
-  for (const s of value.shifts) {
-    if (!isObject(s) ||
-        typeof s.id !== "string" || !s.id ||
-        ids.has(s.id) ||
-        !validDate(s.date) ||
-        !locations.includes(s.location) ||
-        !validTime(s.start) || !validTime(s.end) ||
-        duration(s) <= 0 ||
-        !Object.hasOwn(statuses, s.status) ||
-        !(s.consultation == null || validCents(s.consultation)) ||
-        !(s.procedure == null || validCents(s.procedure)) ||
-        !(s.note == null || typeof s.note === "string")) {
-      throw Error("有班次資料無效或 ID 重複；未覆蓋資料，請檢查備份。");
-    }
-
-    validateRule(s.rule);
-    ids.add(s.id);
-  }
-
-  const settlementKeys = new Set();
-
-  for (const item of value.settlements) {
-    if (!isObject(item) ||
-        !validMonth(item.month) ||
-        ![...scopes, "amc"].includes(item.scope) ||
-        !(item.statement == null || validCents(item.statement)) ||
-        !validCents(item.received) ||
-        !(item.note == null || typeof item.note === "string")) {
-      throw Error("有月結資料無效；未覆蓋資料。");
-    }
-
-    const key = item.month + "|" + item.scope;
-
-    if (settlementKeys.has(key)) {
-      throw Error("有重複月結資料；未覆蓋資料。");
-    }
-
-    settlementKeys.add(key);
-  }
-
-  for (const [date, label] of Object.entries(value.holidays)) {
-    if (!validDate(date) || typeof label !== "string") {
-      throw Error("有假期資料無效；未覆蓋資料。");
-    }
-  }
-
-  if (value.verifiedYears.some(y =>
-    !Number.isInteger(y) || y < 1000 || y > 9999
-  )) {
-    throw Error("假期核對年份資料無效；未覆蓋資料。");
-  }
-}
-
-function validRevision(value) {
-  if (typeof value === "number") {
-    return Number.isSafeInteger(value) && value >= 0;
-  }
-
-  return typeof value === "string" && /^\d+$/.test(value);
-}
-
-/* ===================== 操作及未儲存保護 ===================== */
-
-function message(text, error = false) {
-  $("message").textContent = text;
-  $("message").style.color = error ? "#b42318" : "#2463eb";
-
-  if ($("shiftDialog").open) {
-    $("shiftMessage").textContent = text;
-    $("shiftMessage").style.color = error ? "#b42318" : "#2463eb";
-  }
-}
-
-function resetDirty() {
-  for (const key of Object.keys(dirty)) dirty[key] = false;
-}
-
-function hasUnsaved() {
-  return Object.values(dirty).some(Boolean);
-}
-
-function confirmDiscard(text = "有未儲存輸入，繼續會放棄這些修改。確定？") {
-  return !hasUnsaved() || confirm(text);
-}
-
-function requireWorkspace() {
-  if (!db || !uid || !state) {
-    throw Error("請先登入並成功載入資料。");
-  }
-}
-
-function requireWritable() {
-  requireWorkspace();
-
-  if (needsReload) {
-    throw Error("請先備下未儲存輸入，再重新載入資料，之後才可儲存。");
-  }
-}
-
-function updateControls() {
-  document.querySelectorAll("button, input, select, textarea")
-    .forEach(element => {
-      element.disabled = busy;
-    });
-
-  if (!busy && !db) $("loginButton").disabled = true;
-
-  $("reloadWarning").hidden = !needsReload;
-  document.body.setAttribute("aria-busy", String(busy));
-}
-
-async function run(action) {
-  if (busy) return;
-
-  busy = true;
-  updateControls();
-
-  try {
-    await action();
-  } catch (error) {
-    console.error(error);
-    message(error.message || String(error), true);
-  } finally {
-    busy = false;
-    updateControls();
-  }
-}
-
-function markReloadRequired() {
-  needsReload = true;
-  $("reloadWarning").hidden = false;
-}
-
-function clearSession() {
-  sessionEpoch++;
-  uid = null;
-  state = null;
-  revision = null;
-  needsReload = false;
-  resetDirty();
-
-  $("app").hidden = true;
-  $("loginCard").hidden = false;
-  $("logout").hidden = true;
-  $("reloadWarning").hidden = true;
-  $("user").textContent = "";
-  $("password").value = "";
-
-  if ($("shiftDialog").open) $("shiftDialog").close();
-  document.body.classList.remove("modal-open");
-
-  $("stats").innerHTML = "";
-  $("calendar").innerHTML = "";
-  $("shiftRows").innerHTML = "";
-  $("incomeRows").innerHTML = "";
-  $("settlementRows").innerHTML = "";
-  $("rulesFields").innerHTML = "";
-  $("holidayText").value = "";
-  $("holidayVerified").checked = false;
-  $("statement").value = "";
-  $("received").value = "0.00";
-  $("settleNote").value = "";
-  $("shiftMessage").textContent = "";
-  $("shiftForm").reset();
-
-  message("已登出，請重新登入。");
-}
-
-/* ===================== Supabase 讀取／儲存 ===================== */
-
-async function load() {
-  if (!db || !uid) throw Error("請先登入。");
-
-  const owner = uid;
-  const epoch = sessionEpoch;
-
-  const { data, error } = await db
-    .from("ray_workspace")
-    .select("data,revision")
-    .eq("owner_id", owner)
-    .single();
-
-  if (epoch !== sessionEpoch || uid !== owner) {
-    throw Error("登入狀態已改變，未載入資料。");
-  }
-
-  if (error) throw error;
-  if (!data) throw Error("找不到工作區資料。");
-
-  validateState(data.data);
-
-  if (!validRevision(data.revision)) {
-    throw Error("資料版本號無效，請勿覆蓋。");
-  }
-
-  state = data.data;
-  revision = data.revision;
-  needsReload = false;
-  resetDirty();
-
-  render(true);
-}
-
-async function commit(next) {
-  requireWritable();
-  validateState(next);
-
-  const owner = uid;
-  const epoch = sessionEpoch;
-  let response;
-
-  try {
-    response = await db.rpc("ray_save", {
-      p_expected: revision,
-      p_data: next
-    });
-  } catch (error) {
-    if (epoch === sessionEpoch && uid === owner) {
-      markReloadRequired();
-    }
-
-    throw Error(
-      "未能確認儲存結果。請先備下輸入，再重新載入；不要直接重複儲存。"
-    );
-  }
-
-  if (epoch !== sessionEpoch || uid !== owner) {
-    throw Error("登入狀態已改變，請重新登入後核對儲存結果。");
-  }
-
-  const { data, error } = response;
-
-  if (error) {
-    markReloadRequired();
-
-    if (String(error.message).includes("VERSION_CONFLICT")) {
-      throw Error(
-        "其他裝置已修改資料。本次未儲存；請先備下輸入，再按重新載入。"
-      );
-    }
-
-    throw Error(
-      `${error.message || "儲存失敗"}\n` +
-      "請先備下輸入，再重新載入資料，核對後才重試。"
-    );
-  }
-
-  if (!validRevision(data)) {
-    markReloadRequired();
-    throw Error("伺服器未回傳有效版本號；請重新載入核對儲存結果。");
-  }
-
-  revision = data;
-  state = next;
-  render();
-  message("已儲存至 Supabase。");
-}
-
-async function reloadWorkspace() {
-  requireWorkspace();
-
-  if (!confirmDiscard(
-    "重新載入會放棄未儲存的規則、假期或月結輸入。請先備下內容。確定？"
-  )) return;
-
-  await load();
-  message("已重新載入最新資料。");
-}
-
-/* ===================== 班次篩選 ===================== */
-
-function selectedMonth() {
-  const month = $("month").value;
-  if (!validMonth(month)) throw Error("請先選擇有效月份。");
-  return month;
-}
-
-function monthShifts(month = selectedMonth()) {
-  if (!state) return [];
-
-  return state.shifts
-    .filter(s => s.date.startsWith(month + "-"))
-    .sort((a, b) =>
-      `${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`)
-    );
-}
-
-function active(shifts) {
-  return shifts.filter(s => s.status !== "cancelled");
-}
-
-function scopeFilter(shifts, scope) {
-  return shifts.filter(s =>
-    scope === "amc" ? org(s.location) === "amc" : s.location === scope
-  );
-}
-
-/* ===================== 收入引擎：沿用原有計法 ===================== */
-
-function components(s) {
-  const r = s.rule;
-  const o = org(s.location);
-  const hourly = Math.round(duration(s) * r.hourly / 60);
-
-  let gross = 0;
-  let missing = false;
-
-  if (o === "amc") {
-    missing = s.procedure == null;
-    gross = s.procedure ?? 0;
-  } else {
-    missing = s.consultation == null || s.procedure == null;
-    gross = (s.consultation ?? 0) + (s.procedure ?? 0);
-  }
-
-  if (r.adminMode === "gross") {
-    gross = percent(gross, 10000 - r.admin);
-  }
-
-  let share = percent(gross, r.share);
-
-  if (r.adminMode === "share") {
-    share = percent(share, 10000 - r.admin);
-  }
-
-  return { hourly, share, missing };
-}
-
-function ruleKey(rule) {
-  return JSON.stringify([
-    rule.hourly, rule.share, rule.basis,
-    rule.admin, rule.adminMode, rule.adminConfirmed
-  ]);
-}
-
-function calculate(shifts) {
-  const flags = new Set();
-  const groups = new Map();
-  let low = 0;
-  let high = 0;
-
-  for (const s of active(shifts)) {
-    const key = org(s.location) + "|" + ruleKey(s.rule);
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(s);
-  }
-
-  for (const group of groups.values()) {
-    const r = group[0].rule;
-    const o = org(group[0].location);
-    const items = group.map(s => ({ s, ...components(s) }));
-
-    if (items.some(x => x.missing)) {
-      flags.add("費用未齊：顯示已知部分");
-    }
-
-    if (r.adminMode === "pending") {
-      flags.add("行政費扣法待確認，尚未扣除");
-    } else if (!r.adminConfirmed) {
-      flags.add("行政費設定未確認，按所選扣法暫估");
-    }
-
-    let a;
-    let b;
-
-    if (o === "alan") {
-      const total = bucket => Math.max(
-        bucket.reduce((n, x) => n + x.hourly, 0),
-        bucket.reduce((n, x) => n + x.share, 0)
-      );
-
-      const session = items.reduce((n, x) => n + total([x]), 0);
-      const monthly = total(items);
-      const days = new Map();
-
-      for (const x of items) {
-        if (!days.has(x.s.date)) days.set(x.s.date, []);
-        days.get(x.s.date).push(x);
-      }
-
-      const daily = [...days.values()]
-        .reduce((n, bucket) => n + total(bucket), 0);
-
-      if (r.basis === "unknown") {
-        a = monthly;
-        b = session;
-        flags.add("雅蘭比較週期待確認：範圍為整月至逐節");
-      } else {
-        a = b = { session, daily, monthly }[r.basis];
-      }
-    } else {
-      a = b = items.reduce((n, x) => n + x.hourly + x.share, 0);
-    }
-
-    if (r.adminMode === "all") {
-      a = percent(a, 10000 - r.admin);
-      b = percent(b, 10000 - r.admin);
-    }
-
-    low += a;
-    high += b;
-  }
-
-  for (const o of ruleOrgs) {
-    const keys = [...groups.keys()].filter(k => k.startsWith(o + "|"));
-
-    if (keys.length > 1) {
-      flags.add(names[o] + "有多個規則版本，按版本分組；請核對分段結算");
-    }
-  }
-
-  if (!Number.isSafeInteger(low) || !Number.isSafeInteger(high)) {
-    throw Error("試算總額超出安全計算範圍，請檢查金額。");
-  }
-
-  return { low, high, flags: [...flags] };
-}
-
-function amount(result) {
-  return result.low === result.high
-    ? money(result.low)
-    : `${money(result.low)} ～ ${money(result.high)}`;
-}
-
-/* ===================== 手機介面輔助 ===================== */
-
-function tableCell(label, html, className = "") {
-  return `
-    <td role="cell" data-label="${esc(label)}" class="${esc(className)}">
-      <div class="cell-value">${html}</div>
-    </td>
-  `;
-}
-
-function emptyTableRow(columns, text) {
-  return `
-    <tr role="row">
-      <td role="cell" colspan="${columns}" class="empty-cell">${esc(text)}</td>
-    </tr>
-  `;
-}
-
-function updateCalendarLayout() {
-  $("calendarViewport").classList.toggle("is-month", mobileMonthGrid);
-  $("toggleCalendar").setAttribute("aria-pressed", String(mobileMonthGrid));
-  $("toggleCalendar").textContent =
-    mobileMonthGrid ? "切換每日清單" : "切換月曆格";
-
-  $("calendarLayoutHint").textContent = mobileMonthGrid
-    ? "月曆格可在下方區域左右滑動；點班次可修改。"
-    : "手機以每日清單顯示；點班次可修改，點「＋」可新增。";
-}
-
-/* ===================== 畫面繪製 ===================== */
-
-function render(forceForms = false) {
-  if (!state) return;
-
-  const shifts = monthShifts();
-  const live = active(shifts);
-  const completed = live.filter(s => s.status === "completed");
-
-  $("stats").innerHTML = `
-    <div class="stat">
-      本月有效班次<strong>${live.length} 節</strong>
-    </div>
-    <div class="stat">
-      排班工時<strong>${
-        hours(live.reduce((n, s) => n + duration(s), 0) / 60)
-      } 小時</strong>
-    </div>
-    <div class="stat">
-      已完成<strong>${completed.length} 節</strong>
-    </div>
-  `;
-
-  renderCalendar(shifts);
-  renderShiftRows(shifts);
-  renderIncome(live);
-  renderSettlements(forceForms);
-  renderRules(forceForms);
-  renderHolidays(forceForms);
-  updateControls();
-}
-
-function renderShiftRows(shifts) {
-  $("shiftRows").innerHTML = shifts.map(s => `
-    <tr role="row">
-      ${tableCell("日期", esc(s.date))}
-      ${tableCell("地點／時間", `
-        ${esc(names[s.location])}<br>
-        ${esc(s.start)}–${esc(s.end)}
-      `)}
-      ${tableCell("狀態", esc(statuses[s.status]))}
-      ${tableCell("工時", hours(duration(s) / 60) + " 小時")}
-      ${tableCell("診金", s.consultation == null
-        ? "待填" : money(s.consultation))}
-      ${tableCell("小手術費", s.procedure == null
-        ? "待填" : money(s.procedure))}
-      ${tableCell("操作", `
-        <div class="row">
-          <button type="button" data-edit="${esc(s.id)}">修改</button>
-          ${s.status === "planned" ? `
-            <button type="button" data-confirm="${esc(s.id)}">✓ 確認</button>
-          ` : ""}
-        </div>
-      `)}
-    </tr>
-  `).join("") || emptyTableRow(7, "本月未有班次。");
-}
-
-function renderCalendar(shifts) {
-  const [y, m] = selectedMonth().split("-").map(Number);
-  const weekdaysOnly = $("calendarView").value === "weekdays";
-  const count = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  const firstDay = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
-  const mondayOffset = (firstDay + 6) % 7;
-  const offset = weekdaysOnly && mondayOffset >= 5 ? 0 : mondayOffset;
-
-  const labels = weekdaysOnly
-    ? ["一", "二", "三", "四", "五"]
-    : ["一", "二", "三", "四", "五", "六", "日"];
-
-  const weekdayNames = ["日", "一", "二", "三", "四", "五", "六"];
-  const today = todayHK();
-  const byDate = new Map();
-
-  for (const s of shifts) {
-    if (!byDate.has(s.date)) byDate.set(s.date, []);
-    byDate.get(s.date).push(s);
-  }
-
-  $("calendar").classList.toggle("weekdays", weekdaysOnly);
-
-  let html = labels.map(label =>
-    `<div class="weekday">星期${label}</div>`
-  ).join("");
-
-  html += '<div class="calendar-empty" aria-hidden="true"></div>'
-    .repeat(offset);
-
-  function eventHTML(s) {
-    return `
-      <div class="event ${esc(org(s.location))} ${esc(s.status)}">
-        <button type="button" class="event-main"
-          data-edit="${esc(s.id)}"
-          aria-label="${esc(
-            `${s.date} ${names[s.location]} ${s.start}至${s.end}，` +
-            `${statuses[s.status]}，修改班次`
-          )}">
-          ${esc(names[s.location])}<br>
-          ${esc(s.start)}–${esc(s.end)}<br>
-          ${esc(statuses[s.status])}
-        </button>
-        ${s.status === "planned" ? `
-          <button type="button" class="quick-confirm"
-            data-confirm="${esc(s.id)}"
-            aria-label="${esc(
-              `確認 ${s.date} ${names[s.location]} ${s.start} 班次`
-            )}">✓ 確認</button>
-        ` : ""}
-      </div>
-    `;
-  }
-
-  for (let d = 1; d <= count; d++) {
-    const date = dateString(y, m, d);
-    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-    const weekend = weekday === 0 || weekday === 6;
-
-    if (weekdaysOnly && weekend) continue;
-
-    const holiday = state.holidays[date];
-    const dayShifts = byDate.get(date) || [];
-    const morning = dayShifts.filter(s => minutes(s.start) < 780);
-    const afternoon = dayShifts.filter(s => minutes(s.start) >= 780);
-
-    html += `
-      <div class="day ${weekend || holiday ? "off" : ""} ${
-        date === today ? "today" : ""
-      } ${dayShifts.length ? "" : "no-events"}">
-        <div class="day-header">
-          <div class="date">
-            <div class="date-number">
-              <strong>${d}</strong>
-              <span class="day-weekday">星期${weekdayNames[weekday]}</span>
-              ${date === today
-                ? '<span class="today-label">今日</span>' : ""}
-            </div>
-            <button type="button" class="date-add"
-              data-date="${date}"
-              aria-label="新增 ${date} 班次">＋</button>
-          </div>
-          ${holiday ? `<div class="holiday">${esc(holiday)}</div>` : ""}
-        </div>
-
-        <div class="day-slot am">
-          <span class="slot-label">上午</span>
-          ${morning.map(eventHTML).join("")}
-        </div>
-
-        <div class="day-slot pm">
-          <span class="slot-label">下午</span>
-          ${afternoon.map(eventHTML).join("")}
-        </div>
-
-        ${dayShifts.length ? "" :
-          '<p class="empty-day">未有班次</p>'}
-      </div>
-    `;
-  }
-
-  $("calendar").innerHTML = html;
-
-  const hiddenCount = weekdaysOnly
-    ? shifts.filter(s => {
-        const day = new Date(s.date + "T00:00:00Z").getUTCDay();
-        return day === 0 || day === 6;
-      }).length
-    : 0;
-
-  $("calendarHint").textContent = weekdaysOnly
-    ? `目前只顯示星期一至五；${hiddenCount} 節週末班未顯示。` +
-      "所有班次仍會列入明細及收入試算。"
-    : "13:00 前開始的班次顯示於上午；" +
-      "13:00 或之後開始的班次顯示於下午。";
-
-  updateCalendarLayout();
-}
-
-function renderIncome(live) {
-  function incomeRow(label, all, isTotal = false) {
-    const forecast = calculate(all);
-    const earned = calculate(all.filter(s => s.status === "completed"));
-    const flags = [...new Set([...forecast.flags, ...earned.flags])];
-
-    const notes = flags.length
-      ? flags.map(esc).join("<br>")
-      : all.length
-        ? "資料齊全，按已保存規則試算"
-        : "本月沒有有效班次";
-
-    return `
-      <tr role="row" class="${isTotal ? "total-row" : ""}">
-        ${tableCell("機構", esc(label))}
-        ${tableCell("全月排班試算", amount(forecast), "money")}
-        ${tableCell("已完成班次試算", amount(earned), "money")}
-        ${tableCell("提示", notes)}
-      </tr>
-    `;
-  }
-
-  $("incomeRows").innerHTML = scopes.map(scope =>
-    incomeRow(names[scope], scopeFilter(live, scope))
-  ).join("") + incomeRow("所有診所合計", live, true);
-
-  $("amcBreakdown").textContent =
-    "" +
-    "" +
-    "" +
-    "";
-}
-
-/* ===================== 班次新增／修改／刪除 ===================== */
-
-function openShift(id, date) {
-  if (busy) return;
-  requireWorkspace();
-
-  const s = id ? state.shifts.find(x => x.id === id) : null;
-  if (id && !s) throw Error("找不到這節班次，請重新載入。");
-
-  $("shiftForm").reset();
-  $("shiftTitle").textContent = s ? "修改班次" : "新增班次";
-  $("shiftId").value = s?.id || "";
-  $("shiftDate").value = s?.date || date || todayHK();
-  $("location").value = s?.location || "alan";
-  $("start").value = s?.start || "09:00";
-  $("end").value = s?.end || "13:00";
-  $("status").value = s?.status || "planned";
-  $("consultation").value = displayInput(s?.consultation);
-  $("procedure").value = displayInput(s?.procedure);
-  $("shiftNote").value = s?.note || "";
-  $("deleteShift").hidden = !s;
-  $("shiftMessage").textContent = "";
-
-  $("snapshotInfo").textContent = s
-    ? "此班次保留建立時的報酬規則；更換機構時改用新機構的現行規則。"
-    : "新班次使用目前已儲存的報酬規則。";
-
-  dirty.shift = false;
-  $("shiftDialog").showModal();
-  document.body.classList.add("modal-open");
-  $("shiftDialog").querySelector(".dialog-body").scrollTop = 0;
-  $("shiftTitle").focus({ preventScroll: true });
-}
-
-function closeShift() {
-  if (busy) return;
-
-  if (dirty.shift && !confirm("班次有未儲存修改，確定放棄並關閉？")) {
-    return;
-  }
-
-  dirty.shift = false;
-  $("shiftDialog").close();
-  document.body.classList.remove("modal-open");
-}
-
-async function saveShift() {
-  requireWritable();
-
-  const id = $("shiftId").value;
-  const old = id ? state.shifts.find(s => s.id === id) : null;
-
-  if (id && !old) throw Error("找不到原有班次，請重新載入。");
-
-  const location = $("location").value;
-  const date = $("shiftDate").value;
-  const start = $("start").value;
-  const end = $("end").value;
-  const status = $("status").value;
-
-  if (!validDate(date) || !validTime(start) || !validTime(end) ||
-      !locations.includes(location) || !Object.hasOwn(statuses, status)) {
-    throw Error("請填寫有效日期、時間、地點及狀態。");
-  }
-
-  const s = {
-    ...(old || {}),
-    id: id || crypto.randomUUID(),
-    date,
-    location,
-    start,
-    end,
-    status,
-    consultation: numeric("consultation"),
-    procedure: numeric("procedure"),
-    note: $("shiftNote").value,
-    rule: copy(
-      old && org(old.location) === org(location)
-        ? old.rule
-        : state.rules[org(location)]
-    )
-  };
-
-  if (duration(s) <= 0) {
-    throw Error("結束時間必須晚於開始時間；不支援跨日班次。");
-  }
-
-  const others = active(state.shifts.filter(x =>
-    x.id !== id && x.date === s.date
-  ));
-
-  if (s.status !== "cancelled") {
-    if (others.some(x =>
-      minutes(s.start) < minutes(x.end) &&
-      minutes(s.end) > minutes(x.start)
-    )) {
-      throw Error("此班次與同日其他班次時間重疊。");
-    }
-
-    if (others.length >= 2 ||
-        others.reduce((n, x) => n + duration(x), duration(s)) > 480) {
-      if (!confirm("同日超過兩節或八小時。確定作為特別例外？")) return;
-    }
-
-    const dow = new Date(s.date + "T00:00:00Z").getUTCDay();
-
-    if (dow === 0 || dow === 6 || state.holidays[s.date]) {
-      if (!confirm("這是週末或公眾假期。確定安排駐診？")) return;
-    } else if (!state.verifiedYears.includes(Number(s.date.slice(0, 4)))) {
-      if (!confirm(
-        "此年份假期尚未核對，未能可靠排除公眾假期。仍要儲存？"
-      )) return;
-    }
-  }
-
-  const next = copy(state);
-  const index = next.shifts.findIndex(x => x.id === id);
-
-  if (index < 0) next.shifts.push(s);
-  else next.shifts[index] = s;
-
-  await commit(next);
-
-  dirty.shift = false;
-  $("shiftDialog").close();
-  document.body.classList.remove("modal-open");
-}
-
-async function deleteShift() {
-  requireWritable();
-
-  const id = $("shiftId").value;
-  const shift = state.shifts.find(s => s.id === id);
-
-  if (!shift) throw Error("找不到這節班次。");
-
-  if (!confirm(
-    `永久刪除 ${shift.date} ${names[shift.location]} ` +
-    `${shift.start}–${shift.end}？\n` +
-    "一般請假建議改為已取消，以免重新產生。"
-  )) return;
-
-  const next = copy(state);
-  next.shifts = next.shifts.filter(s => s.id !== id);
-
-  await commit(next);
-
-  dirty.shift = false;
-  $("shiftDialog").close();
-  document.body.classList.remove("modal-open");
-}
-
-/* ===================== 固定排班 ===================== */
-
-async function generate() {
-  requireWritable();
-
-  const month = selectedMonth();
-  const [y, m] = month.split("-").map(Number);
-
-  if (!state.verifiedYears.includes(y)) {
-    throw Error(`請先在假期設定核對並確認 ${y} 年全年假期。`);
-  }
-
-  if (dirty.holidays) {
-    throw Error("假期設定有未儲存修改，請先儲存後再產生排班。");
-  }
-
-  if (dirty.rules) {
-    throw Error("報酬規則有未儲存修改，請先儲存後再產生排班。");
-  }
-
-  const next = copy(state);
-  const existingDates = new Set(next.shifts.map(s => s.date));
-  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  let added = 0;
-  let skipped = 0;
-
-  for (let d = 1; d <= last; d++) {
-    const date = dateString(y, m, d);
-    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-
-    if (!templates[weekday] || next.holidays[date]) continue;
-
-    if (existingDates.has(date)) {
-      skipped++;
-      continue;
-    }
-
-    const [location, slots] = templates[weekday];
-
-    for (const [start, end] of slots) {
-      next.shifts.push({
-        id: crypto.randomUUID(),
-        date, location, start, end,
-        status: "planned",
-        consultation: null,
-        procedure: null,
-        note: "",
-        rule: copy(next.rules[org(location)])
-      });
-      added++;
-    }
-
-    existingDates.add(date);
-  }
-
-  if (!added) {
-    message(`沒有新增班次；已有記錄的工作日跳過 ${skipped} 日。`);
-    return;
-  }
-
-  await commit(next);
-  message(`新增 ${added} 節；跳過已有記錄的工作日 ${skipped} 日。`);
-}
-
-/* ===================== 一鍵確認 ===================== */
-
-async function confirmShift(id) {
-  requireWritable();
-
-  const shift = state.shifts.find(s => s.id === id);
-  if (!shift || shift.status !== "planned") return;
-
-  const next = copy(state);
-  next.shifts.find(s => s.id === id).status = "confirmed";
-
-  await commit(next);
-  message(`已確認 ${shift.date} ${names[shift.location]} ${shift.start} 的班次。`);
-}
-
-async function confirmMonthShifts() {
-  requireWritable();
-
-  const month = selectedMonth();
-  const planned = monthShifts(month).filter(s => s.status === "planned");
-
-  if (!planned.length) {
-    message(`${month} 沒有暫定班需要確認。`);
-    return;
-  }
-
-  if (!confirm(
-    `將 ${month} 全部 ${planned.length} 節暫定班改為已確認？\n` +
-    "包括所有地點及週末班；已完成、已取消班次不會改動。"
-  )) return;
-
-  const next = copy(state);
-
-  for (const s of next.shifts) {
-    if (s.date.startsWith(month + "-") && s.status === "planned") {
-      s.status = "confirmed";
-    }
-  }
-
-  await commit(next);
-  message(`已確認 ${month} 共 ${planned.length} 節班次。`);
-}
-
-/* ===================== 刪除整月班次 ===================== */
-
-async function deleteMonthShifts() {
-  requireWritable();
-
-  const month = selectedMonth();
-  const prefix = month + "-";
-  const shifts = monthShifts(month);
-
-  if (!shifts.length) {
-    message(`${month} 沒有班次需要刪除。`);
-    return;
-  }
-
-  const completed = shifts.filter(s => s.status === "completed").length;
-  const cancelled = shifts.filter(s => s.status === "cancelled").length;
-  const hasSettlement = state.settlements.some(x => x.month === month);
-
-  const warning = [
-    `即將永久刪除 ${month} 的全部 ${shifts.length} 節班次。`,
-    `包括已完成 ${completed} 節、已取消 ${cancelled} 節。`,
-    "",
-    "所有地點的班次都會刪除，其他月份不受影響。",
-    "月結／收款記錄、報酬規則及假期設定會保留。",
-    ...(hasSettlement ? [
-      "",
-      "注意：此月份已有月結記錄。",
-      "刪除後收入試算會更新，月結差額亦可能改變。"
-    ] : []),
-    "",
-    "此操作沒有一鍵復原功能，建議先下載 JSON 備份。",
-    "確定繼續？"
-  ].join("\n");
-
-  if (!confirm(warning)) return;
-
-  const typed = prompt(
-    `請輸入 ${month}，確認永久刪除這個月份的全部班次。`
-  );
-
-  if (typed === null) return;
-
-  if (typed.trim() !== month) {
-    message("輸入月份不符，未刪除任何資料。", true);
-    return;
-  }
-
-  const next = copy(state);
-  next.shifts = next.shifts.filter(s => !s.date.startsWith(prefix));
-
-  await commit(next);
-
-  message(
-    `已永久刪除 ${month} 共 ${shifts.length} 節班次。` +
-    "其他月份及月結／收款記錄已保留。"
-  );
-}
-
-/* ===================== 報酬規則 ===================== */
-
-function options(values, current) {
-  return Object.entries(values).map(([value, label]) => `
-    <option value="${esc(value)}" ${
-      value === current ? "selected" : ""
-    }>${esc(label)}</option>
-  `).join("");
-}
-
-function renderRules(force = false) {
-  if (dirty.rules && !force) return;
-
-  $("rulesFields").innerHTML = ruleOrgs.map(o => {
-    const r = state.rules[o];
-
-    return `
-      <h3>${esc(names[o])}</h3>
-      <div class="grid">
-        <label>時薪／保底 HK$
-          <input id="${o}_hourly" type="number" inputmode="decimal"
-            min="0" step=".01" value="${r.hourly / 100}" required>
-        </label>
-
-        <label>分成 %
-          <input id="${o}_share" type="number" inputmode="decimal"
-            min="0" max="100" step=".01"
-            value="${r.share / 100}" required>
-        </label>
-
-        ${o === "alan" ? `
-          <label>保底與分成比較週期
-            <select id="alan_basis">
-              ${options({
-                unknown: "待確認：顯示試算範圍",
-                session: "每節",
-                daily: "每日",
-                monthly: "整月"
-              }, r.basis)}
-            </select>
-          </label>
-        ` : ""}
-
-        <label>行政費 %
-          <input id="${o}_admin" type="number" inputmode="decimal"
-            min="0" max="100" step=".01"
-            value="${r.admin / 100}" required>
-        </label>
-
-        <label>行政費計法
-          <select id="${o}_mode">
-            ${options({
-              pending: "待確認：暫不扣除",
-              none: "不扣行政費",
-              share: "只扣分成所得",
-              gross: "醫生費先扣行政費，再計分成",
-              all: "時薪／保底及分成所得一併扣"
-            }, r.adminMode)}
-          </select>
-        </label>
-
-        <label class="row">
-          <input id="${o}_confirmed" type="checkbox" class="checkbox"
-            ${r.adminConfirmed ? "checked" : ""}>
-          行政費設定已獲確認
-        </label>
-      </div>
-    `;
-  }).join("");
-}
-
-async function saveRules() {
-  requireWritable();
-
-  const next = copy(state);
-
-  for (const o of ruleOrgs) {
-    const hourly = numeric(o + "_hourly");
-    if (hourly == null) throw Error("請填寫有效時薪。");
-
-    next.rules[o] = {
-      ...next.rules[o],
-      hourly,
-      share: percentageInput(o + "_share"),
-      admin: percentageInput(o + "_admin"),
-      basis: o === "alan" ? $("alan_basis").value : "session",
-      adminMode: $(o + "_mode").value,
-      adminConfirmed: $(o + "_confirmed").checked
-    };
-  }
-
-  await commit(next);
-
-  dirty.rules = false;
-  renderRules(true);
-  message("已儲存新班次規則；已有班次仍保留原有規則。");
-}
-
-async function applyRules() {
-  requireWritable();
-
-  if (dirty.rules) {
-    throw Error("報酬規則有未儲存修改，請先按「儲存新班次規則」。");
-  }
-
-  const month = selectedMonth();
-  const shifts = monthShifts(month);
-
-  if (!shifts.length) {
-    message(`${month} 沒有班次可套用規則。`);
-    return;
-  }
-
-  if (!confirm(
-    `將已儲存規則套用 ${month} 全部 ${shifts.length} 節班次？\n` +
-    "包括已完成及已取消班次，收入試算可能改變。"
-  )) return;
-
-  const next = copy(state);
-
-  for (const s of next.shifts) {
-    if (s.date.startsWith(month + "-")) {
-      s.rule = copy(next.rules[org(s.location)]);
-    }
-  }
-
-  await commit(next);
-  message(`已將已儲存規則套用 ${month} 全部班次。`);
-}
-
-/* ===================== 假期匯入／核對 ===================== */
-
-function renderHolidays(force = false) {
-  if (dirty.holidays && !force) return;
-
-  const year = Number(selectedMonth().slice(0, 4));
-  const entries = Object.entries(state.holidays)
-    .filter(([date]) => date.startsWith(year + "-"))
-    .sort(([a], [b]) => a.localeCompare(b));
-
-  $("holidayText").value =
-    entries.map(([date, name]) => `${date} ${name}`).join("\n");
-
-  $("holidayVerified").checked = state.verifiedYears.includes(year);
-
-  $("holidayStatus").textContent =
-    `${year} 年：${entries.length} 個日期；` +
-    (state.verifiedYears.includes(year)
-      ? "已確認全年清單"
-      : "尚未確認全年清單");
-}
-
-async function importICS(text) {
-  requireWritable();
-
-  if (dirty.holidays && !confirm(
-    "假期設定有未儲存修改。匯入會放棄這些修改，確定繼續？"
-  )) return;
-
-  const unfolded = text.replace(/\r?\n[ \t]/g, "");
-  const blocks = unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || [];
-  const imported = {};
-
-  for (const block of blocks) {
-    const match = block.match(
-      /^DTSTART(?:;[^:\r\n]*)?:(\d{4})(\d{2})(\d{2})/m
-    );
-
-    if (!match) continue;
-
-    const date = `${match[1]}-${match[2]}-${match[3]}`;
-    if (!validDate(date)) throw Error("ICS 包含無效日期：" + date);
-
-    const label = block.match(/^SUMMARY(?:;[^:\r\n]*)?:(.*)$/m);
-
-    imported[date] = (label?.[1] || "公眾假期")
-      .trim()
-      .replace(/\\n/gi, " ")
-      .replace(/\\([,;\\])/g, "$1");
-  }
-
-  const dates = Object.keys(imported);
-
-  if (!dates.length) {
-    throw Error("找不到可讀取的 ICS 假期日期。");
-  }
-
-  const years = [...new Set(dates.map(d => Number(d.slice(0, 4))))];
-
-  if (!confirm(
-    `將匯入 ${dates.length} 個日期，涉及 ${years.join("、")} 年。\n` +
-    "會替換這些年份的假期清單，並取消全年核對標記。\n" +
-    "已有班次不會刪除。確定匯入？"
-  )) return;
-
-  const next = copy(state);
-
-  for (const date of Object.keys(next.holidays)) {
-    if (years.includes(Number(date.slice(0, 4)))) {
-      delete next.holidays[date];
-    }
-  }
-
-  Object.assign(next.holidays, imported);
-  next.verifiedYears = next.verifiedYears.filter(y => !years.includes(y));
-
-  await commit(next);
-
-  dirty.holidays = false;
-  renderHolidays(true);
-  message(`已匯入 ${dates.length} 個日期。請逐年核對後確認完整。`);
-}
-
-async function fetchHolidays() {
-  requireWritable();
-
-  let text;
-
-  try {
-    const response = await fetch(HOLIDAY_URL, {
-      cache: "no-store",
-      credentials: "omit"
-    });
-
-    if (!response.ok) throw Error("HTTP " + response.status);
-    text = await response.text();
-  } catch (error) {
-    throw Error(
-      "未能直接讀取官方資料。請下載官方 ICS，再使用檔案匯入。"
-    );
-  }
-
-  await importICS(text);
-}
-
-async function saveHolidays() {
-  requireWritable();
-
-  const year = Number(selectedMonth().slice(0, 4));
-  const parsed = {};
-
-  for (const line of $("holidayText").value.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-
-    const match = line.trim().match(
-      /^(\d{4}-\d{2}-\d{2})(?:\s+(.+))?$/
-    );
-
-    if (!match || Number(match[1].slice(0, 4)) !== year) {
-      throw Error(
-        "每行必須是所選年份的 YYYY-MM-DD，後面可加假期名稱。"
-      );
-    }
-
-    if (!validDate(match[1])) {
-      throw Error("無效日期：" + match[1]);
-    }
-
-    if (Object.hasOwn(parsed, match[1])) {
-      throw Error("假期日期重複：" + match[1]);
-    }
-
-    parsed[match[1]] = match[2] || "公眾假期";
-  }
-
-  const verified = $("holidayVerified").checked;
-
-  if (verified && !Object.keys(parsed).length) {
-    throw Error("不能確認空白假期清單。");
-  }
-
-  const next = copy(state);
-
-  for (const date of Object.keys(next.holidays)) {
-    if (date.startsWith(year + "-")) delete next.holidays[date];
-  }
-
-  Object.assign(next.holidays, parsed);
-  next.verifiedYears = next.verifiedYears.filter(y => y !== year);
-
-  if (verified) next.verifiedYears.push(year);
-
-  await commit(next);
-
-  dirty.holidays = false;
-  renderHolidays(true);
-
-  message(
-    `已儲存 ${year} 年假期清單；` +
-    (verified ? "已標記全年核對完成。" : "尚未標記全年核對完成。")
-  );
-}
-
-/* ===================== 月結及收款 ===================== */
-
-function fillSettlement(force = false) {
-  if (dirty.settlement && !force) return;
-
-  const month = selectedMonth();
-  const scope = $("settleScope").value;
-  const item = state.settlements.find(x =>
-    x.month === month && x.scope === scope
-  );
-
-  $("statement").value = displayInput(item?.statement);
-  $("received").value = displayInput(item?.received ?? 0);
-  $("settleNote").value = item?.note || "";
-  shownSettlementScope = scope;
-}
-
-function renderSettlements(force = false) {
-  const month = selectedMonth();
-  const items = state.settlements.filter(x => x.month === month);
-  const done = monthShifts(month).filter(s => s.status === "completed");
-
-  $("settlementRows").innerHTML = items.map(x => {
-    const result = calculate(scopeFilter(done, x.scope));
-    let difference = "待填結算額";
-
-    if (x.statement != null) {
-      difference = result.flags.length || result.low !== result.high
-        ? "待確認；完成班次試算：" + amount(result)
-        : money(x.statement - result.low);
-    }
-
-    return `
-      <tr role="row">
-        ${tableCell("對象", esc(names[x.scope]))}
-        ${tableCell("診所結算", x.statement == null
-          ? "待填" : money(x.statement))}
-        ${tableCell("已收", money(x.received))}
-        ${tableCell("結算減已收", x.statement == null
-          ? "待填" : money(x.statement - x.received))}
-        ${tableCell("結算減完成班次試算", esc(difference))}
-        ${tableCell("備註", esc(x.note))}
-      </tr>
-    `;
-  }).join("") || emptyTableRow(6, "本月未有結算記錄。");
-
-  fillSettlement(force);
-}
-
-async function saveSettlement() {
-  requireWritable();
-
-  const month = selectedMonth();
-  const scope = $("settleScope").value;
-  const existing = state.settlements.filter(x => x.month === month);
-
-  if (scope === "amc" &&
-      existing.some(x => ["cwb", "tqb"].includes(x.scope))) {
-    throw Error("已有 AMC 分店月結；請先刪除分店記錄，再改為合併結算。");
-  }
-
-  if (["cwb", "tqb"].includes(scope) &&
-      existing.some(x => x.scope === "amc")) {
-    throw Error("已有 AMC 合併月結；請先刪除合併記錄，再改為分店結算。");
-  }
-
-  const old = existing.find(x => x.scope === scope);
-  const next = copy(state);
-
-  next.settlements = next.settlements.filter(x =>
-    !(x.month === month && x.scope === scope)
-  );
-
-  next.settlements.push({
-    ...(old || {}),
-    month,
-    scope,
-    statement: numeric("statement"),
-    received: numeric("received") ?? 0,
-    note: $("settleNote").value
-  });
-
-  await commit(next);
-
-  dirty.settlement = false;
-  fillSettlement(true);
-  message(`已儲存 ${month} ${names[scope]} 月結。`);
-}
-
-async function deleteSettlement() {
-  requireWritable();
-
-  const month = selectedMonth();
-  const scope = $("settleScope").value;
-  const exists = state.settlements.some(x =>
-    x.month === month && x.scope === scope
-  );
-
-  if (!exists) {
-    message("沒有此月份／對象的已儲存月結記錄。");
-    return;
-  }
-
-  if (!confirm(`刪除 ${month} ${names[scope]} 的月結記錄？`)) return;
-
-  const next = copy(state);
-  next.settlements = next.settlements.filter(x =>
-    !(x.month === month && x.scope === scope)
-  );
-
-  await commit(next);
-
-  dirty.settlement = false;
-  fillSettlement(true);
-  message("已刪除此月結記錄。");
-}
-
-/* ===================== CSV／JSON 匯出 ===================== */
-
-function download(name, text, type) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = name;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function csvCell(value) {
-  let text = String(value ?? "");
-
-  if (typeof value !== "number" &&
-      /^[\s]*[=+\-@\t\r]/.test(text)) {
-    text = "'" + text;
-  }
-
-  return '"' + text.replace(/"/g, '""') + '"';
-}
-
-function csv(name, rows) {
-  download(
-    name,
-    "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n"),
-    "text/csv;charset=utf-8"
-  );
-}
-
-function exportShifts() {
-  requireWorkspace();
-
-  const rows = [[
-    "日期", "地點", "開始", "結束", "工時", "狀態",
-    "診金HKD", "小手術HKD",
-    "時薪/保底部分HKD（非最終收入）", "報酬規則JSON", "備註"
-  ]];
-
-  for (const s of monthShifts()) {
-    rows.push([
-      s.date,
-      names[s.location],
-      s.start,
-      s.end,
-      duration(s) / 60,
-      statuses[s.status],
-      s.consultation == null ? "" : s.consultation / 100,
-      s.procedure == null ? "" : s.procedure / 100,
-      s.status === "cancelled" ? 0 : components(s).hourly / 100,
-      JSON.stringify(s.rule),
-      s.note
-    ]);
-  }
-
-  csv(`ray-shifts-${selectedMonth()}.csv`, rows);
-}
-
-function exportSummary() {
-  requireWorkspace();
-
-  const rows = [[
-    "月份", "機構", "範圍",
-    "已知部分試算低值HKD", "已知部分試算高值HKD", "提示"
-  ]];
-
-  const month = selectedMonth();
-  const live = active(monthShifts(month));
-
-  for (const scope of [...scopes, "total"]) {
-    const all = scope === "total" ? live : scopeFilter(live, scope);
-    const label = scope === "total" ? "所有診所合計" : names[scope];
-
-    for (const [range, list] of [
-      ["全月排班（含已完成）", all],
-      ["已完成", all.filter(s => s.status === "completed")]
-    ]) {
-      const result = calculate(list);
-
-      rows.push([
-        month, label, range,
-        result.low / 100,
-        result.high / 100,
-        result.flags.join("；")
-      ]);
-    }
-  }
-
-  csv(`ray-income-${month}.csv`, rows);
-}
-
-function backup() {
-  requireWorkspace();
-
-  download(
-    `ray-backup-${todayHK()}.json`,
-    JSON.stringify({
-      exportedAt: new Date().toISOString(),
-      revision,
-      data: state
-    }, null, 2),
-    "application/json"
-  );
-}
-
-/* ===================== 月份切換 ===================== */
-
-function switchMonth(target) {
-  if (busy || !state) return;
-
-  if (!validMonth(target)) {
-    $("month").value = shownMonth;
-    message("請選擇有效月份。", true);
-    return;
-  }
-
-  if (target === shownMonth) {
-    $("month").value = shownMonth;
-    return;
-  }
-
-  if (!confirmDiscard(
-    "轉月份會放棄未儲存的規則、假期或月結輸入。確定繼續？"
-  )) {
-    $("month").value = shownMonth;
-    return;
-  }
-
-  shownMonth = target;
-  $("month").value = target;
-  resetDirty();
-  render(true);
-}
-
-function changeMonth(delta) {
-  const [y, m] = shownMonth.split("-").map(Number);
-  const date = new Date(Date.UTC(y, m - 1 + delta, 1));
-  const target =
-    `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
-
-  switchMonth(target);
-}
-
-/* ===================== 自測 ===================== */
-
-function selfTest() {
-  const defaults = initialState().rules;
-
-  const make = (
-    location, rule, consultation, procedure,
-    date = "2026-01-05", start = "09:00", end = "13:00"
-  ) => ({
-    location, rule, consultation, procedure,
-    date, start, end, status: "completed"
-  });
-
-  const assert = (ok, label) => {
-    if (!ok) throw Error("計算自測失敗：" + label);
-  };
-
-  let result = calculate([
-    make("alan", defaults.alan, 0, 0),
-    make("alan", defaults.alan, 1000000, 0,
-      "2026-01-05", "14:00", "18:00")
-  ]);
-
-  assert(
-    result.low === 700000 && result.high === 1020000,
-    "雅蘭未知比較週期"
-  );
-
-  const daily = { ...defaults.alan, basis: "daily" };
-
-  result = calculate([
-    make("alan", daily, 0, 0),
-    make("alan", daily, 1000000, 0,
-      "2026-01-05", "14:00", "18:00")
-  ]);
-
-  assert(result.low === 700000, "雅蘭每日比較");
-
-  const amc = {
-    ...defaults.amc,
-    adminMode: "none",
-    adminConfirmed: true
-  };
-
-  result = calculate([make("tqb", amc, 999999, 100000)]);
-  assert(result.low === 370000, "AMC 診金不分成、小手術 30%");
-
-  const stubbs = {
-    ...defaults.stubbs,
-    adminMode: "none",
-    adminConfirmed: true
-  };
-
-  result = calculate([
-    make("stubbs", stubbs, 1000000, 0,
-      "2026-01-08", "09:00", "17:00")
-  ]);
-
-  assert(result.low === 920000, "司徒拔時薪加 20%");
-
-  result = calculate([
-    make("stubbs", { ...stubbs, adminMode: "gross" }, 1000000, 0,
-      "2026-01-08", "09:00", "17:00")
-  ]);
-
-  assert(result.low === 918000, "醫生費先扣 1%");
-
-  result = calculate([
-    make("stubbs", { ...stubbs, adminMode: "all" }, 1000000, 0,
-      "2026-01-08", "09:00", "17:00")
-  ]);
-
-  assert(result.low === 910800, "全額扣 1%");
-
-  result = calculate([make("tqb", amc, 0, null)]);
-  assert(
-    result.flags.some(flag => flag.includes("費用未齊")),
-    "空白不是零"
-  );
-
-  const cancelled = {
-    ...make("tqb", amc, 0, 100000),
-    status: "cancelled"
-  };
-
-  assert(calculate([cancelled]).low === 0, "取消班不計收入");
-
-  const all = [
-    make("tqb", amc, 0, 100000),
-    make("cwb", amc, 0, 100000)
-  ];
-
-  assert(
-    calculate(all).low ===
-      calculate(scopeFilter(all, "tqb")).low +
-      calculate(scopeFilter(all, "cwb")).low,
-    "AMC 分店合計不重複"
-  );
-
-  assert(validDate("2028-02-29"), "有效閏日");
-  assert(!validDate("2026-02-29"), "拒絕無效閏日");
-
-  const staticIds = [...document.querySelectorAll("[id]")]
-    .map(element => element.id);
-
-  assert(
-    new Set(staticIds).size === staticIds.length,
-    "HTML 不可有重複 ID"
-  );
-}
-
-/* ===================== 登入／啟動 ===================== */
-
-async function start() {
-  if (!db) throw Error("Supabase 尚未初始化。");
-
-  const epoch = sessionEpoch;
-  const { data, error } = await db.auth.getUser();
-
-  if (error) throw error;
-  if (epoch !== sessionEpoch) throw Error("登入狀態已改變。");
-
-  const user = data?.user;
-  if (!user) return;
-
-  uid = user.id;
-  const owner = uid;
-
-  const { data: existing, error: readError } = await db
-    .from("ray_workspace")
-    .select("owner_id")
-    .eq("owner_id", owner)
-    .maybeSingle();
-
-  if (epoch !== sessionEpoch || uid !== owner) {
-    throw Error("登入狀態已改變。");
-  }
-
-  if (readError) throw readError;
-
-  if (!existing) {
-    const { error: insertError } = await db
-      .from("ray_workspace")
-      .insert({
-        owner_id: owner,
-        data: initialState()
-      });
-
-    if (epoch !== sessionEpoch || uid !== owner) {
-      throw Error("登入狀態已改變。");
-    }
-
-    if (insertError && insertError.code !== "23505") {
-      throw insertError;
-    }
-  }
-
-  await load();
-
-  if (epoch !== sessionEpoch || uid !== owner) {
-    throw Error("登入狀態已改變。");
-  }
-
-  $("loginCard").hidden = true;
-  $("app").hidden = false;
-  $("logout").hidden = false;
-  $("user").textContent = user.email || "";
-
-  message(
-    "登入成功。"
-  );
-}
-
-async function login() {
-  if (!db) throw Error("Supabase SDK 尚未載入，請重新整理。");
-
-  const { error } = await db.auth.signInWithPassword({
-    email: $("email").value.trim(),
-    password: $("password").value
-  });
-
-  if (error) throw error;
-
-  $("password").value = "";
-  await start();
-}
-
-async function logout() {
-  if (!confirmDiscard("有未儲存輸入，登出會放棄修改。確定登出？")) return;
-
-  const { error } = await db.auth.signOut();
-  if (error) throw error;
-
-  if (uid || state) clearSession();
-}
-
-async function boot() {
-  selfTest();
-
-  if (!window.supabase) {
-    throw Error("Supabase SDK 未載入，請檢查網絡後重新整理。");
-  }
-
-  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  db.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_OUT") {
-      clearSession();
-    } else if (uid && session?.user?.id &&
-               session.user.id !== uid) {
-      clearSession();
-      message("其他分頁已切換帳戶，請重新登入。", true);
-    }
-  });
-
-  const { data, error } = await db.auth.getSession();
-  if (error) throw error;
-
-  if (data?.session) {
-    await start();
-  } else {
-    message("請登入。");
-  }
-}
-
-/* ===================== 事件：每個控制項只綁定一次 ===================== */
-
-$("month").value = shownMonth;
-updateCalendarLayout();
-
-$("loginForm").addEventListener("submit", event => {
-  event.preventDefault();
-  run(login);
-});
-
-$("logout").addEventListener("click", () => run(logout));
-$("previous").addEventListener("click", () => changeMonth(-1));
-$("next").addEventListener("click", () => changeMonth(1));
-
-$("month").addEventListener("change", () => {
-  switchMonth($("month").value);
-});
-
-$("calendarView").addEventListener("change", () => {
-  if (!busy && state) renderCalendar(monthShifts());
-});
-
-$("toggleCalendar").addEventListener("click", () => {
-  if (busy) return;
-  mobileMonthGrid = !mobileMonthGrid;
-  updateCalendarLayout();
-});
-
-$("reload").addEventListener("click", () => run(reloadWorkspace));
-$("generate").addEventListener("click", () => run(generate));
-$("confirmMonth").addEventListener("click", () => run(confirmMonthShifts));
-$("deleteMonthShifts").addEventListener("click", () => run(deleteMonthShifts));
-
-$("add").addEventListener("click", () => {
-  if (busy || !state) return;
-
-  const month = selectedMonth();
-  const today = todayHK();
-
-  openShift(null, today.startsWith(month + "-") ? today : month + "-01");
-});
-
-function handleShiftClick(event) {
-  if (busy || !state || !(event.target instanceof Element)) return;
-
-  const confirmButton = event.target.closest("[data-confirm]");
-  const editButton = event.target.closest("[data-edit]");
-  const dateButton = event.target.closest("[data-date]");
-
-  if (confirmButton) {
-    run(() => confirmShift(confirmButton.dataset.confirm));
-  } else if (editButton) {
-    openShift(editButton.dataset.edit);
-  } else if (dateButton) {
-    openShift(null, dateButton.dataset.date);
-  }
-}
-
-$("calendar").addEventListener("click", handleShiftClick);
-$("shiftRows").addEventListener("click", handleShiftClick);
-
-$("shiftForm").addEventListener("submit", event => {
-  event.preventDefault();
-  run(saveShift);
-});
-
-$("closeDialog").addEventListener("click", closeShift);
-$("deleteShift").addEventListener("click", () => run(deleteShift));
-
-$("shiftDialog").addEventListener("cancel", event => {
-  event.preventDefault();
-  closeShift();
-});
-
-$("shiftDialog").addEventListener("close", () => {
-  dirty.shift = false;
-  document.body.classList.remove("modal-open");
-});
-
-$("rulesForm").addEventListener("submit", event => {
-  event.preventDefault();
-  run(saveRules);
-});
-
-$("applyRules").addEventListener("click", () => run(applyRules));
-$("saveHolidays").addEventListener("click", () => run(saveHolidays));
-$("fetchHolidays").addEventListener("click", () => run(fetchHolidays));
-
-$("holidayFile").addEventListener("change", event => {
-  const file = event.target.files[0];
-  if (!file || busy) return;
-
-  run(async () => {
-    try {
-      await importICS(await file.text());
-    } finally {
-      $("holidayFile").value = "";
-    }
-  });
-});
-
-$("settleScope").addEventListener("change", () => {
-  if (!state || busy) return;
-
-  if (dirty.settlement &&
-      !confirm("此月結有未儲存修改，切換對象會放棄修改。確定？")) {
-    $("settleScope").value = shownSettlementScope;
-    return;
-  }
-
-  dirty.settlement = false;
-  fillSettlement(true);
-});
-
-$("settlementForm").addEventListener("submit", event => {
-  event.preventDefault();
-  run(saveSettlement);
-});
-
-$("deleteSettlement").addEventListener("click", () => run(deleteSettlement));
-$("exportShifts").addEventListener("click", () => run(exportShifts));
-$("exportSummary").addEventListener("click", () => run(exportSummary));
-$("backup").addEventListener("click", () => run(backup));
-
-/* 點手機「設定」時，同時展開報酬規則。 */
-document.querySelector('.mobile-nav a[href="#settingsSection"]')
-  .addEventListener("click", () => {
-    $("settingsSection").open = true;
-  });
-
-function trackUnsaved(event) {
-  if (!state || busy || !(event.target instanceof Element)) return;
-
-  const target = event.target;
-
-  if (target.closest("#rulesForm")) {
-    dirty.rules = true;
-  } else if (target.id === "holidayText" ||
-             target.id === "holidayVerified") {
-    dirty.holidays = true;
-  } else if (target.closest("#settlementForm") &&
-             target.id !== "settleScope") {
-    dirty.settlement = true;
-  } else if (target.closest("#shiftForm")) {
-    dirty.shift = true;
-  }
-}
-
-document.addEventListener("input", trackUnsaved);
-document.addEventListener("change", trackUnsaved);
-
-window.addEventListener("beforeunload", event => {
-  if (hasUnsaved() || busy) {
-    event.preventDefault();
-    event.returnValue = "";
-  }
-});
-
-/* 全份檔案只有一次啟動。 */
-run(boot);
-</script>
-  <!-- ===== Dr. Ray v5：總覽及設定排版升級，貼在 </body> 前 ===== -->
-<style id="rayV5Style">
-  .v5-overview-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .v5-overview-head h2 { margin: 0; }
-
-  .v5-year-control {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .v5-year-control select {
-    width: auto;
-    min-width: 110px;
-    margin: 0;
-  }
-
-  .v5-year-control button {
-    min-width: 44px;
-    padding: 8px 12px;
-  }
-
-  .v5-kpis {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .v5-kpi {
-    min-width: 0;
-    padding: 15px;
-    border-radius: 11px;
-    background: #f5f8fe;
-    border: 1px solid #e4eaf5;
-  }
-
-  .v5-kpi-label {
-    display: block;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .v5-kpi strong {
-    display: block;
-    margin-top: 6px;
-    font-size: 22px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .v5-kpi small {
-    display: block;
-    margin-top: 5px;
-    font-size: 12px;
-  }
-
-  .v5-summary-lines {
-    margin-top: 14px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 4px 14px;
-  }
-
-  .v5-summary-line {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid #edf0f5;
-  }
-
-  .v5-summary-line:last-child { border-bottom: 0; }
-
-  .v5-summary-line span {
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .v5-summary-line strong {
-    text-align: right;
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .v5-subsection {
-    margin-top: 22px;
-  }
-
-  .v5-subsection > summary {
-    font-size: 16px;
-  }
-
-  .v5-chart {
-    margin-top: 14px;
-    display: grid;
-    gap: 13px;
-  }
-
-  .v5-chart-month {
-    display: grid;
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 10px;
-    align-items: start;
-  }
-
-  .v5-chart-month-label {
-    color: var(--muted);
-    font-size: 13px;
-    padding-top: 4px;
-  }
-
-  .v5-chart-bars {
-    display: grid;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .v5-chart-series {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    gap: 7px;
-    min-width: 0;
-    align-items: center;
-  }
-
-  .v5-series-name {
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .v5-track {
-    height: 9px;
-    background: #edf1f7;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .v5-bar {
-    display: block;
-    height: 100%;
-    border-radius: inherit;
-  }
-
-  .v5-blue { background: #5b83f1; }
-  .v5-green { background: #199f86; }
-  .v5-amber { background: #df9b27; }
-
-  .v5-chart-value {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 2px;
-    overflow-wrap: anywhere;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .v5-month-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 14px;
-  }
-
-  .v5-month-card {
-    min-width: 0;
-    align-self: start;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .v5-month-card.v5-selected {
-    border-color: #9db9fa;
-    background: #fbfcff;
-  }
-
-  .v5-month-card > summary {
-    padding: 14px;
-    min-height: 70px;
-  }
-
-  .v5-month-title {
-    display: inline;
-    font-size: 16px;
-  }
-
-  .v5-month-subtitle {
-    display: block;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 400;
-    margin-top: 5px;
-  }
-
-  .v5-month-body {
-    padding: 0 14px 14px;
-  }
-
-  .v5-metric {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    border-top: 1px solid #edf0f5;
-    padding: 9px 0;
-  }
-
-  .v5-metric > span {
-    color: var(--muted);
-    font-size: 12px;
-    flex: 0 1 48%;
-  }
-
-  .v5-metric > strong {
-    font-size: 13px;
-    font-weight: 600;
-    text-align: right;
-    min-width: 0;
-    overflow-wrap: anywhere;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .v5-month-note {
-    margin: 9px 0;
-    padding: 9px;
-    background: #fff7e8;
-    border-radius: 7px;
-    color: #805400;
-    font-size: 12px;
-    overflow-wrap: anywhere;
-  }
-
-  .v5-month-body > button {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .v5-rule-card {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    margin: 12px 0;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  .v5-rule-card > summary {
-    padding: 15px;
-  }
-
-  .v5-rule-name {
-    font-size: 16px;
-  }
-
-  .v5-rule-summary {
-    display: block;
-    margin: 8px 0 0;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.8;
-    color: var(--text);
-  }
-
-  .v5-rule-summary > span { display: block; }
-
-  .v5-rule-edit {
-    padding: 0 15px 15px;
-    border-top: 1px solid var(--line);
-  }
-
-  .v5-rule-edit > p {
-    font-size: 13px;
-  }
-
-  .v5-badge {
-    display: inline-block;
-    border-radius: 6px;
-    padding: 2px 7px;
-    background: #fff1d6;
-    color: #805400;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .v5-badge.v5-ok {
-    background: #e5f5ee;
-    color: #166b4c;
-  }
-
-  .v5-settings-block {
-    margin-top: 18px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-  }
-
-  .v5-settings-block > summary {
-    font-size: 15px;
-  }
-
-  .v5-advanced {
-    background: #fffaf4;
-    border: 1px solid #eedbc6;
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 20px;
-  }
-
-  .v5-advanced p {
-    font-size: 13px;
-  }
-
-  #v5Overview .notice {
-    font-size: 13px;
-  }
-
-  #v5OverviewHelp {
-    margin-top: 18px;
-  }
-
-  #v5OverviewHelp li {
-    margin: 8px 0;
-    font-size: 13px;
-  }
-
-  @media (max-width: 950px) {
-    .v5-month-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 700px) {
-    .v5-kpis {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .v5-kpi { padding: 12px 10px; }
-    .v5-kpi strong { font-size: 18px; }
-    .v5-kpi-label { font-size: 12px; }
-    .v5-kpi small { font-size: 11px; }
-
-    .v5-month-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .v5-overview-head {
-      align-items: stretch;
-    }
-
-    .v5-overview-head h2 {
-      width: 100%;
-    }
-
-    .v5-year-control {
-      display: grid;
-      grid-template-columns: 44px minmax(0, 1fr) 44px;
-      width: 100%;
-    }
-
-    .v5-year-control select {
-      width: 100%;
-      text-align: center;
-    }
-
-    .v5-summary-line {
-      gap: 10px;
-    }
-
-    .v5-summary-line strong {
-      max-width: 58%;
-    }
-
-    .v5-rule-card > summary { padding: 13px; }
-
-    .v5-rule-edit {
-      padding: 0 13px 13px;
-    }
-
-    .mobile-nav {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .mobile-nav a {
-      font-size: 13px;
-      padding: 8px 4px;
-    }
-
-    .v5-settings-block .row {
-      gap: 8px;
-    }
-  }
-</style>
-
-<script id="rayV5Script">
-"use strict";
-
 (() => {
-  if (window.__rayV5Installed) return;
-  window.__rayV5Installed = true;
+  const API =
+    "https://vuzzgyzyucyuedxabjss.supabase.co";
 
-  /*
-    只擴充畫面與統計，不改 schema、RPC 或收入引擎。
-    預測及已完成收入均逐月計算後相加，
-    避免把雅蘭「整月比較」錯當成全年比較。
-  */
+  const KEY =
+    "sb_publishable_meYS5Q2OrY2T0pwrUE8lbQ__jjeEkTt";
 
-  let overviewYear = Number(shownMonth.slice(0, 4));
+  const $ = id => document.getElementById(id);
 
-  const app = $("app");
-  const settings = $("settingsSection");
-
-  if (!app || !settings) {
-    console.error("v5 需要目前的手機整合版 v4。");
-    return;
-  }
-
-  /* ===================== 建立總覽 ===================== */
-
-  const overview = document.createElement("section");
-  overview.id = "v5Overview";
-  overview.className = "card";
-
-  overview.innerHTML = `
-    <div class="v5-overview-head">
-      <div>
-        <h2>工作及收入總覽</h2>
-      </div>
-
-      <div class="v5-year-control">
-        <button id="v5PreviousYear" type="button"
-          aria-label="上一年">←</button>
-        <select id="v5Year" aria-label="總覽年份"></select>
-        <button id="v5NextYear" type="button"
-          aria-label="下一年">→</button>
-      </div>
-    </div>
-
-    <div id="v5AnnualKpis" class="v5-kpis"></div>
-    <div id="v5AnnualRates" class="v5-summary-lines"></div>
-    <p id="v5AnnualNotes" class="muted"></p>
-
-    <details class="v5-subsection">
-      <summary>每月工作時數圖</summary>
-      <p class="muted">
-        藍色：有效排班；綠色：已完成。已取消班次不計。
-      </p>
-      <div id="v5HoursChart" class="v5-chart"></div>
-    </details>
-
-    <details class="v5-subsection">
-      <summary>每月收入比較圖</summary>
-      <p class="muted">
-        藍色：排班試算；綠色：完成試算；黃色：累計已收款。
-        有試算範圍時，長條以較高值繪畫，旁邊保留完整範圍。
-      </p>
-      <div id="v5IncomeChart" class="v5-chart"></div>
-    </details>
-
-    <div class="v5-subsection">
-      <h3>每月明細</h3>
-      <small>展開月份查看平均時薪、結算及收款進度。</small>
-      <div id="v5Months" class="v5-month-grid"></div>
-    </div>
-
-    <details id="v5OverviewHelp">
-      <summary>統計口徑及限制</summary>
-      <ul>
-        <li>
-          預測平均時薪：
-          全月有效排班收入試算 ÷ 有效排班工時。
-        </li>
-        <li>
-          已完成平均時薪：
-          已完成班次收入試算 ÷ 已完成工時，仍然係試算。
-        </li>
-        <li>
-          結算平均時薪：
-          已填診所結算額 ÷ 同一批結算對象的已完成工時。
-          未填結算額的對象不會加入分母。
-        </li>
-        <li>
-          收款折合時薪：
-          有月結記錄對象的累計已收款 ÷
-          同一批對象的已完成工時，反映收款進度，唔係最終時薪。
-        </li>
-        <li>
-          平均每月排班試算只除以有有效排班的月份；
-          其餘月份不當作零收入月份。
-        </li>
-        <li>
-          年度收入先逐月計算再相加；
-          年度平均時薪以總額除總工時，不取各月時薪的簡單平均。
-        </li>
-        <li>
-          冇工時顯示「—」。
-          若有結算／收款，但對應對象冇已完成工時，
-          該項平均時薪亦顯示「—」，避免錯配。
-        </li>
-        <li>
-          未建立月結記錄只代表「未記錄」，唔代表已確認未收款。
-          金額只計入目前已儲存資料。
-        </li>
-        <li>
-          目前未有逐筆收款及入帳日期，
-          因此唔可以用此總覽當作銀行現金流報表。
-        </li>
-      </ul>
-    </details>
-  `;
-
-  const warning = $("reloadWarning");
-  if (warning) warning.after(overview);
-  else app.prepend(overview);
-
-  /* ===================== 設定排版 ===================== */
-
-  const settingsSummary = settings.querySelector(":scope > summary");
-  const settingsBody = settings.querySelector(":scope > .body");
-
-  if (settingsSummary) {
-    settingsSummary.textContent = "設定：報酬規則／假期／備份";
-  }
-
-  if (settingsBody) {
-    const intro = document.createElement("p");
-    intro.className = "muted";
-    intro.textContent =
-      "以下摘要顯示目前已儲存規則。展開機構卡片修改，" +
-      "再按「儲存新班次規則」。未儲存修改不會更新摘要。";
-    settingsBody.prepend(intro);
-
-    /*
-      重用原有假期及備份節點；
-      原本事件處理器會保留。
-    */
-    const holidayDetails = $("holidayFile")?.closest("details");
-
-    if (holidayDetails && holidayDetails !== settings) {
-      holidayDetails.classList.remove("card");
-      holidayDetails.classList.add("v5-settings-block");
-      settingsBody.appendChild(holidayDetails);
+  const places = {
+    alan: {
+      name: "香港專科日間醫療中心",
+      address: "九龍旺角彌敦道625及639號雅蘭中心一期20樓"
+    },
+    tqb: {
+      name: "港安醫療中心－太古坊",
+      address: "香港鰂魚涌英皇道979號太古坊濠豐大廈19樓"
+    },
+    cwb: {
+      name: "港安醫療中心－銅鑼灣",
+      address: "香港銅鑼灣恩平道28號利園二期26樓"
+    },
+    stubbs: {
+      name: "香港港安醫院－司徒拔道",
+      address: "香港灣仔區司徒拔道40號"
     }
-
-    const backupSection = $("backup")?.closest("section");
-
-    if (backupSection && backupSection !== overview) {
-      backupSection.classList.remove("card");
-      backupSection.classList.add("v5-settings-block");
-      settingsBody.appendChild(backupSection);
-    }
-
-    const applyButton = $("applyRules");
-
-    if (applyButton) {
-      const advanced = document.createElement("details");
-      advanced.className = "v5-advanced";
-
-      advanced.innerHTML = `
-        <summary>進階操作：重算已有班次</summary>
-        <p>
-          這不是日常儲存。
-          套用後會更新上方所選月份全部班次的報酬規則，
-          包括已完成及已取消班次。
-        </p>
-        <p id="v5ApplyRulesInfo" class="muted"></p>
-        <p class="notice">
-          月結及已收款不會被修改，但收入試算及月結比較差額可能改變。
-          請先儲存規則，並確認月份。
-        </p>
-      `;
-
-      advanced.appendChild(applyButton);
-      settingsBody.appendChild(advanced);
-    }
-  }
-
-  /*
-    包裝原 renderRules：
-    欄位、ID、表單及原有儲存功能全部保留。
-  */
-  const previousRenderRules = renderRules;
-
-  renderRules = function(force = false) {
-    const fields = $("rulesFields");
-
-    const openOrgs = new Set(
-      [...fields.querySelectorAll(".v5-rule-card[open]")]
-        .map(element => element.dataset.org)
-    );
-
-    if (dirty.rules && !force) {
-      previousRenderRules(force);
-      return;
-    }
-
-    previousRenderRules(force);
-
-    if (!state) return;
-
-    const originalChildren = [...fields.children];
-    const fragment = document.createDocumentFragment();
-
-    const basisLabels = {
-      unknown: "待確認",
-      session: "每節比較",
-      daily: "每日比較",
-      monthly: "整月比較"
-    };
-
-    const adminLabels = {
-      pending: "扣法待確認，暫不扣除",
-      none: "不扣行政費",
-      share: "只扣分成所得",
-      gross: "醫生費先扣，再計分成",
-      all: "時薪／保底及分成一併扣"
-    };
-
-    ruleOrgs.forEach((o, index) => {
-      const heading = originalChildren[index * 2];
-      const grid = originalChildren[index * 2 + 1];
-      if (!grid) return;
-
-      const r = state.rules[o];
-
-      const pct = value =>
-        (value / 100).toLocaleString("zh-HK", {
-          maximumFractionDigits: 2
-        }) + "%";
-
-      const shareText = o === "amc"
-        ? `小手術分成 ${pct(r.share)}；診金不分成`
-        : `診金及程序費分成 ${pct(r.share)}`;
-
-      const modelText = o === "alan"
-        ? "保底與分成取較高者"
-        : "時薪另加適用分成";
-
-      const adminText = r.adminMode === "none"
-        ? "行政費：不扣除"
-        : `行政費 ${pct(r.admin)}：${adminLabels[r.adminMode]}`;
-
-      const pending = (
-        r.adminMode === "pending" ||
-        !r.adminConfirmed ||
-        (o === "alan" && r.basis === "unknown")
-      );
-
-      const card = document.createElement("details");
-      card.className = "v5-rule-card";
-      card.dataset.org = o;
-      card.open = openOrgs.has(o);
-
-      card.innerHTML = `
-        <summary>
-          <span class="v5-rule-name">${esc(names[o])}</span>
-          <div class="v5-rule-summary">
-            <span>
-              ${o === "alan" ? "保底" : "時薪"}
-              <strong>${money(r.hourly)}／小時</strong>
-            </span>
-            <span>${esc(shareText)}</span>
-            <span>${esc(modelText)}</span>
-            ${o === "alan" ? `
-              <span>比較週期：${esc(basisLabels[r.basis])}</span>
-            ` : ""}
-            <span>${esc(adminText)}</span>
-            ${o === "amc" ? `
-              <span class="muted">適用：太古坊及銅鑼灣</span>
-            ` : ""}
-            <span>
-              <span class="v5-badge ${pending ? "" : "v5-ok"}">
-                ${pending ? "有待確認條款" : "設定已確認"}
-              </span>
-              <span class="muted"> · 展開修改</span>
-            </span>
-          </div>
-        </summary>
-        <div class="v5-rule-edit">
-          <p class="muted">
-            修改後請到下方按「儲存新班次規則」。
-            新設定只影響之後新增／產生的班次。
-          </p>
-        </div>
-      `;
-
-      if (heading) heading.remove();
-      card.querySelector(".v5-rule-edit").appendChild(grid);
-      fragment.appendChild(card);
-    });
-
-    fields.replaceChildren(fragment);
   };
 
-  /* ===================== 手機導覽 ===================== */
+  // 預設選取全部地點；重新整理日程不會重設選擇。
+  const selectedLocations = new Set(Object.keys(places));
 
-  const mobileNav = document.querySelector(".mobile-nav");
+  const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
 
-  if (mobileNav &&
-      !mobileNav.querySelector('a[href="#v5Overview"]')) {
-    const link = document.createElement("a");
-    link.href = "#v5Overview";
-    link.textContent = "總覽";
-    mobileNav.prepend(link);
-  }
+  const pad = value => String(value).padStart(2, "0");
 
-  /* ===================== 統計工具 ===================== */
+  const esc = value => String(value ?? "").replace(
+    /[&<>"']/g,
+    char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]
+  );
 
-  const emptyResult = () => ({
-    low: 0,
-    high: 0,
-    flags: []
-  });
+  function todayHK() {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Hong_Kong",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
 
-  function addResults(results) {
-    const result = emptyResult();
-    const flags = new Set();
-
-    for (const item of results) {
-      result.low += item.low;
-      result.high += item.high;
-      item.flags.forEach(flag => flags.add(flag));
-    }
-
-    if (!Number.isSafeInteger(result.low) ||
-        !Number.isSafeInteger(result.high)) {
-      throw Error("年度試算超出安全計算範圍。");
-    }
-
-    result.flags = [...flags];
-    return result;
-  }
-
-  function rateText(result, totalMinutes) {
-    if (totalMinutes <= 0) return "—";
-
-    return amount({
-      low: Math.round(result.low * 60 / totalMinutes),
-      high: Math.round(result.high * 60 / totalMinutes)
-    }) + "／小時";
-  }
-
-  function fixedRateText(cents, totalMinutes, blocked = false) {
-    if (blocked || totalMinutes <= 0) return "—";
-    return money(Math.round(cents * 60 / totalMinutes)) + "／小時";
-  }
-
-  function averageMonthText(result, count) {
-    if (!count) return "—";
-
-    return amount({
-      low: Math.round(result.low / count),
-      high: Math.round(result.high / count)
-    });
-  }
-
-  /*
-    同一月若出現 AMC 合併 + 分店重疊：
-    不猜測哪筆才正確，該月結算／收款統計暫停採用。
-  */
-  function settlementMetrics(month, completed) {
-    const records = state.settlements.filter(
-      item => item.month === month
+    const fields = Object.fromEntries(
+      parts.map(part => [part.type, part.value])
     );
 
-    const combined = records.some(item => item.scope === "amc");
-    const branch = records.some(
-      item => ["cwb", "tqb"].includes(item.scope)
-    );
-
-    const conflict = combined && branch;
-
-    const result = {
-      conflict,
-      records: records.length,
-      statements: 0,
-      statement: 0,
-      received: 0,
-      statementMinutes: 0,
-      receiptMinutes: 0,
-      statementBlocked: false,
-      receiptBlocked: false,
-      notes: []
-    };
-
-    if (conflict) {
-      result.notes.push(
-        "AMC 合併及分店月結重疊：本月結算及收款統計暫不採用，請先整理記錄。"
-      );
-      return result;
-    }
-
-    for (const record of records) {
-      const matching = scopeFilter(completed, record.scope);
-      const mins = matching.reduce(
-        (total, shift) => total + duration(shift), 0
-      );
-
-      result.received += record.received;
-      result.receiptMinutes += mins;
-
-      /*
-        有金額但沒有對應工時時，
-        不讓該金額被其他對象工時攤薄。
-      */
-      if (record.received > 0 && mins <= 0) {
-        result.receiptBlocked = true;
-      }
-
-      if (record.statement != null) {
-        result.statements++;
-        result.statement += record.statement;
-        result.statementMinutes += mins;
-
-        if (record.statement > 0 && mins <= 0) {
-          result.statementBlocked = true;
-        }
-      }
-    }
-
-    if (records.length) {
-      const recordedScopes = records.map(record => record.scope);
-
-      const unmatchedCompleted = completed.some(shift =>
-        !recordedScopes.some(scope =>
-          scope === "amc"
-            ? org(shift.location) === "amc"
-            : shift.location === scope
-        )
-      );
-
-      if (unmatchedCompleted) {
-        result.notes.push(
-          "部分已完成班次尚未建立對應月結；結算及收款只反映已記錄對象。"
-        );
-      }
-
-      if (records.some(record => record.statement == null)) {
-        result.notes.push("部分月結未填診所結算額。");
-      }
-
-      if (result.statementBlocked || result.receiptBlocked) {
-        result.notes.push(
-          "部分金額沒有對應已完成工時，相關平均時薪暫不顯示。"
-        );
-      }
-    }
-
-    return result;
+    return `${fields.year}-${fields.month}-${fields.day}`;
   }
 
-  function buildMonths(year) {
-    const result = [];
+  function validMonth(value) {
+    return typeof value === "string" &&
+      /^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(value);
+  }
 
-    for (let m = 1; m <= 12; m++) {
-      const month = `${year}-${pad(m)}`;
-
-      const all = active(monthShifts(month));
-      const completed = all.filter(
-        shift => shift.status === "completed"
-      );
-
-      const plannedMinutes = all.reduce(
-        (total, shift) => total + duration(shift), 0
-      );
-
-      const completedMinutes = completed.reduce(
-        (total, shift) => total + duration(shift), 0
-      );
-
-      const forecast = calculate(all);
-      const earned = calculate(completed);
-      const settlement = settlementMetrics(month, completed);
-
-      result.push({
-        month,
-        number: m,
-        all,
-        completed,
-        plannedMinutes,
-        completedMinutes,
-        forecast,
-        earned,
-        settlement
-      });
+  function validDate(value) {
+    if (
+      typeof value !== "string" ||
+      !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)
+    ) {
+      return false;
     }
 
-    return result;
+    const date = new Date(value + "T00:00:00Z");
+
+    return Number.isFinite(date.getTime()) &&
+      date.toISOString().slice(0, 10) === value;
   }
 
-  function kpi(label, value, note) {
-    return `
-      <div class="v5-kpi">
-        <span class="v5-kpi-label">${esc(label)}</span>
-        <strong>${esc(value)}</strong>
-        <small>${esc(note)}</small>
-      </div>
-    `;
+  function validTime(value) {
+    return typeof value === "string" &&
+      /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
   }
 
-  function summaryLine(label, value) {
-    return `
-      <div class="v5-summary-line">
-        <span>${esc(label)}</span>
-        <strong>${esc(value)}</strong>
-      </div>
-    `;
-  }
+  let selectedMonth = todayHK().slice(0, 7);
 
-  function metric(label, value) {
-    return `
-      <div class="v5-metric">
-        <span>${esc(label)}</span>
-        <strong>${esc(value)}</strong>
-      </div>
-    `;
-  }
+  let view = window.matchMedia("(max-width: 700px)").matches
+    ? "list"
+    : "month";
 
-  function updateYearOptions() {
-    const years = new Set([
-      overviewYear,
-      Number(todayHK().slice(0, 4)),
-      Number(shownMonth.slice(0, 4))
-    ]);
+  let events = [];
+  let loading = false;
+  let loaded = false;
 
-    if (state) {
-      state.shifts.forEach(shift =>
-        years.add(Number(shift.date.slice(0, 4)))
-      );
+  $("month").value = selectedMonth;
 
-      state.settlements.forEach(item =>
-        years.add(Number(item.month.slice(0, 4)))
-      );
-    }
+  function buildLocationCards() {
+    $("locationCards").innerHTML = Object.entries(places)
+      .map(([code, place]) => `
+        <button
+          type="button"
+          class="location-card ${code}"
+          data-location="${code}"
+          aria-pressed="true"
+        >
+          <span class="location-card-head">
+            <span class="location-name">
+              ${esc(place.name)}
+            </span>
+            <span class="selection-mark" aria-hidden="true">✓</span>
+          </span>
 
-    $("v5Year").innerHTML = [...years]
-      .sort((a, b) => a - b)
-      .map(year => `
-        <option value="${year}"
-          ${year === overviewYear ? "selected" : ""}>
-          ${year} 年
-        </option>
+          <span class="location-address">
+            ${esc(place.address)}
+          </span>
+
+          <span class="location-state" aria-hidden="true">
+            已選取 · 點擊取消
+          </span>
+        </button>
       `).join("");
   }
 
-  /* ===================== 圖表 ===================== */
+  function updateLocationCards() {
+    $("locationCards")
+      .querySelectorAll("[data-location]")
+      .forEach(button => {
+        const selected = selectedLocations.has(
+          button.dataset.location
+        );
 
-  function seriesHTML(label, value, max, colorClass, text) {
-    const width = max > 0
-      ? Math.max(0, Math.min(100, value / max * 100))
-      : 0;
+        button.setAttribute(
+          "aria-pressed",
+          String(selected)
+        );
 
+        button.querySelector(".location-state").textContent =
+          selected
+            ? "已選取 · 點擊取消"
+            : "未選取 · 點擊顯示";
+      });
+  }
+
+  function setStatus(text, error = false) {
+    $("status").textContent = text;
+    $("status").classList.toggle("error", error);
+  }
+
+  function updateControls() {
+    const currentMonth = todayHK().slice(0, 7);
+
+    $("month").min = currentMonth;
+    $("month").max = "9999-12";
+
+    $("previous").disabled =
+      loading || selectedMonth <= currentMonth;
+
+    $("next").disabled =
+      loading || selectedMonth >= "9999-12";
+
+    $("month").disabled = loading;
+    $("thisMonth").disabled = loading;
+    $("refresh").disabled = loading;
+
+    $("schedule").setAttribute(
+      "aria-busy",
+      String(loading)
+    );
+
+    $("monthView").setAttribute(
+      "aria-pressed",
+      String(view === "month")
+    );
+
+    $("listView").setAttribute(
+      "aria-pressed",
+      String(view === "list")
+    );
+  }
+
+  function timeHTML(event) {
     return `
-      <div class="v5-chart-series">
-        <span class="v5-series-name">${esc(label)}</span>
-        <div>
-          <div class="v5-track" aria-hidden="true">
-            <span class="v5-bar ${colorClass}"
-              style="width:${width.toFixed(2)}%"></span>
-          </div>
-          <span class="v5-chart-value">${esc(text)}</span>
-        </div>
+      <div class="event-time">
+        <time datetime="${esc(event.date)}T${esc(event.start_time)}:00+08:00">${esc(event.start_time)}</time>–<time datetime="${esc(event.date)}T${esc(event.end_time)}:00+08:00">${esc(event.end_time)}</time>
       </div>
     `;
   }
 
-  function renderCharts(months) {
-    const maxMinutes = Math.max(
-      0,
-      ...months.map(item => item.plannedMinutes),
-      ...months.map(item => item.completedMinutes)
-    );
+  function eventHTML(event, showAddress = false) {
+    const place = places[event.location];
 
-    $("v5HoursChart").innerHTML = months.map(item => `
-      <div class="v5-chart-month">
-        <span class="v5-chart-month-label">${item.number} 月</span>
-        <div class="v5-chart-bars">
-          ${seriesHTML(
-            "排班",
-            item.plannedMinutes,
-            maxMinutes,
-            "v5-blue",
-            hours(item.plannedMinutes / 60) + " 小時"
-          )}
-          ${seriesHTML(
-            "完成",
-            item.completedMinutes,
-            maxMinutes,
-            "v5-green",
-            hours(item.completedMinutes / 60) + " 小時"
-          )}
+    if (showAddress) {
+      return `
+        <div class="event ${event.location}">
+          <div class="agenda-event-head">
+            <strong>${esc(place.name)}</strong>
+            ${timeHTML(event)}
+          </div>
+
+          <div class="event-address">
+            地址：${esc(place.address)}
+          </div>
         </div>
+      `;
+    }
+
+    return `
+      <div class="event ${event.location}">
+        <strong>${esc(place.name)}</strong>
+        ${timeHTML(event)}
       </div>
-    `).join("");
-
-    const maxIncome = Math.max(
-      0,
-      ...months.map(item => item.forecast.high),
-      ...months.map(item => item.earned.high),
-      ...months.map(item =>
-        item.settlement.conflict ? 0 : item.settlement.received
-      )
-    );
-
-    $("v5IncomeChart").innerHTML = months.map(item => {
-      const s = item.settlement;
-
-      const receivedText = s.conflict
-        ? "記錄重疊，待整理"
-        : s.records
-          ? money(s.received)
-          : "未記錄";
-
-      return `
-        <div class="v5-chart-month">
-          <span class="v5-chart-month-label">${item.number} 月</span>
-          <div class="v5-chart-bars">
-            ${seriesHTML(
-              "排班",
-              item.forecast.high,
-              maxIncome,
-              "v5-blue",
-              item.all.length ? amount(item.forecast) : "未有有效班次"
-            )}
-            ${seriesHTML(
-              "完成",
-              item.earned.high,
-              maxIncome,
-              "v5-green",
-              item.completed.length ? amount(item.earned) : "未有完成班次"
-            )}
-            ${seriesHTML(
-              "已收",
-              s.conflict ? 0 : s.received,
-              maxIncome,
-              "v5-amber",
-              receivedText
-            )}
-          </div>
-        </div>
-      `;
-    }).join("");
+    `;
   }
 
-  /* ===================== 每月卡片 ===================== */
+  function filteredEvents() {
+    const today = todayHK();
 
-  function renderMonthCards(months) {
-    const opened = new Set(
-      [...$("v5Months").querySelectorAll("details[open]")]
-        .map(element => element.dataset.month)
+    return events.filter(event =>
+      event.date >= today &&
+      event.date.slice(0, 7) === selectedMonth &&
+      selectedLocations.has(event.location)
     );
-
-    const firstRender = !$("v5Months").children.length;
-
-    $("v5Months").innerHTML = months.map(item => {
-      const s = item.settlement;
-      const selected = item.month === shownMonth;
-
-      const isOpen = opened.has(item.month) ||
-        (firstRender && selected);
-
-      const statementText = s.conflict
-        ? "待整理"
-        : s.statements
-          ? money(s.statement)
-          : "未填結算額";
-
-      const receivedText = s.conflict
-        ? "待整理"
-        : s.records
-          ? money(s.received)
-          : "未記錄";
-
-      /*
-        結算減已收只比較已填結算額的那批記錄，
-        避免把尚未填結算額對象的收款扣進去。
-      */
-      const statementRecords = state.settlements.filter(record =>
-        record.month === item.month && record.statement != null
-      );
-
-      const comparableReceived = statementRecords.reduce(
-        (total, record) => total + record.received, 0
-      );
-
-      const difference = s.conflict || !s.statements
-        ? "—"
-        : money(s.statement - comparableReceived);
-
-      const notes = [...new Set([
-        ...item.forecast.flags,
-        ...item.earned.flags,
-        ...s.notes
-      ])];
-
-      return `
-        <details class="v5-month-card ${selected ? "v5-selected" : ""}"
-          data-month="${item.month}" ${isOpen ? "open" : ""}>
-          <summary>
-            <span class="v5-month-title">
-              ${item.number} 月${selected ? " · 排班所選月份" : ""}
-            </span>
-            <span class="v5-month-subtitle">
-              排班 ${hours(item.plannedMinutes / 60)} 小時 ·
-              完成 ${hours(item.completedMinutes / 60)} 小時
-            </span>
-            <span class="v5-month-subtitle">
-              ${item.all.length
-                ? "排班試算 " + esc(amount(item.forecast))
-                : "未有有效排班"}
-            </span>
-          </summary>
-
-          <div class="v5-month-body">
-            ${metric(
-              "有效班次／已完成",
-              `${item.all.length}／${item.completed.length} 節`
-            )}
-
-            ${metric(
-              "排班工時",
-              hours(item.plannedMinutes / 60) + " 小時"
-            )}
-
-            ${metric(
-              "已完成工時",
-              hours(item.completedMinutes / 60) + " 小時"
-            )}
-
-            ${metric(
-              "排班收入試算",
-              item.all.length ? amount(item.forecast) : "—"
-            )}
-
-            ${metric(
-              "已完成收入試算",
-              item.completed.length ? amount(item.earned) : "—"
-            )}
-
-            ${metric(
-              "預測平均時薪",
-              rateText(item.forecast, item.plannedMinutes)
-            )}
-
-            ${metric(
-              "已完成平均時薪（試算）",
-              rateText(item.earned, item.completedMinutes)
-            )}
-
-            ${metric("診所結算額（已填部分）", statementText)}
-            ${metric("累計已收款（已記錄）", receivedText)}
-
-            ${metric(
-              "結算減已收（已填結算對象）",
-              difference
-            )}
-
-            ${metric(
-              "結算平均時薪",
-              s.conflict || !s.statements
-                ? "—"
-                : fixedRateText(
-                    s.statement,
-                    s.statementMinutes,
-                    s.statementBlocked
-                  )
-            )}
-
-            ${metric(
-              "收款折合時薪",
-              s.conflict || !s.records
-                ? "—"
-                : fixedRateText(
-                    s.received,
-                    s.receiptMinutes,
-                    s.receiptBlocked
-                  )
-            )}
-
-            ${notes.length ? `
-              <div class="v5-month-note">
-                ${notes.map(esc).join("<br>")}
-              </div>
-            ` : ""}
-
-            <button type="button" data-v5-open-month="${item.month}">
-              查看 ${item.number} 月排班
-            </button>
-          </div>
-        </details>
-      `;
-    }).join("");
   }
 
-  /* ===================== 年度統計 ===================== */
+  function render() {
+    updateControls();
+    updateLocationCards();
 
-  function renderOverview() {
-    updateYearOptions();
-    if (!state) return;
+    const [year, month] = selectedMonth.split("-").map(Number);
 
-    const months = buildMonths(overviewYear);
+    $("monthTitle").textContent = `${year} 年 ${month} 月`;
 
-    const plannedMinutes = months.reduce(
-      (total, item) => total + item.plannedMinutes, 0
-    );
+    if (!loaded) {
+      $("summary").textContent = "";
+      $("calendarWrap").hidden = true;
+      $("calendarHint").hidden = true;
+      $("agenda").hidden = true;
+      $("empty").hidden = false;
 
-    const completedMinutes = months.reduce(
-      (total, item) => total + item.completedMinutes, 0
-    );
+      $("calendar").replaceChildren();
+      $("agenda").replaceChildren();
 
-    const forecast = addResults(
-      months.map(item => item.forecast)
-    );
+      $("empty").textContent = loading
+        ? "正在讀取已確認駐診時間…"
+        : "暫時未能取得日程，請按「重新整理」再試。";
 
-    const earned = addResults(
-      months.map(item => item.earned)
-    );
-
-    const activeMonths = months.filter(
-      item => item.all.length > 0
-    ).length;
-
-    const validSettlementMonths = months.filter(
-      item => !item.settlement.conflict
-    );
-
-    const conflictCount = months.filter(
-      item => item.settlement.conflict
-    ).length;
-
-    const settlementCount = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.statements, 0
-    );
-
-    const receiptCount = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.records, 0
-    );
-
-    const statement = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.statement, 0
-    );
-
-    const received = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.received, 0
-    );
-
-    const statementMinutes = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.statementMinutes, 0
-    );
-
-    const receiptMinutes = validSettlementMonths.reduce(
-      (total, item) => total + item.settlement.receiptMinutes, 0
-    );
-
-    const statementBlocked = validSettlementMonths.some(
-      item => item.settlement.statementBlocked
-    );
-
-    const receiptBlocked = validSettlementMonths.some(
-      item => item.settlement.receiptBlocked
-    );
-
-    const forecastWarningMonths = months.filter(
-      item => item.all.length && item.forecast.flags.length
-    ).length;
-
-    $("v5AnnualKpis").innerHTML = [
-      kpi(
-        "全年有效排班工時",
-        hours(plannedMinutes / 60) + " 小時",
-        `${activeMonths} 個有排班月份；不含已取消班次`
-      ),
-
-      kpi(
-        "全年已完成工時",
-        hours(completedMinutes / 60) + " 小時",
-        "已包含在有效排班工時內"
-      ),
-
-      kpi(
-        "全年排班收入試算",
-        activeMonths ? amount(forecast) : "—",
-        forecast.flags.length
-          ? "有未齊費用或待確認條款，屬暫估"
-          : "逐月試算後相加，含已完成班次"
-      ),
-
-      kpi(
-        "全年已完成收入試算",
-        completedMinutes ? amount(earned) : "—",
-        earned.flags.length
-          ? "有未齊費用或待確認條款，屬暫估"
-          : "只計已完成班次，並非診所最終結算"
-      ),
-
-      kpi(
-        "診所結算額",
-        settlementCount ? money(statement) : "未填結算額",
-        `${settlementCount} 筆已填結算額；只計已填部分` +
-        (conflictCount ? `，排除 ${conflictCount} 個重疊月份` : "")
-      ),
-
-      kpi(
-        "累計已收款",
-        receiptCount ? money(received) : "未記錄",
-        "按結算所屬月份，並非銀行入帳月份" +
-        (conflictCount ? `；排除 ${conflictCount} 個重疊月份` : "")
-      )
-    ].join("");
-
-    $("v5AnnualRates").innerHTML = [
-      summaryLine(
-        "全年預測平均時薪",
-        rateText(forecast, plannedMinutes)
-      ),
-
-      summaryLine(
-        "全年已完成平均時薪（試算）",
-        rateText(earned, completedMinutes)
-      ),
-
-      summaryLine(
-        "結算平均時薪（已填對象）",
-        settlementCount
-          ? fixedRateText(
-              statement,
-              statementMinutes,
-              statementBlocked
-            )
-          : "—"
-      ),
-
-      summaryLine(
-        "收款折合時薪（已記錄對象）",
-        receiptCount
-          ? fixedRateText(
-              received,
-              receiptMinutes,
-              receiptBlocked
-            )
-          : "—"
-      ),
-
-      summaryLine(
-        `平均每月排班試算（${activeMonths} 個有排班月份）`,
-        averageMonthText(forecast, activeMonths)
-      )
-    ].join("");
-
-    const notes = [
-      `${overviewYear} 年統計只反映目前已儲存資料；未儲存輸入不會計入。`,
-      "總覽年份可獨立切換，不會更改上方排班月份。"
-    ];
-
-    if (forecastWarningMonths) {
-      notes.push(
-        `${forecastWarningMonths} 個月份有未齊費用或待確認條款，` +
-        "相關金額及平均時薪只可作暫估。"
-      );
-    }
-
-    if (conflictCount) {
-      notes.push(
-        `${conflictCount} 個月份有 AMC 月結重疊，` +
-        "已暫停採用這些月份的結算／收款統計。"
-      );
-    }
-
-    if (statementBlocked || receiptBlocked) {
-      notes.push(
-        "部分金額缺少對應已完成工時，相關年度平均時薪顯示「—」。"
-      );
-    }
-
-    $("v5AnnualNotes").textContent = notes.join(" ");
-
-    renderCharts(months);
-    renderMonthCards(months);
-  }
-
-  /* ===================== 進階操作提示 ===================== */
-
-  function renderAdvancedInfo() {
-    const target = $("v5ApplyRulesInfo");
-    if (!target || !state) return;
-
-    const shifts = monthShifts();
-    const done = shifts.filter(
-      shift => shift.status === "completed"
-    ).length;
-
-    target.textContent =
-      `目前排班所選月份：${selectedMonth()}；` +
-      `共 ${shifts.length} 節，包括 ${done} 節已完成班次。` +
-      "注意：此月份跟總覽年份選擇無關。";
-  }
-
-  /* ===================== 整合原有 render ===================== */
-
-  const previousRender = render;
-
-  render = function(forceForms = false) {
-    previousRender(forceForms);
-
-    if (state) {
-      renderOverview();
-      renderAdvancedInfo();
-    }
-  };
-
-  /* ===================== 年份及月份操作 ===================== */
-
-  function chooseYear(year) {
-    if (busy) return;
-
-    if (!Number.isInteger(year) || year < 1000 || year > 9999) {
       return;
     }
 
-    overviewYear = year;
-    renderOverview();
-    updateControls();
+    const list = filteredEvents();
+    const byDate = new Map();
+
+    for (const event of list) {
+      if (!byDate.has(event.date)) {
+        byDate.set(event.date, []);
+      }
+
+      byDate.get(event.date).push(event);
+    }
+
+    $("summary").textContent =
+      `${selectedLocations.size} / 4 個地點已選取 · ` +
+      `${byDate.size} 個駐診日 · ${list.length} 節`;
+
+    $("empty").hidden = list.length > 0;
+
+    if (selectedLocations.size === 0) {
+      $("empty").textContent =
+        "目前未選取任何地點。請點擊上方地點方框，顯示相關駐診時間。";
+    } else {
+      $("empty").textContent =
+        "所選地點本月暫未有可公開的已確認駐診時間。";
+    }
+
+    $("calendarWrap").hidden = view !== "month";
+    $("calendarHint").hidden = view !== "month";
+    $("agenda").hidden = view !== "list";
+
+    renderCalendar(year, month, byDate);
+    renderAgenda(byDate);
   }
 
-  $("v5PreviousYear").addEventListener("click", () => {
-    chooseYear(overviewYear - 1);
-  });
+  function renderCalendar(year, month, byDate) {
+    const today = todayHK();
 
-  $("v5NextYear").addEventListener("click", () => {
-    chooseYear(overviewYear + 1);
-  });
+    const firstDay = new Date(
+      Date.UTC(year, month - 1, 1)
+    ).getUTCDay();
 
-  $("v5Year").addEventListener("change", () => {
-    chooseYear(Number($("v5Year").value));
-  });
+    const offset = (firstDay + 6) % 7;
 
-  $("v5Months").addEventListener("click", event => {
-    if (busy || !state ||
-        !(event.target instanceof Element)) return;
+    const lastDate = new Date(
+      Date.UTC(year, month, 0)
+    ).getUTCDate();
 
-    const button = event.target.closest("[data-v5-open-month]");
-    if (!button) return;
+    let html = ["一", "二", "三", "四", "五", "六", "日"]
+      .map(day =>
+        `<div class="weekday">星期${day}</div>`
+      ).join("");
 
-    const target = button.dataset.v5OpenMonth;
+    html += '<div aria-hidden="true"></div>'.repeat(offset);
 
-    /*
-      使用原有切月方法：
-      原有未儲存輸入確認保護繼續生效。
-    */
-    switchMonth(target);
+    for (let day = 1; day <= lastDate; day++) {
+      const date = `${year}-${pad(month)}-${pad(day)}`;
 
-    if (shownMonth === target) {
-      $("calendarSection").scrollIntoView({
-        block: "start",
-        behavior: "auto"
-      });
+      const weekday = new Date(
+        date + "T00:00:00Z"
+      ).getUTCDay();
+
+      const isToday = date === today;
+      const weekend = weekday === 0 || weekday === 6;
+      const items = byDate.get(date) || [];
+
+      /*
+        只按開始時間分類：
+        12:59 或之前 → 上半部
+        13:00 或之後 → 下半部
+
+        上午開始、下午結束的更仍放上半部，
+        不會拆開或重複顯示。
+      */
+      const morning = items.filter(
+        event => event.start_time < "13:00"
+      );
+
+      const afternoon = items.filter(
+        event => event.start_time >= "13:00"
+      );
+
+      html += `
+        <div
+          class="day
+            ${weekend ? "weekend" : ""}
+            ${date < today ? "past" : ""}
+            ${isToday ? "today" : ""}"
+          role="group"
+          aria-label="${esc(date)}"
+        >
+          <div class="date-number">
+            <strong>${day}</strong>
+            ${isToday
+              ? '<span class="today-label">今日</span>'
+              : ""}
+          </div>
+
+          <div class="day-sessions">
+            <div
+              class="session-half morning"
+              role="group"
+              aria-label="13:00 前開始的更期"
+            >
+              ${morning.map(event => eventHTML(event)).join("")}
+            </div>
+
+            <div
+              class="session-half afternoon"
+              role="group"
+              aria-label="13:00 或之後開始的更期"
+            >
+              ${afternoon.map(event => eventHTML(event)).join("")}
+            </div>
+          </div>
+        </div>
+      `;
     }
-  });
 
-  /*
-    登出時清除新增畫面內容，避免重新登入前留下總覽。
-  */
-  const previousClearSession = clearSession;
+    $("calendar").innerHTML = html;
+  }
 
-  clearSession = function() {
-    previousClearSession();
+  function renderAgenda(byDate) {
+    const today = todayHK();
 
-    [
-      "v5AnnualKpis",
-      "v5AnnualRates",
-      "v5HoursChart",
-      "v5IncomeChart",
-      "v5Months"
-    ].forEach(id => {
-      $(id).replaceChildren();
-    });
+    $("agenda").innerHTML = [...byDate.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, items]) => {
+        const weekday = new Date(
+          date + "T00:00:00Z"
+        ).getUTCDay();
 
-    $("v5AnnualNotes").textContent = "";
+        const [, month, day] = date.split("-").map(Number);
 
-    if ($("v5ApplyRulesInfo")) {
-      $("v5ApplyRulesInfo").textContent = "";
+        return `
+          <article class="agenda-day ${
+            date === today ? "today" : ""
+          }">
+            <div class="agenda-date">
+              <strong>${month} 月 ${day} 日</strong>
+              <span>星期${weekdays[weekday]}</span>
+              ${date === today
+                ? '<span class="today-label">今日</span>'
+                : ""}
+            </div>
+
+            ${items.map(event => eventHTML(event, true)).join("")}
+          </article>
+        `;
+      }).join("");
+  }
+
+  async function load() {
+    if (loading) return;
+
+    const currentMonth = todayHK().slice(0, 7);
+
+    if (selectedMonth < currentMonth) {
+      selectedMonth = currentMonth;
+      $("month").value = selectedMonth;
     }
-  };
 
-  /*
-    原本 boot 已經開始：
-    若資料尚未載入，之後的 render 會自動更新；
-    若已載入，立即重畫。
-  */
-  if (state) {
+    loading = true;
+    loaded = false;
+    events = [];
+
     render();
-  } else {
-    updateYearOptions();
-  }
-
-  updateControls();
-})();
-</script>
-<!-- ===== v5 升級區塊完 ===== -->
-
-  <!-- ===== Dr. Ray v6：四分頁介面 ===== -->
-<style id="rayV6Style">
-  .v6-nav {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-    position: sticky;
-    top: 8px;
-    z-index: 20;
-    margin: 16px 0;
-    padding: 8px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: #fffffff5;
-    box-shadow: 0 4px 18px #1723370a;
-  }
-
-  .v6-nav button {
-    min-height: 46px;
-    background: transparent;
-    color: var(--muted);
-    font-weight: 650;
-  }
-
-  .v6-nav button[aria-pressed="true"] {
-    background: var(--blue);
-    color: #fff;
-  }
-
-  .v6-page { min-width: 0; }
-
-  .v6-month-caption {
-    margin: 0 0 10px;
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .v6-common .month-toolbar {
-    gap: 12px;
-  }
-
-  .v6-common #reload {
-    flex: 0 0 auto;
-  }
-
-  .v6-actions {
-    justify-content: flex-start;
-    margin: 0;
-  }
-
-  .v6-fold > summary {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 17px;
-  }
-
-  .v6-fold > summary::before {
-    content: "＋";
-    color: var(--blue);
-  }
-
-  .v6-fold[open] > summary::before {
-    content: "－";
-  }
-
-  .v6-fold > summary {
-    list-style: none;
-  }
-
-  .v6-fold > summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .v6-fold > .body {
-    margin-top: 14px;
-  }
-
-  #v6Page-settings > .v5-settings-block {
-    margin: 16px 0;
-    padding: 20px;
-    border: 1px solid var(--line);
-    border-radius: 15px;
-    background: #fff;
-  }
-
-  @media (max-width: 700px) {
-    .v6-nav {
-      position: fixed;
-      top: auto;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      margin: 0;
-      gap: 4px;
-      border-radius: 0;
-      border: 0;
-      border-top: 1px solid var(--line);
-      padding: 8px 12px;
-      padding-bottom: max(8px, env(safe-area-inset-bottom));
-      box-shadow: 0 -4px 18px #1723370a;
-    }
-
-    .v6-nav button {
-      min-width: 0;
-      padding: 8px 4px;
-      font-size: 14px;
-    }
-
-    body.modal-open .v6-nav {
-      display: none;
-    }
-
-    .v6-common .month-toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .v6-common #reload {
-      padding: 10px;
-      font-size: 13px;
-    }
-
-    .v6-actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      width: 100%;
-    }
-
-    #v6Page-settings > .v5-settings-block {
-      margin: 12px 0;
-      padding: 15px;
-    }
-  }
-</style>
-
-<script id="rayV6Script">
-"use strict";
-
-(() => {
-  if (window.__rayV6Installed) return;
-
-  const app = $("app");
-  const overview = $("v5Overview");
-  const settings = $("settingsSection");
-  const calendar = $("calendarSection");
-  const settlement = $("settlementSection");
-  const common = $("month")?.closest("section");
-  const shiftSection = $("shiftRows")?.closest("section");
-  const incomeSection = $("incomeRows")?.closest("section");
-
-  if (!app || !overview || !settings || !calendar ||
-      !settlement || !common || !shiftSection || !incomeSection) {
-    console.error("v6 未安裝：請保留完整 v4 及 v5 區塊。");
-    return;
-  }
-
-  window.__rayV6Installed = true;
-
-  /*
-    只搬動原有畫面節點。
-    表單、ID、事件處理器及資料儲存方法保留。
-  */
-  const labels = {
-    overview: "總覽",
-    schedule: "排班",
-    settlement: "月結",
-    settings: "設定"
-  };
-
-  const pages = {};
-  const scrollPositions = {};
-  let currentPage = "overview";
-
-  /* 移除舊版只作頁內跳轉的手機導覽。 */
-  app.querySelector(".mobile-nav")?.remove();
-
-  const nav = document.createElement("nav");
-  nav.className = "v6-nav";
-  nav.setAttribute("aria-label", "主要分頁");
-
-  for (const [key, label] of Object.entries(labels)) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.dataset.v6Page = key;
-    button.setAttribute("aria-controls", `v6Page-${key}`);
-    button.setAttribute("aria-pressed", String(key === currentPage));
-    nav.appendChild(button);
-
-    const page = document.createElement("div");
-    page.id = `v6Page-${key}`;
-    page.className = "v6-page";
-    page.setAttribute("role", "region");
-    page.setAttribute("aria-label", label);
-    page.hidden = key !== currentPage;
-    pages[key] = page;
-  }
-
-  /* 共用月份及重新載入：四頁都可以使用。 */
-  common.classList.add("v6-common");
-
-  const caption = document.createElement("p");
-  caption.className = "v6-month-caption";
-  caption.textContent = "";
-  common.prepend(caption);
-
-  const toolbar = common.querySelector(".month-toolbar");
-  const actions = common.querySelector(".main-actions");
-  const reload = $("reload");
-  const tools = common.querySelector(".month-tools");
-  const stats = $("stats");
-
-  /* 排班專用操作不再出現在其他頁。 */
-  const scheduleTools = document.createElement("section");
-  scheduleTools.className = "card";
-
-  const scheduleHeading = document.createElement("h2");
-  scheduleHeading.textContent = "排班操作";
-  scheduleTools.appendChild(scheduleHeading);
-
-  toolbar.appendChild(reload);
-  actions.classList.remove("main-actions");
-  actions.classList.add("v6-actions");
-
-  scheduleTools.appendChild(actions);
-  if (tools) scheduleTools.appendChild(tools);
-  scheduleTools.appendChild(stats);
-
-  /* 將既有區塊整理成可展開明細，保留其內容及事件。 */
-  function foldSection(section, title) {
-    const fold = document.createElement("details");
-    fold.className = "card v6-fold";
-
-    const summary = document.createElement("summary");
-    summary.textContent = title;
-
-    const body = document.createElement("div");
-    body.className = "body";
-
-    section.querySelector("h2")?.remove();
-
-    while (section.firstChild) {
-      body.appendChild(section.firstChild);
-    }
-
-    fold.append(summary, body);
-    section.replaceWith(fold);
-    return fold;
-  }
-
-  const shiftDetails = foldSection(
-    shiftSection, "班次明細及 CSV 匯出"
-  );
-
-  /* 總覽十二個月卡片整組預設收起。 */
-  const monthGrid = $("v5Months");
-  const monthGroup = monthGrid?.parentElement;
-
-  if (monthGroup && monthGroup.tagName !== "DETAILS") {
-    const fold = document.createElement("details");
-    fold.className = "v5-subsection v6-fold";
-
-    const summary = document.createElement("summary");
-    summary.textContent = "每月明細";
-
-    monthGroup.querySelector("h3")?.remove();
-
-    fold.appendChild(summary);
-
-    while (monthGroup.firstChild) {
-      fold.appendChild(monthGroup.firstChild);
-    }
-
-    monthGroup.replaceWith(fold);
-  }
-
-  /*
-    設定頁拆開：
-    報酬規則、假期、備份各自獨立，
-    不再全部藏在同一個大型設定折疊內。
-  */
-  const holidayBlock = $("holidayFile").closest("details");
-  const backupBlock = $("backup").closest("section");
-
-  settings.open = true;
-  settings.querySelector(":scope > summary").textContent =
-    "報酬規則與條款";
-
-  /* 組合四頁。 */
-  pages.overview.appendChild(overview);
-
-  pages.schedule.append(
-    scheduleTools,
-    calendar,
-    shiftDetails
-  );
-
-  pages.settlement.append(
-    incomeSection,
-    settlement
-  );
-
-  pages.settings.appendChild(settings);
-
-  if (holidayBlock && holidayBlock !== settings) {
-    pages.settings.appendChild(holidayBlock);
-  }
-
-  if (backupBlock && backupBlock !== settings) {
-    pages.settings.appendChild(backupBlock);
-  }
-
-  /* 顯示順序：警告 → 分頁列 → 共用月份 → 所選頁。 */
-  app.append(nav, common, ...Object.values(pages));
-
-  function showPage(key, restoreScroll = true) {
-    if (!pages[key] || busy || !state) return;
-
-    const changed = key !== currentPage;
-
-    if (changed) {
-      scrollPositions[currentPage] = window.scrollY;
-    }
-
-    currentPage = key;
-
-    for (const [name, page] of Object.entries(pages)) {
-      page.hidden = name !== key;
-    }
-
-    nav.querySelectorAll("[data-v6-page]").forEach(button => {
-      button.setAttribute(
-        "aria-pressed",
-        String(button.dataset.v6Page === key)
+    setStatus("正在讀取已確認駐診時間…");
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(
+      () => controller.abort(),
+      15000
+    );
+
+    try {
+      const response = await fetch(
+        `${API}/rest/v1/rpc/ray_public_calendar`,
+        {
+          method: "POST",
+          headers: {
+            "apikey": KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            p_month: selectedMonth
+          }),
+          credentials: "omit",
+          cache: "no-store",
+          signal: controller.signal
+        }
       );
-    });
 
-    /*
-      切頁不 render、不 resetDirty：
-      未儲存表單留在原有節點內。
-    */
-    if (changed && restoreScroll) {
-      window.scrollTo({
-        top: scrollPositions[key] || 0,
-        behavior: "auto"
-      });
+      if (!response.ok) {
+        console.error(
+          "Calendar API:",
+          response.status,
+          await response.text()
+        );
+
+        throw new Error("API_REQUEST_FAILED");
+      }
+
+      const result = await response.json();
+
+      if (!Array.isArray(result)) {
+        throw new Error("INVALID_RESPONSE");
+      }
+
+      const valid = result.every(event =>
+        event &&
+        typeof event === "object" &&
+        validDate(event.date) &&
+        Object.hasOwn(places, event.location) &&
+        validTime(event.start_time) &&
+        validTime(event.end_time) &&
+        event.end_time > event.start_time &&
+        event.date.slice(0, 7) === selectedMonth
+      );
+
+      if (!valid) {
+        throw new Error("INVALID_EVENTS");
+      }
+
+      events = result.map(event => ({
+        date: event.date,
+        location: event.location,
+        start_time: event.start_time,
+        end_time: event.end_time
+      })).sort((a, b) =>
+        `${a.date} ${a.start_time} ${a.location}`.localeCompare(
+          `${b.date} ${b.start_time} ${b.location}`
+        )
+      );
+
+      loaded = true;
+
+      const readAt = new Intl.DateTimeFormat("zh-HK", {
+        timeZone: "Asia/Hong_Kong",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).format(new Date());
+
+      setStatus(
+        `最後讀取：${readAt}（香港時間） · 頁面開啟時每分鐘更新`
+      );
+    } catch (error) {
+      console.error(error);
+
+      events = [];
+      loaded = false;
+
+      setStatus(
+        error.name === "AbortError"
+          ? "讀取逾時，請檢查網絡後重新整理。"
+          : "暫時未能載入日程，請稍後按「重新整理」。",
+        true
+      );
+    } finally {
+      clearTimeout(timeout);
+      loading = false;
+      render();
     }
   }
 
-  nav.addEventListener("click", event => {
-    if (!(event.target instanceof Element)) return;
-    const button = event.target.closest("[data-v6-page]");
-    if (button) showPage(button.dataset.v6Page);
-  });
+  function chooseMonth(value) {
+    if (loading) return;
 
-  /*
-    總覽「查看 X 月排班」：
-    先用原本切月保護；成功後才切入排班頁。
-    捕獲階段攔截，避免舊事件嘗試捲動隱藏月曆。
-  */
-  monthGrid.addEventListener("click", event => {
-    if (!(event.target instanceof Element)) return;
+    const currentMonth = todayHK().slice(0, 7);
 
-    const button = event.target.closest("[data-v5-open-month]");
+    if (!validMonth(value) || value < currentMonth) {
+      $("month").value = selectedMonth;
+      setStatus("請選擇本月或之後的月份。", true);
+      return;
+    }
+
+    selectedMonth = value;
+    $("month").value = value;
+    load();
+  }
+
+  function changeMonth(delta) {
+    if (loading) return;
+
+    const [year, month] = selectedMonth.split("-").map(Number);
+
+    const date = new Date(
+      Date.UTC(year, month - 1 + delta, 1)
+    );
+
+    chooseMonth(
+      `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`
+    );
+  }
+
+  $("locationCards").addEventListener("click", event => {
+    const button = event.target.closest("[data-location]");
+
     if (!button) return;
 
-    event.preventDefault();
-    event.stopImmediatePropagation();
+    const code = button.dataset.location;
 
-    if (busy || !state) return;
+    if (!Object.hasOwn(places, code)) return;
 
-    const target = button.dataset.v5OpenMonth;
-    switchMonth(target);
-
-    if (shownMonth === target) {
-      showPage("schedule", false);
-      calendar.scrollIntoView({
-        block: "start",
-        behavior: "auto"
-      });
-    }
-  }, true);
-
-  /* 登出時回到總覽，清除各頁捲動位置。 */
-  const oldClearSession = clearSession;
-
-  clearSession = function() {
-    oldClearSession();
-
-    currentPage = "overview";
-
-    for (const key of Object.keys(scrollPositions)) {
-      delete scrollPositions[key];
+    if (selectedLocations.has(code)) {
+      selectedLocations.delete(code);
+    } else {
+      selectedLocations.add(code);
     }
 
-    for (const [key, page] of Object.entries(pages)) {
-      page.hidden = key !== currentPage;
+    // 本地即時篩選，不需要重新讀取伺服器。
+    render();
+  });
+
+  $("previous").addEventListener(
+    "click",
+    () => changeMonth(-1)
+  );
+
+  $("next").addEventListener(
+    "click",
+    () => changeMonth(1)
+  );
+
+  $("month").addEventListener(
+    "change",
+    () => chooseMonth($("month").value)
+  );
+
+  $("thisMonth").addEventListener(
+    "click",
+    () => chooseMonth(todayHK().slice(0, 7))
+  );
+
+  $("refresh").addEventListener("click", load);
+
+  $("monthView").addEventListener("click", () => {
+    view = "month";
+    render();
+  });
+
+  $("listView").addEventListener("click", () => {
+    view = "list";
+    render();
+  });
+
+  setInterval(() => {
+    if (!document.hidden && !loading) {
+      load();
     }
+  }, 60000);
 
-    nav.querySelectorAll("[data-v6-page]").forEach(button => {
-      button.setAttribute(
-        "aria-pressed",
-        String(button.dataset.v6Page === currentPage)
-      );
-    });
-  };
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && !loading) {
+      load();
+    }
+  });
 
-  const footer = document.querySelector("main > footer small");
-  if (footer) {
-    footer.textContent = "";
-  }
-
-  updateControls();
+  buildLocationCards();
+  load();
 })();
 </script>
-<!-- ===== v6 四分頁介面完 ===== -->
 </body>
 </html>
